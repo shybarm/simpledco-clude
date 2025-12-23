@@ -28,6 +28,17 @@ function setActiveTab(tab) {
   );
 }
 
+function serviceLabel(value) {
+  const map = {
+    general: "ייעוץ רפואי כללי",
+    "home-visit": "ביקור בית",
+    chronic: "ניהול מחלות כרוניות",
+    preventive: "רפואה מונעת",
+    pediatric: "טיפול ילדים",
+  };
+  return map[value] || value || "";
+}
+
 // ---------- auth ----------
 async function requireAuth() {
   const { data } = await sb.auth.getSession();
@@ -64,7 +75,7 @@ async function loadPatient() {
 
   patient = data;
 
-  $("patientIdLabel").textContent = `patient_id: ${patient.id}`;
+  // hide internal id – show only created date
   $("patientMeta").textContent = `נוצר: ${new Date(
     patient.created_at
   ).toLocaleString("he-IL")}`;
@@ -72,6 +83,10 @@ async function loadPatient() {
   $("fullNameInput").value = patient.full_name || "";
   $("emailInput").value = patient.email || "";
   $("phoneInput").value = patient.phone || "";
+
+  $("personalIdInput").value = patient.personal_id || "";
+  $("dobInput").value = patient.date_of_birth || "";
+  $("allergiesInput").value = patient.allergies || "";
 }
 
 // ---------- save patient ----------
@@ -80,9 +95,13 @@ async function savePatient() {
   const email = $("emailInput").value.trim();
   const phone = $("phoneInput").value.trim();
 
+  const personal_id = $("personalIdInput").value.trim();
+  const date_of_birth = $("dobInput").value || null;
+  const allergies = $("allergiesInput").value.trim();
+
   const { error } = await sb
     .from("patients")
-    .update({ full_name, email, phone })
+    .update({ full_name, email, phone, personal_id, date_of_birth, allergies })
     .eq("id", patientId);
 
   if (error) throw error;
@@ -114,7 +133,7 @@ async function loadAppointments() {
     div.className = "row";
     div.innerHTML = `
       <div class="meta">
-        <strong>${a.service || ""}</strong>
+        <strong>${serviceLabel(a.service)}</strong>
         <span>${a.date || ""} ${a.time || ""}</span>
         <span>סטטוס: ${a.status}</span>
       </div>
@@ -181,7 +200,7 @@ async function createVisit() {
   setActiveTab("visits");
 }
 
-// ---------- invoices ----------
+// ---------- invoices (read-only for now) ----------
 async function loadInvoices() {
   const wrap = $("invoicesList");
   wrap.innerHTML = "";
@@ -218,26 +237,33 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     await requireAuth();
 
-    document
-      .querySelectorAll(".tab")
-      .forEach((b) =>
-        b.addEventListener("click", () => setActiveTab(b.dataset.tab))
-      );
+    document.querySelectorAll(".tab").forEach((b) =>
+      b.addEventListener("click", () => setActiveTab(b.dataset.tab))
+    );
 
     $("logoutLink").addEventListener("click", (e) => {
       e.preventDefault();
       logout();
     });
 
-    $("savePatientBtn").addEventListener("click", savePatient);
+    $("savePatientBtn").addEventListener("click", () =>
+      savePatient().catch((err) => alert(err.message))
+    );
+
     $("refreshBtn").addEventListener("click", async () => {
-      await loadPatient();
-      await loadAppointments();
-      await loadVisits();
-      await loadInvoices();
+      try {
+        await loadPatient();
+        await loadAppointments();
+        await loadVisits();
+        await loadInvoices();
+      } catch (err) {
+        alert(err.message);
+      }
     });
 
-    $("createVisitBtn").addEventListener("click", createVisit);
+    $("createVisitBtn").addEventListener("click", () =>
+      createVisit().catch((err) => alert(err.message))
+    );
 
     // defaults
     $("visitDateInput").value = new Date().toISOString().slice(0, 10);
