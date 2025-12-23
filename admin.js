@@ -115,7 +115,14 @@ function render() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${fmtDate(a.created_at)}</td>
-      <td><strong>${(a.first_name || "")} ${(a.last_name || "")}</strong></td>
+     <td>
+  ${a.patient_id
+    ? `<a href="patient.html?patient_id=${a.patient_id}">
+         <strong>${(a.first_name || "")} ${(a.last_name || "")}</strong>
+       </a>`
+    : `<strong>${(a.first_name || "")} ${(a.last_name || "")}</strong>`
+  }
+</td>
       <td><a href="tel:${a.phone || ""}">${a.phone || ""}</a></td>
       <td><a href="mailto:${a.email || ""}">${a.email || ""}</a></td>
       <td>${serviceLabel(a.service)}</td>
@@ -140,7 +147,14 @@ function render() {
 async function loadAppointments() {
   const { data, error } = await sb
     .from(TABLE)
-    .select("*")
+   .select(`
+  *,
+  patients (
+    id,
+    first_name,
+    last_name
+  )
+`)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
