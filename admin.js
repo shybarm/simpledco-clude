@@ -1,4 +1,4 @@
-// admin.js — Supabase Auth Back Office (clean + patient-safe)
+// admin.js — Supabase Auth Back Office (FULL FILE, patient navigation fixed)
 
 window.__ADMIN_LOADED = true;
 console.log("[ADMIN] admin.js loaded ✅");
@@ -8,17 +8,24 @@ let sb = null;
 let allAppointments = [];
 
 // ---------------- helpers ----------------
-const $ = (id) => document.getElementById(id);
+function $(id) {
+  return document.getElementById(id);
+}
 
 function on(id, event, handler) {
   const el = $(id);
-  if (!el) return;
+  if (!el) {
+    console.warn(`[ADMIN] Missing element #${id} (cannot bind ${event})`);
+    return false;
+  }
   el.addEventListener(event, handler);
+  return true;
 }
 
 function show(id, yes) {
   const el = $(id);
-  if (el) el.style.display = yes ? "" : "none";
+  if (!el) return;
+  el.style.display = yes ? "" : "none";
 }
 
 function setLoginError(msg) {
@@ -30,10 +37,8 @@ function setLoginError(msg) {
 
 function fmtDate(iso) {
   try {
-    return new Date(iso).toLocaleString("he-IL", {
-      dateStyle: "short",
-      timeStyle: "short",
-    });
+    const d = new Date(iso);
+    return d.toLocaleString("he-IL", { dateStyle: "short", timeStyle: "short" });
   } catch {
     return iso || "";
   }
@@ -52,7 +57,7 @@ function serviceLabel(value) {
 
 // ---------------- filters ----------------
 function applyFilters(list) {
-  const q = ($("searchInput")?.value || "").toLowerCase();
+  const q = ($("searchInput")?.value || "").trim().toLowerCase();
   const status = $("statusFilter")?.value || "all";
   const service = $("serviceFilter")?.value || "all";
 
@@ -69,6 +74,7 @@ function applyFilters(list) {
       a.status,
       a.patients?.full_name,
     ]
+      .filter(Boolean)
       .join(" ")
       .toLowerCase();
 
@@ -88,33 +94,43 @@ function render() {
   body.innerHTML = "";
 
   if (!list.length) {
-    body.innerHTML = `<tr><td colspan="10" class="admin-empty">אין בקשות להצגה</td></tr>`;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="11" class="admin-empty">אין בקשות להצגה</td>`;
+    body.appendChild(tr);
     return;
   }
 
   list.forEach((a) => {
     const patientName =
-      a.patients?.full_name || `${a.first_name || ""} ${a.last_name || ""}`;
+      a.patients?.full_name || `${a.first_name || ""} ${a.last_name || ""}`.trim();
 
-    const patientIdAttr = a.patient_id ? String(a.patient_id) : "";
-
-    // patient cell is clickable via delegated click handler (bindEvents)
-    const patientCell = `
-      <td class="patient-cell ${patientIdAttr ? "is-clickable" : ""}" data-patient-id="${patientIdAttr}">
-        <strong>${patientName}</strong>
-      </td>
-    `;
+    const patientId = a.patient_id ? String(a.patient_id) : "";
+    const openDisabled = patientId ? "" : "disabled";
+    const openTitle = patientId ? "פתח תיק מטופל" : "אין patient_id (להריץ backfill)";
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${fmtDate(a.created_at)}</td>
-      ${patientCell}
+
+      <td class="patient-cell">
+        <button
+          type="button"
+          class="patient-open"
+          data-patient-id="${patientId}"
+          ${openDisabled}
+          title="${openTitle}"
+        >
+          ${patientName || "—"}
+        </button>
+      </td>
+
       <td><a href="tel:${a.phone || ""}">${a.phone || ""}</a></td>
       <td><a href="mailto:${a.email || ""}">${a.email || ""}</a></td>
       <td>${serviceLabel(a.service)}</td>
       <td>${a.date || ""}</td>
       <td>${a.time || ""}</td>
       <td class="admin-notes">${(a.notes || "").replace(/</g, "&lt;")}</td>
+
       <td>
         <select class="admin-status" data-id="${a.id}">
           <option value="new" ${a.status === "new" ? "selected" : ""}>חדש</option>
@@ -122,8 +138,9 @@ function render() {
           <option value="cancelled" ${a.status === "cancelled" ? "selected" : ""}>בוטל</option>
         </select>
       </td>
-      <td>
-        <button class="admin-delete" data-id="${a.id}" type="button">מחק</button>
+
+      <td class="admin-row-actions">
+        <button class="btn-outline admin-delete" data-id="${a.id}" type="button">מחק</button>
       </td>
     `;
     body.appendChild(tr);
@@ -146,6 +163,7 @@ async function loadAppointments() {
     .order("created_at", { ascending: false });
 
   if (error) throw error;
+
   allAppointments = data || [];
   render();
 }
@@ -154,8 +172,8 @@ async function updateStatus(id, status) {
   const { error } = await sb.from(TABLE).update({ status }).eq("id", id);
   if (error) throw error;
 
-  const row = allAppointments.find((x) => x.id === id);
-  if (row) row.status = status;
+  const idx = allAppointments.findIndex((x) => x.id === id);
+  if (idx >= 0) allAppointments[idx].status = status;
   render();
 }
 
@@ -167,16 +185,64 @@ async function deleteAppointment(id) {
   render();
 }
 
+function exportCsv() {
+  const list = allAppointments;
+  const headers = [
+    "created_at",
+    "status",
+    "first_name",
+    "last_name",
+    "phone",
+    "email",
+    "service",
+    "date",
+    "time",
+    "notes",
+    "patient_id",
+  ];
+  const rows = [headers.join(",")];
+
+  list.forEach((a) => {
+    const row = headers
+      .map((h) => {
+        const val = (a[h] ?? "").toString().replace(/"/g, '""');
+        return `"${val}"`;
+      })
+      .join(",");
+    rows.push(row);
+  });
+
+  const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "appointments.csv";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 // ---------------- auth ----------------
 async function signIn() {
   setLoginError("");
   const email = ($("emailInput")?.value || "").trim();
   const password = $("passwordInput")?.value || "";
-  if (!email || !password) return setLoginError("נא למלא אימייל וסיסמה");
+
+  if (!email || !password) {
+    setLoginError("נא למלא אימייל וסיסמה.");
+    return;
+  }
+
+  setLoginError("מתחבר...");
 
   const { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) return setLoginError(error.message);
+  if (error) {
+    setLoginError("התחברות נכשלה: " + error.message);
+    return;
+  }
 
+  setLoginError("");
   await onAuthReady();
 }
 
@@ -189,9 +255,19 @@ async function onAuthReady() {
   const { data } = await sb.auth.getSession();
   const session = data?.session;
 
-  show("loginPanel", !session);
-  show("appPanel", !!session);
-  if (session) await loadAppointments();
+  if (!session) {
+    show("loginPanel", true);
+    show("appPanel", false);
+    const logout = $("logoutLink");
+    if (logout) logout.style.display = "none";
+    return;
+  }
+
+  show("loginPanel", false);
+  show("appPanel", true);
+  const logout = $("logoutLink");
+  if (logout) logout.style.display = "";
+  await loadAppointments();
 }
 
 // ---------------- events ----------------
@@ -202,46 +278,47 @@ function bindEvents() {
     signOut();
   });
   on("refreshBtn", "click", () => loadAppointments().catch((err) => alert(err.message)));
-  on("exportBtn", "click", () => alert("exportCsv not wired in this version"));
+  on("exportBtn", "click", exportCsv);
 
-  $("searchInput")?.addEventListener("input", render);
-  $("statusFilter")?.addEventListener("change", render);
-  $("serviceFilter")?.addEventListener("change", render);
+  const si = $("searchInput");
+  if (si) si.addEventListener("input", render);
 
-  // status change
+  const sf = $("statusFilter");
+  if (sf) sf.addEventListener("change", render);
+
+  const svc = $("serviceFilter");
+  if (svc) svc.addEventListener("change", render);
+
+  // Status change
   document.addEventListener("change", (e) => {
-    const target = e.target;
-    if (target && target.classList.contains("admin-status")) {
-      updateStatus(target.getAttribute("data-id"), target.value).catch((err) =>
+    if (e.target && e.target.classList.contains("admin-status")) {
+      updateStatus(e.target.getAttribute("data-id"), e.target.value).catch((err) =>
         alert("עדכון נכשל: " + err.message)
       );
     }
   });
 
-  // clicks: delete + patient navigation
+  // Clicks: patient open + delete
   document.addEventListener("click", (e) => {
-    const target = e.target;
+    // Patient open (button is the most reliable click target)
+    const openBtn = e.target.closest && e.target.closest(".patient-open");
+    if (openBtn) {
+      const patientId = openBtn.getAttribute("data-patient-id");
+      if (!patientId) return;
 
-    // delete button
-    const delBtn = target.closest?.(".admin-delete");
-    if (delBtn) {
-      const id = delBtn.getAttribute("data-id");
-      if (!confirm("למחוק?")) return;
-      deleteAppointment(id).catch((err) => alert("מחיקה נכשלה: " + err.message));
+      // IMPORTANT: use ./ for Vercel/static routes
+      window.location.href = `./patient.html?patient_id=${patientId}`;
       return;
     }
 
-    // don't hijack clicks on interactive elements
-    if (target.closest?.("a, button, select, input, textarea, label")) return;
-
-    // patient cell navigation
-    const cell = target.closest?.(".patient-cell");
-    if (!cell) return;
-
-    const patientId = cell.getAttribute("data-patient-id");
-    if (!patientId) return;
-
-    window.location.href = `patient.html?patient_id=${patientId}`;
+    // Delete
+    const delBtn = e.target.closest && e.target.closest(".admin-delete");
+    if (delBtn) {
+      const id = delBtn.getAttribute("data-id");
+      if (!confirm("למחוק את הבקשה הזו?")) return;
+      deleteAppointment(id).catch((err) => alert("מחיקה נכשלה: " + err.message));
+      return;
+    }
   });
 }
 
