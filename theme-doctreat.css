@@ -1,5 +1,5 @@
 /* theme-doctreat.css
-   HIGH-TECH MEDICAL AESTHETIC (Design-only upgrade)
+   HIGH‑TECH MEDICAL AESTHETIC (Design-only upgrade)
    Goal: "Apple Health meets cutting-edge startup" — futuristic digital wellness
    Safety: CSS only. No HTML / logic / flow changes. RTL-safe.
 
@@ -192,4 +192,548 @@ body::after{
   background: linear-gradient(135deg, var(--primary), #7ab7ff);
   box-shadow: 0 8px 20px rgba(43,116,228,.25);
   border: 1px solid rgba(255,255,255,.55);
-  animation: pulse 3s ea
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.nav-links{
+  display:flex;
+  align-items:center;
+  gap: 14px !important;
+}
+
+.nav-links a{
+  font-weight: 800 !important;
+  opacity: .92;
+  transition: transform .18s ease, opacity .18s ease;
+}
+
+.nav-links a:hover{
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+/* Mobile menu toggle */
+.menu-toggle{
+  border-radius: 14px !important;
+  border: 1px solid rgba(15,23,42,.10) !important;
+  background: rgba(255,255,255,.92) !important;
+  box-shadow: var(--shadow-ambient);
+  padding: 10px 12px !important;
+}
+
+/* ─────────────────────────────────────────────
+   Buttons (pill, glow, micro interactions)
+───────────────────────────────────────────── */
+button,
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-outline,
+input[type="submit"]{
+  border-radius: 999px !important;
+  font-weight: 900 !important;
+  transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease, opacity .16s ease;
+}
+
+.btn-primary,
+button.btn-primary,
+input[type="submit"].btn-primary{
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  color: #fff !important;
+  border: 1px solid transparent !important;
+  box-shadow: 0 12px 30px rgba(43,116,228,.20);
+}
+
+.btn-secondary,
+button.btn-secondary{
+  background: rgba(255,255,255,.92) !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(15,23,42,.10) !important;
+  box-shadow: 0 10px 24px rgba(15,23,42,.06);
+}
+
+.btn-outline,
+button.btn-outline{
+  background: transparent !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(15,23,42,.14) !important;
+  box-shadow: none;
+}
+
+.btn:hover,
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-outline:hover,
+button:hover,
+input[type="submit"]:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(43,116,228,.25);
+}
+
+.btn:active,
+.btn-primary:active,
+.btn-secondary:active,
+.btn-outline:active,
+button:active,
+input[type="submit"]:active{
+  transform: translateY(0);
+  box-shadow: 0 6px 15px rgba(43,116,228,.20);
+}
+
+/* Optional loading class hook (won't break if unused) */
+.btn.loading,
+button.loading{
+  pointer-events: none;
+  opacity: .7;
+  position: relative;
+}
+.btn.loading::after,
+button.loading::after{
+  content:"";
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,.85);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  margin-inline-start: 10px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* ─────────────────────────────────────────────
+   Hero (glass card + image + mesh)
+───────────────────────────────────────────── */
+.hero{
+  padding: var(--space-xl) 0 var(--space-2xl) !important;
+  background: transparent !important;
+}
+
+.hero-content{
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-xl) !important;
+  padding: var(--space-xl) !important;
+  box-shadow: 0 20px 60px rgba(15,23,42,.08), var(--shadow-glow) !important;
+}
+
+/* Ambient gradients inside hero */
+.hero-content::before{
+  content:"";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(900px 360px at 20% 15%, rgba(43,116,228,.16), transparent 58%),
+    radial-gradient(820px 340px at 82% 24%, rgba(255,90,95,.12), transparent 60%),
+    radial-gradient(900px 420px at 46% 120%, rgba(14,165,233,.10), transparent 60%);
+  opacity: .95;
+  pointer-events:none;
+  z-index: 0;
+}
+
+/* Hero image overlay (optional, subtle) */
+.hero-content::after{
+  content:"";
+  position:absolute;
+  inset: 0;
+  background-image: var(--hero-image);
+  background-size: cover;
+  background-position: center;
+  opacity: .22;
+  filter: saturate(1.05) contrast(1.05);
+  pointer-events:none;
+  z-index: 0;
+}
+
+.hero-content > *{
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1{
+  font-size: var(--h1) !important;
+  font-weight: 900 !important;
+  letter-spacing: .2px;
+  line-height: 1.15 !important;
+  margin: 0 0 var(--space-sm) 0 !important;
+}
+
+.hero .subtitle,
+.hero .hero-description{
+  font-size: var(--body-lg) !important;
+  color: rgba(15,23,42,.70) !important;
+  line-height: 1.6 !important;
+}
+
+.hero-buttons{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px !important;
+  margin-top: var(--space-md) !important;
+}
+
+/* Stats / badges (if present) */
+.badges,
+.hero-badges,
+.stats-row{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: var(--space-lg);
+}
+
+.badge,
+.stat-badge,
+.hero-badge{
+  background: rgba(255,255,255,.72);
+  border: 1px solid rgba(15,23,42,.10);
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: 0 12px 28px rgba(15,23,42,.08);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  font-weight: 900;
+}
+
+/* ─────────────────────────────────────────────
+   Cards (global upgrade)
+───────────────────────────────────────────── */
+.card,
+.service-card,
+.feature-card,
+.panel,
+.box{
+  background: var(--card) !important;
+  border: 1px solid rgba(15,23,42,.10) !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--shadow-ambient) !important;
+  transition: transform .3s cubic-bezier(.4,0,.2,1), box-shadow .3s cubic-bezier(.4,0,.2,1), border-color .3s cubic-bezier(.4,0,.2,1);
+}
+
+.card:hover,
+.service-card:hover,
+.feature-card:hover,
+.panel:hover,
+.box:hover{
+  transform: translateY(-8px);
+  border-color: rgba(43,116,228,.25) !important;
+  box-shadow: 0 24px 60px rgba(15,23,42,.12), var(--shadow-glow) !important;
+}
+
+/* Service cards: icon bubble (works if .service-icon exists) */
+.service-icon{
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(43,116,228,.15), rgba(14,165,233,.10));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 32px;
+  box-shadow: 0 10px 30px rgba(43,116,228,.15);
+}
+
+/* Featured card hook */
+.service-card.featured,
+.featured{
+  border: 2px solid transparent !important;
+  background:
+    linear-gradient(#fff,#fff) padding-box,
+    linear-gradient(135deg, var(--primary), var(--accent-coral)) border-box !important;
+  animation: borderGlow 3s ease-in-out infinite;
+}
+
+/* Stagger entrance (safe: only affects .service-card elements) */
+.service-card{
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp .6s ease forwards;
+}
+.service-card:nth-child(1){ animation-delay: .10s; }
+.service-card:nth-child(2){ animation-delay: .20s; }
+.service-card:nth-child(3){ animation-delay: .30s; }
+.service-card:nth-child(4){ animation-delay: .40s; }
+.service-card:nth-child(5){ animation-delay: .50s; }
+
+/* ─────────────────────────────────────────────
+   Forms (glass, bigger inputs, focus glow)
+───────────────────────────────────────────── */
+form,
+.appointment-form{
+  border-radius: var(--r-lg) !important;
+  padding: var(--space-lg) !important;
+  box-shadow: 0 30px 80px rgba(15,23,42,.10) !important;
+}
+
+.form-group label{
+  font-weight: 700;
+  color: rgba(15,23,42,.72);
+  font-size: 13px;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+input[type="date"],
+input[type="number"],
+select,
+textarea{
+  background: rgba(255,255,255,.92) !important;
+  border: 1px solid rgba(15,23,42,.12) !important;
+  border-radius: var(--r-sm) !important;
+  padding: 12px 14px !important;
+  min-height: 44px;
+  font-size: var(--body) !important;
+  box-shadow: 0 12px 28px rgba(15,23,42,.06) !important;
+  transition: box-shadow .16s ease, border-color .16s ease, transform .16s ease, background .16s ease;
+}
+
+textarea{ min-height: 120px; resize: vertical; }
+
+input:focus,
+select:focus,
+textarea:focus{
+  border-color: rgba(43,116,228,.45) !important;
+  box-shadow: 0 0 0 4px rgba(43,116,228,.12), 0 18px 46px rgba(15,23,42,.10) !important;
+  background: #edeeee !important; /* subtle “smart” focus fill */
+}
+
+/* Floating label (best-effort, robust)
+   Works if label is inside .form-group and the group contains an input/textarea */
+.form-group{
+  position: relative;
+}
+.form-group label{
+  display: inline-block;
+  transition: transform .2s ease, color .2s ease, font-size .2s ease, opacity .2s ease;
+}
+.form-group:focus-within label{
+  transform: translateY(-10px);
+  font-size: 12px;
+  color: var(--primary);
+}
+
+/* Error shake hook (won't break if unused) */
+.form-group.error input,
+.form-group.error select,
+.form-group.error textarea{
+  border-color: var(--danger) !important;
+  animation: shake .4s ease;
+}
+
+/* ─────────────────────────────────────────────
+   Tables (clean command-center look)
+───────────────────────────────────────────── */
+table{
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+table thead th{
+  background: rgba(237,238,240,.78) !important;
+  color: rgba(15,23,42,.78) !important;
+  font-weight: 900 !important;
+  font-size: 13px !important;
+  padding: 12px 12px !important;
+  border-bottom: 1px solid rgba(15,23,42,.08) !important;
+  white-space: nowrap;
+}
+
+table tbody td{
+  padding: 12px 12px !important;
+  border-bottom: 1px solid rgba(15,23,42,.06) !important;
+  color: rgba(15,23,42,.86) !important;
+  vertical-align: middle;
+  font-size: 14px !important;
+}
+
+table tbody tr{
+  background: rgba(255,255,255,.98) !important;
+  transition: background .16s ease;
+}
+
+table tbody tr:nth-child(even){
+  background: rgba(255,255,255,.92) !important;
+}
+
+table tbody tr:hover{
+  background: rgba(43,116,228,.05) !important;
+}
+
+/* Clickable phone/email should remain “unstyled” */
+a[href^="tel:"],
+a[href^="mailto:"]{
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+/* ─────────────────────────────────────────────
+   Admin (command center polish)
+───────────────────────────────────────────── */
+.admin{
+  background: transparent !important;
+  padding: 28px 0 46px !important;
+}
+
+.admin .layout{ gap: 18px !important; }
+
+/* Sidebar */
+.admin .sidebar{
+  border-radius: var(--r-md) !important;
+  padding: 16px !important;
+  box-shadow: var(--shadow-float) !important;
+}
+
+.admin .side-title{
+  font-weight: 900 !important;
+  font-size: 16px !important;
+  margin: 0 0 6px !important;
+}
+.admin .side-sub{
+  color: rgba(15,23,42,.62) !important;
+  margin: 0 0 12px !important;
+  font-size: 13px !important;
+}
+
+.admin .side-links a,
+.admin .side-links button{
+  border-radius: 14px !important;
+  border: 1px solid rgba(15,23,42,.10) !important;
+  background: rgba(255,255,255,.92) !important;
+  box-shadow: 0 10px 22px rgba(15,23,42,.06) !important;
+  padding: 10px 12px !important;
+}
+
+.admin .side-links a:hover,
+.admin .side-links button:hover{
+  border-color: rgba(43,116,228,.22) !important;
+  box-shadow: 0 16px 34px rgba(15,23,42,.10) !important;
+}
+
+.admin .side-links .active{
+  background: linear-gradient(135deg, rgba(43,116,228,.16), rgba(43,116,228,.08)) !important;
+  border-color: rgba(43,116,228,.35) !important;
+  font-weight: 900 !important;
+  position: relative;
+}
+.admin .side-links .active::after{
+  content:"";
+  position:absolute;
+  inset-inline-start: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 10px 22px rgba(43,116,228,.25);
+}
+
+/* Filters + table wrap as glass cards */
+.admin .admin-filters,
+.admin .admin-table-wrap{
+  border-radius: var(--r-md) !important;
+  box-shadow: var(--shadow-ambient) !important;
+}
+
+/* KPI card hooks (if you add markup later, styling is ready) */
+.admin-kpi,
+.kpi-card{
+  border-radius: var(--r-md);
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(43,116,228,.08), rgba(43,116,228,.03));
+  border: 1px solid rgba(43,116,228,.15);
+  box-shadow: 0 10px 30px rgba(15,23,42,.06);
+}
+
+.admin-kpi-value,
+.kpi-value{
+  font-size: 42px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Status badges */
+.badge-ok{ border-color: rgba(22,163,74,.35) !important; }
+.badge-warn{ border-color: rgba(245,158,11,.35) !important; }
+.badge-danger{ border-color: rgba(239,68,68,.35) !important; }
+
+/* ─────────────────────────────────────────────
+   Patient page polish
+───────────────────────────────────────────── */
+.patient .patient-card,
+.patient-card{
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--shadow-ambient) !important;
+}
+
+/* ─────────────────────────────────────────────
+   Animations
+───────────────────────────────────────────── */
+@keyframes pulse{
+  0%,100%{ transform: scale(1); box-shadow: 0 8px 20px rgba(43,116,228,.20); }
+  50%{ transform: scale(1.03); box-shadow: 0 10px 28px rgba(43,116,228,.28); }
+}
+
+@keyframes borderGlow{
+  0%,100%{ filter: drop-shadow(0 0 0 rgba(43,116,228,0)); }
+  50%{ filter: drop-shadow(0 0 18px rgba(43,116,228,.22)); }
+}
+
+@keyframes fadeInUp{
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin{
+  to{ transform: rotate(360deg); }
+}
+
+@keyframes shake{
+  0%,100%{ transform: translateX(0); }
+  25%{ transform: translateX(-10px); }
+  75%{ transform: translateX(10px); }
+}
+
+/* Skeleton loader hook */
+.skeleton{
+  background: linear-gradient(
+    90deg,
+    rgba(15,23,42,.05) 25%,
+    rgba(15,23,42,.10) 50%,
+    rgba(15,23,42,.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer{
+  0%{ background-position: 200% 0; }
+  100%{ background-position: -200% 0; }
+}
+
+/* ─────────────────────────────────────────────
+   Responsive tuning
+───────────────────────────────────────────── */
+@media (max-width: 767px){
+  .btn,
+  button,
+  input[type="submit"]{
+    min-height: 44px;
+    padding: 12px 24px !important;
+  }
+
+  /* reduce glass intensity on mobile for performance */
+  .glass-card,
+  .hero .hero-content,
+  .appointment-form,
+  .admin .sidebar,
+  .admin .admin-filters,
+  .admin .admin-table-wrap{
+    backdrop-filter: blur(10px) saturate(160%);
+    -webkit-backdrop-filter: blur(10px) saturate(160%);
+  }
+}
