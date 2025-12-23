@@ -5,7 +5,7 @@
 const APPOINTMENTS_STORAGE_KEY = 'appointments_v1';
 
 // Change this passcode before publishing
-const ADMIN_PASSCODE = '1234';
+const ADMIN_PASSCODE = 'change-me-1234';
 
 function requireLogin() {
   const existing = sessionStorage.getItem('admin_authed');
@@ -18,7 +18,7 @@ function requireLogin() {
   }
 
   alert('Access denied.');
-  window.location.href = 'index.html';
+  window.location.href = './index.html';
   return false;
 }
 

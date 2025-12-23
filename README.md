@@ -126,17 +126,3 @@ async function handleSubmit(event) {
 פשוט, נקי, עובד!
 
 זה הכל! 🎉
-
-
----
-
-## Back Office (ניהול בקשות תור)
-
-נוספה מערכת Back Office בסיסית שמציגה את כל הבקשות שנשלחו מהטופס:
-
-- קובץ: `admin.html`
-- גישה: `https://YOUR_DOMAIN/admin.html`
-- כולל: חיפוש, סינון סטטוס, שינוי סטטוס, מחיקה, וייצוא CSV.
-
-⚠️ חשוב: זו גרסה "קלה" ששומרת נתונים ב-`localStorage` של הדפדפן (רק באותו מחשב/דפדפן).
-ל-Back Office אמיתי (רב-משתמשים/נגיש מכל מקום) צריך שרת/DB (למשל Supabase / Firebase / Google Sheets).
