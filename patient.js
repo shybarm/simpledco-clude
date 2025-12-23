@@ -1,4 +1,4 @@
-// patient.js — Patient file: details, appointments, visits, invoices (+ allergies checkbox)
+// patient.js — Patient file: details, appointments, visits, invoices (+ allergies checkbox + EDIT visits)
 
 console.log("[PATIENT] patient.js loaded ✅");
 
@@ -43,6 +43,15 @@ function safeShow(id, yes) {
   const el = $(id);
   if (!el) return;
   el.style.display = yes ? "" : "none";
+}
+
+function escHtml(s) {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 // ---------- auth ----------
@@ -113,7 +122,6 @@ async function loadPatient() {
   $("personalIdInput").value = patient.personal_id || "";
   $("dobInput").value = patient.date_of_birth || "";
 
-  // allergies + checkbox
   if ($("allergiesInput")) $("allergiesInput").value = patient.allergies || "";
   syncAllergiesUiFromValue(patient.allergies || "");
 }
@@ -127,7 +135,9 @@ async function savePatient() {
   const personal_id = $("personalIdInput").value.trim();
   const date_of_birth = $("dobInput").value || null;
 
-  const hasAllergies = $("hasAllergiesCheckbox") ? $("hasAllergiesCheckbox").checked : false;
+  const hasAllergies = $("hasAllergiesCheckbox")
+    ? $("hasAllergiesCheckbox").checked
+    : false;
   const allergies = hasAllergies ? ($("allergiesInput")?.value || "").trim() : null;
 
   const { error } = await sb
@@ -173,7 +183,33 @@ async function loadAppointments() {
   });
 }
 
-// ---------- visits ----------
+// ---------- visits (editable) ----------
+let editingVisitId = null;
+
+function openVisitEditor(visit) {
+  editingVisitId = visit.id;
+
+  $("visitDateInput").value = visit.visit_date || new Date().toISOString().slice(0, 10);
+  $("visitSummaryInput").value = visit.summary || "";
+  $("visitNotesInput").value = visit.doctor_notes || "";
+
+  const btn = $("createVisitBtn");
+  if (btn) btn.textContent = "שמור שינויים";
+
+  setActiveTab("visits");
+}
+
+function resetVisitEditor() {
+  editingVisitId = null;
+
+  $("visitDateInput").value = new Date().toISOString().slice(0, 10);
+  $("visitSummaryInput").value = "";
+  $("visitNotesInput").value = "";
+
+  const btn = $("createVisitBtn");
+  if (btn) btn.textContent = "צור ביקור";
+}
+
 async function loadVisits() {
   const wrap = $("visitsList");
   wrap.innerHTML = "";
@@ -196,16 +232,29 @@ async function loadVisits() {
     div.className = "row";
     div.innerHTML = `
       <div class="meta">
-        <strong>${v.visit_date}</strong>
-        <span>${v.summary || ""}</span>
-        <span>${v.doctor_notes || ""}</span>
+        <strong>${escHtml(v.visit_date)}</strong>
+        <span>${escHtml(v.summary || "")}</span>
+        <span>${escHtml(v.doctor_notes || "")}</span>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn-outline visit-edit" data-id="${v.id}">ערוך</button>
       </div>
     `;
     wrap.appendChild(div);
   });
+
+  // attach edit handlers
+  wrap.querySelectorAll(".visit-edit").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      const visit = data.find((x) => String(x.id) === String(id));
+      if (!visit) return;
+      openVisitEditor(visit);
+    });
+  });
 }
 
-async function createVisit() {
+async function createOrUpdateVisit() {
   const visit_date = $("visitDateInput").value;
   const summary = $("visitSummaryInput").value.trim();
   const doctor_notes = $("visitNotesInput").value.trim();
@@ -215,18 +264,33 @@ async function createVisit() {
     return;
   }
 
-  const { error } = await sb.from("visits").insert({
-    patient_id: patientId,
-    visit_date,
-    summary,
-    doctor_notes,
-  });
+  if (!editingVisitId) {
+    const { error } = await sb.from("visits").insert({
+      patient_id: patientId,
+      visit_date,
+      summary,
+      doctor_notes,
+    });
+    if (error) throw error;
+
+    alert("✔ ביקור נוצר");
+    resetVisitEditor();
+    await loadVisits();
+    setActiveTab("visits");
+    return;
+  }
+
+  // update existing visit
+  const { error } = await sb
+    .from("visits")
+    .update({ visit_date, summary, doctor_notes })
+    .eq("id", editingVisitId)
+    .eq("patient_id", patientId);
 
   if (error) throw error;
 
-  $("visitSummaryInput").value = "";
-  $("visitNotesInput").value = "";
-
+  alert("✔ ביקור עודכן");
+  resetVisitEditor();
   await loadVisits();
   setActiveTab("visits");
 }
@@ -254,9 +318,9 @@ async function loadInvoices() {
     div.className = "row";
     div.innerHTML = `
       <div class="meta">
-        <strong>${inv.invoice_number}</strong>
-        <span>סה״כ: ${money(inv.total)} ${inv.currency || "ILS"}</span>
-        <span>סטטוס: ${inv.status}</span>
+        <strong>${escHtml(inv.invoice_number)}</strong>
+        <span>סה״כ: ${money(inv.total)} ${escHtml(inv.currency || "ILS")}</span>
+        <span>סטטוס: ${escHtml(inv.status)}</span>
       </div>
     `;
     wrap.appendChild(div);
@@ -287,13 +351,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         await loadAppointments();
         await loadVisits();
         await loadInvoices();
+        resetVisitEditor();
       } catch (err) {
         alert(err.message);
       }
     });
 
+    // Create OR Update visit (same button)
     $("createVisitBtn").addEventListener("click", () =>
-      createVisit().catch((err) => alert(err.message))
+      createOrUpdateVisit().catch((err) => alert(err.message))
     );
 
     // allergies checkbox toggle
@@ -301,6 +367,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // defaults
     $("visitDateInput").value = new Date().toISOString().slice(0, 10);
+    resetVisitEditor();
 
     await loadPatient();
     await loadAppointments();
