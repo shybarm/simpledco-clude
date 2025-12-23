@@ -1,162 +1,172 @@
-// Mobile Menu Toggle
-function toggleMenu() {
-    const navLinks = document.getElementById('navLinks');
-    navLinks.classList.toggle('active');
-}
+// script.js
+// Website logic + appointment form submission to Supabase (appointments table)
 
-// Smooth Scrolling
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-            // Close mobile menu if open
-            const navLinks = document.getElementById('navLinks');
-            navLinks.classList.remove('active');
-        }
-    });
-});
+(function () {
+  // ---------- Helpers ----------
+  function byId(id) {
+    return document.getElementById(id);
+  }
 
-// Chatbot Toggle
-function toggleChat() {
-    const chatWindow = document.getElementById('chatWindow');
-    chatWindow.classList.toggle('active');
-}
+  function showToast(message, type) {
+    // Minimal inline toast (no CSS dependencies)
+    const toast = document.createElement("div");
+    toast.style.position = "fixed";
+    toast.style.left = "16px";
+    toast.style.right = "16px";
+    toast.style.bottom = "16px";
+    toast.style.zIndex = "9999";
+    toast.style.padding = "14px 16px";
+    toast.style.borderRadius = "10px";
+    toast.style.boxShadow = "0 8px 30px rgba(0,0,0,.12)";
+    toast.style.fontFamily = "Heebo, Arial, sans-serif";
+    toast.style.fontSize = "16px";
+    toast.style.textAlign = "center";
+    toast.style.background = type === "error" ? "#ffe5e5" : "#e9fff1";
+    toast.style.color = type === "error" ? "#8a0000" : "#0b5a2a";
+    toast.textContent = message;
 
-// Send Chat Message
-function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const message = input.value.trim();
-    
-    if (message) {
-        addMessage(message, 'user');
-        input.value = '';
-        
-        // Simulate bot response
-        setTimeout(() => {
-            const response = getBotResponse(message);
-            addMessage(response, 'bot');
-        }, 1000);
-    }
-}
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.transition = "opacity .25s ease";
+      setTimeout(() => toast.remove(), 300);
+    }, 2800);
+  }
 
-function handleChatKey(event) {
-    if (event.key === 'Enter') {
-        sendMessage();
-    }
-}
+  function getFormValue(form, name) {
+    const el = form.elements[name];
+    if (!el) return "";
+    return (el.value || "").toString().trim();
+  }
 
-function addMessage(text, type) {
-    const messagesDiv = document.getElementById('chatMessages');
-    const messageDiv = document.createElement('div');
-    messageDiv.className = type === 'user' ? 'user-message' : 'bot-message';
-    messageDiv.textContent = text;
-    messagesDiv.appendChild(messageDiv);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
+  // ---------- Navigation / Menu ----------
+  window.toggleMenu = function toggleMenu() {
+    const navLinks = byId("navLinks");
+    if (!navLinks) return;
+    navLinks.classList.toggle("active");
+  };
 
-function getBotResponse(message) {
-    const lowerMessage = message.toLowerCase();
-    
-    // Appointment triggers
-    if (lowerMessage.includes('תור') || lowerMessage.includes('קביעה') || lowerMessage.includes('לקבוع')) {
-        return 'אשמח לעזור לך לקבוע תור! לחץ על כפתור "קביעת תור" למעלה או התקשר ל-03-123-4567';
-    }
-    
-    // Services
-    if (lowerMessage.includes('שירות') || lowerMessage.includes('מחיר') || lowerMessage.includes('עלות')) {
-        return 'אנו מציעים: ייעוץ רפואי כללי, ביקורי בית, ניהול מחלות כרוניות, רפואה מונעת, וטיפול ילדים. למידע נוסף התקשר ל-03-123-4567.';
-    }
-    
-    // Hours
-    if (lowerMessage.includes('שעות') || lowerMessage.includes('פתוח') || lowerMessage.includes('זמינות')) {
-        return 'שעות הפעילות: א׳-ה׳ 9:00-18:00, ו׳ 9:00-13:00. שבת סגור.';
-    }
-    
-    // Location
-    if (lowerMessage.includes('כתובת') || lowerMessage.includes('איפה') || lowerMessage.includes('מיקום')) {
-        return 'המרפאה נמצאת ברחוב רוטשילד 123, תל אביב. תוכל לנווט ב-Waze או Google Maps מהאתר.';
-    }
-    
-    // Insurance
-    if (lowerMessage.includes('קופת חולים') || lowerMessage.includes('ביטוח') || lowerMessage.includes('כללית') || lowerMessage.includes('מכבי')) {
-        return 'אנו עובדים עם כל קופות החולים: כללית, מכבי, מאוחדת ולאומית.';
-    }
-    
-    // Home visits
-    if (lowerMessage.includes('בית') || lowerMessage.includes('ביקור בבית')) {
-        return 'כן! אנו מציעים ביקורי בית רפואיים באזור תל אביב. למידע נוסף התקשר ל-03-123-4567.';
-    }
-    
-    // Emergency
-    if (lowerMessage.includes('חירום') || lowerMessage.includes('דחוף')) {
-        return 'במקרה חירום, נא להתקשר למוקד 101 או לפנות לחדר מיון. למצבים לא דחופים, התקשר ל-03-123-4567.';
-    }
-    
-    // Default responses
-    const defaultResponses = [
-        'תודה על פנייתך! איך אוכל לעזור לך? תוכל לשאול אותי על שעות פעילות, שירותים, מחירים או לקבוע תור.',
-        'אשמח לעזור! תוכל לקבוע תור בטלפון 03-123-4567 או דרך הטופס באתר.',
-        'יש לך שאלה נוספת? אני כאן לעזור בנושאים כמו שירותים, מחירים, קופות חולים ועוד.'
-    ];
-    
-    return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
-}
+  // ---------- Chat (optional; keep if your UI has it) ----------
+  window.toggleChat = function toggleChat() {
+    const chatWindow = byId("chatWindow");
+    if (!chatWindow) return;
+    chatWindow.style.display = chatWindow.style.display === "block" ? "none" : "block";
+  };
 
-// Form Submission
-function handleSubmit(event) {
+  window.handleChatKey = function handleChatKey(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      window.sendMessage();
+    }
+  };
+
+  window.sendMessage = function sendMessage() {
+    const input = byId("chatInput");
+    const messages = byId("chatMessages");
+    if (!input || !messages) return;
+
+    const text = (input.value || "").trim();
+    if (!text) return;
+
+    const userMsg = document.createElement("div");
+    userMsg.className = "user-message";
+    userMsg.textContent = text;
+    messages.appendChild(userMsg);
+
+    const botMsg = document.createElement("div");
+    botMsg.className = "bot-message";
+    botMsg.textContent = "תודה! אם תרצה, אתה יכול גם להשאיר פרטים בטופס קביעת התור ואנחנו נחזור אליך.";
+    messages.appendChild(botMsg);
+
+    input.value = "";
+    messages.scrollTop = messages.scrollHeight;
+  };
+
+  // ---------- Appointment submit to Supabase ----------
+  window.handleSubmit = async function handleSubmit(event) {
     event.preventDefault();
-    
+
     const form = event.target;
-    const formData = new FormData(form);
-    
-    // Get form values
-    const data = {
-        firstName: formData.get('firstName'),
-        lastName: formData.get('lastName'),
-        email: formData.get('email'),
-        phone: formData.get('phone'),
-        service: formData.get('service'),
-        date: formData.get('date'),
-        time: formData.get('time'),
-        notes: formData.get('notes')
-    };
-    
-    // Here you would normally send to a server
-    // For now, just show success message
-    console.log('Appointment request:', data);
-    
-    alert('✅ תודה! בקשת התור שלך נשלחה בהצלחה.\n\nנחזור אליך תוך 24 שעות לאישור התור.\n\nפרטי התור:\nשם: ' + data.firstName + ' ' + data.lastName + '\nתאריך: ' + data.date + '\nשעה: ' + data.time);
-    
-    // Reset form
-    form.reset();
-    
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
 
-// Set minimum date for appointment (tomorrow)
-document.addEventListener('DOMContentLoaded', function() {
-    const dateInput = document.querySelector('input[name="date"]');
-    if (dateInput) {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const minDate = tomorrow.toISOString().split('T')[0];
-        dateInput.setAttribute('min', minDate);
-    }
-});
+    // Collect fields from your index.html
+    const firstName = getFormValue(form, "firstName");
+    const lastName = getFormValue(form, "lastName");
+    const email = getFormValue(form, "email");
+    const phone = getFormValue(form, "phone");
+    const service = getFormValue(form, "service");
+    const date = getFormValue(form, "date");
+    const time = getFormValue(form, "time");
+    const notes = getFormValue(form, "notes");
 
-// Add scroll effect to header (top bar)
-window.addEventListener('scroll', function() {
-    const header = document.querySelector('.topbar');
-    if (!header) return;
-    if (window.scrollY > 20) {
-        header.style.boxShadow = '0 14px 40px rgba(11,27,58,.10)';
-    } else {
-        header.style.boxShadow = 'none';
+    // Basic validation (HTML required should already handle most)
+    if (!firstName || !lastName || !email || !phone || !service || !date || !time) {
+      showToast("נא למלא את כל השדות החובה.", "error");
+      return;
     }
-});
+
+    // Ensure Supabase client exists
+    if (typeof window.getSupabaseClient !== "function") {
+      showToast("שגיאת מערכת: חסר חיבור למסד הנתונים (Supabase).", "error");
+      console.error("getSupabaseClient() not found. Make sure Supabase scripts are included in index.html.");
+      return;
+    }
+
+    let sb;
+    try {
+      sb = window.getSupabaseClient();
+    } catch (err) {
+      showToast("שגיאת מערכת: לא ניתן ליצור חיבור למסד הנתונים.", "error");
+      console.error(err);
+      return;
+    }
+
+    // Disable submit button to prevent double submits
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const oldBtnText = submitBtn ? submitBtn.textContent : "";
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "שולח...";
+    }
+
+    try {
+      // Insert into public.appointments (matches your table schema)
+      const payload = {
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        phone: phone,
+        service: service,
+        date: date,     // stored as date
+        time: time,     // stored as text
+        notes: notes,
+        status: "new"
+      };
+
+      const { error } = await sb
+        .from("appointments")
+        .insert([payload]);
+
+      if (error) {
+        console.error("Supabase insert error:", error);
+        showToast("שליחה נכשלה: " + error.message, "error");
+        return;
+      }
+
+      // Success
+      form.reset();
+      showToast("✅ הבקשה נשלחה! נחזור אליך בהקדם לאישור התור.", "success");
+
+      // Optional: scroll to top or to confirmation area
+      // window.scrollTo({ top: 0, behavior: "smooth" });
+
+    } catch (err) {
+      console.error(err);
+      showToast("שליחה נכשלה: Failed to fetch / Network error", "error");
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = oldBtnText || "שלח בקשה";
+      }
+    }
+  };
+})();
