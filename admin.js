@@ -1,4 +1,4 @@
-// admin.js — Clinic dashboard + appointments (with Today list + accounting + calendar)
+// admin.js — Clinic dashboard + sidebar + clinic_settings
 
 window.__ADMIN_LOADED = true;
 console.log("[ADMIN] admin.js loaded ✅");
@@ -7,53 +7,35 @@ const TABLE = "appointments";
 let sb = null;
 
 let allAppointments = [];
-let lastVisitByPatient = new Map();     // patient_id -> { summary, doctor_notes, visit_date }
-let lastInvoiceByPatient = new Map();   // patient_id -> { status, invoice_number, total, created_at }
-
-// ---------- CONFIG (edit these) ----------
-const CLINIC_NAME = "Eye Clinic";     // change to your clinic name
-const DOCTOR_NAME = "ד״ר ____";        // change to doctor name
-const ACCOUNTING_URL = "./accounting.html"; // if you don’t have it yet, leave as is
-const CALENDAR_URL = "https://calendar.google.com/"; // replace with the doctor’s calendar link
+let lastVisitByPatient = new Map();
+let lastInvoiceByPatient = new Map();
+let clinic = null;
 
 // ---------- helpers ----------
-function $(id) {
-  return document.getElementById(id);
-}
-
+function $(id) { return document.getElementById(id); }
 function on(id, event, handler) {
   const el = $(id);
   if (!el) return false;
   el.addEventListener(event, handler);
   return true;
 }
-
-function show(id, yes) {
-  const el = $(id);
-  if (!el) return;
-  el.style.display = yes ? "" : "none";
-}
-
+function show(id, yes) { const el = $(id); if (el) el.style.display = yes ? "" : "none"; }
 function setLoginError(msg) {
   const el = $("loginError");
   if (!el) return;
   el.textContent = msg || "";
   el.style.display = msg ? "" : "none";
 }
-
 function fmtDate(iso) {
-  try {
-    const d = new Date(iso);
-    return d.toLocaleString("he-IL", { dateStyle: "short", timeStyle: "short" });
-  } catch {
-    return iso || "";
-  }
+  try { return new Date(iso).toLocaleString("he-IL", { dateStyle:"short", timeStyle:"short" }); }
+  catch { return iso || ""; }
 }
-
-function todayIso() {
-  return new Date().toISOString().slice(0, 10);
+function todayIso() { return new Date().toISOString().slice(0, 10); }
+function firstLine(s) {
+  const txt = String(s || "").trim();
+  if (!txt) return "";
+  return txt.split("\n")[0].slice(0, 140);
 }
-
 function serviceLabel(value) {
   const map = {
     general: "ייעוץ רפואי כללי",
@@ -65,10 +47,43 @@ function serviceLabel(value) {
   return map[value] || value || "";
 }
 
-function firstLine(s) {
-  const txt = String(s || "").trim();
-  if (!txt) return "";
-  return txt.split("\n")[0].slice(0, 140);
+// ---------- clinic settings ----------
+async function loadClinicSettings() {
+  const { data, error } = await sb
+    .from("clinic_settings")
+    .select("*")
+    .order("updated_at", { ascending: false })
+    .limit(1);
+
+  if (error) throw error;
+
+  clinic = data?.[0] || null;
+
+  const doctorDisplay =
+    (clinic?.doctor_title ? clinic.doctor_title + " " : "") +
+    (clinic?.doctor_name || "");
+
+  const clinicDisplay = clinic?.clinic_name || "—";
+  const licenseDisplay = clinic?.license_number ? `רישיון: ${clinic.license_number}` : "";
+
+  const sideDoctor = $("sideDoctorName");
+  if (sideDoctor) sideDoctor.textContent = doctorDisplay || "פרופיל רופא";
+
+  const sideMeta = $("sideClinicMeta");
+  if (sideMeta) sideMeta.textContent = `${clinicDisplay}${licenseDisplay ? " | " + licenseDisplay : ""}`;
+
+  const sub = $("clinicSub");
+  if (sub) sub.textContent = `${clinicDisplay}${doctorDisplay ? " | " + doctorDisplay : ""}`;
+
+  // Links (fallbacks)
+  const calendarUrl = clinic?.calendar_url || "https://calendar.google.com/";
+  const accountingUrl = clinic?.accounting_url || "./accounting.html";
+
+  const cal = $("calendarLink");
+  if (cal) cal.href = calendarUrl;
+
+  const acc = $("accountingLink");
+  if (acc) acc.href = accountingUrl;
 }
 
 // ---------- KPIs ----------
@@ -96,7 +111,7 @@ function buildKpis(list) {
   });
 }
 
-// ---------- Filters ----------
+// ---------- filters ----------
 function applyFilters(list) {
   const q = ($("searchInput")?.value || "").trim().toLowerCase();
   const status = $("statusFilter")?.value || "all";
@@ -115,7 +130,7 @@ function applyFilters(list) {
   });
 }
 
-// ---------- Today Dashboard ----------
+// ---------- Today ----------
 function renderToday() {
   const wrap = $("todayList");
   const badge = $("todayCountBadge");
@@ -143,11 +158,9 @@ function renderToday() {
     const reason = serviceLabel(a.service);
     const time = a.time || "";
 
-    // last visit summary first line
     const lv = patientId ? lastVisitByPatient.get(patientId) : null;
     const lvLine = lv ? firstLine(lv.summary || lv.doctor_notes || "") : "";
 
-    // paid status (based on latest invoice status for that patient)
     const inv = patientId ? lastInvoiceByPatient.get(patientId) : null;
     const isPaid = inv && String(inv.status).toLowerCase() === "paid";
     const payBadge = isPaid
@@ -159,7 +172,7 @@ function renderToday() {
     div.innerHTML = `
       <div class="today-meta">
         <strong>${patientName}</strong>
-        <span>${time ? `שעה: ${time}` : ""} ${reason ? ` | ${reason}` : ""}</span>
+        <span>${time ? `שעה: ${time}` : ""}${reason ? ` | ${reason}` : ""}</span>
         ${lvLine ? `<span style="color:#607080;">ביקור קודם: ${lvLine}</span>` : ``}
       </div>
 
@@ -170,7 +183,6 @@ function renderToday() {
           class="patient-open"
           data-patient-id="${patientId}"
           ${patientId ? "" : "disabled"}
-          title="${patientId ? "פתח תיק מטופל" : "אין patient_id"}"
         >
           פתח תיק
         </button>
@@ -180,7 +192,7 @@ function renderToday() {
   });
 }
 
-// ---------- Table Render ----------
+// ---------- Table ----------
 function renderTable() {
   buildKpis(allAppointments);
 
@@ -191,9 +203,7 @@ function renderTable() {
   body.innerHTML = "";
 
   if (!list.length) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td colspan="8" class="admin-empty">אין בקשות להצגה</td>`;
-    body.appendChild(tr);
+    body.innerHTML = `<tr><td colspan="8" class="admin-empty">אין בקשות להצגה</td></tr>`;
     return;
   }
 
@@ -207,12 +217,7 @@ function renderTable() {
     tr.innerHTML = `
       <td>${fmtDate(a.created_at)}</td>
       <td>
-        <button
-          type="button"
-          class="patient-open"
-          data-patient-id="${patientId}"
-          ${patientId ? "" : "disabled"}
-        >
+        <button type="button" class="patient-open" data-patient-id="${patientId}" ${patientId ? "" : "disabled"}>
           <strong>${patientName}</strong>
         </button>
       </td>
@@ -235,14 +240,18 @@ function renderTable() {
   });
 }
 
-// ---------- Data loading (appointments + visits + invoices for Today section) ----------
+// ---------- hydrate patient insights ----------
 async function hydratePatientInsights(patientIds) {
   lastVisitByPatient = new Map();
   lastInvoiceByPatient = new Map();
 
-  if (!patientIds.length) return;
+  if (!patientIds.length) {
+    const countEl = $("accountingCount");
+    if (countEl) countEl.textContent = "0";
+    return;
+  }
 
-  // Visits: fetch recent visits for these patients, reduce to latest per patient
+  // Visits
   {
     const { data, error } = await sb
       .from("visits")
@@ -258,7 +267,7 @@ async function hydratePatientInsights(patientIds) {
     }
   }
 
-  // Invoices: fetch recent invoices for these patients, reduce to latest per patient
+  // Invoices
   {
     const { data, error } = await sb
       .from("invoices")
@@ -274,7 +283,6 @@ async function hydratePatientInsights(patientIds) {
     }
   }
 
-  // Accounting count (unpaid among “latest invoices” for patients coming today)
   const unpaid = Array.from(lastInvoiceByPatient.values()).filter(
     (inv) => String(inv.status).toLowerCase() !== "paid"
   ).length;
@@ -283,6 +291,7 @@ async function hydratePatientInsights(patientIds) {
   if (countEl) countEl.textContent = String(unpaid);
 }
 
+// ---------- data ----------
 async function loadAppointments() {
   const { data, error } = await sb
     .from(TABLE)
@@ -299,7 +308,6 @@ async function loadAppointments() {
 
   allAppointments = data || [];
 
-  // For Today section: pull patient_ids appearing today (not cancelled)
   const t = todayIso();
   const patientIds = Array.from(
     new Set(
@@ -315,7 +323,7 @@ async function loadAppointments() {
   renderTable();
 }
 
-// ---------- Mutations ----------
+// ---------- mutations ----------
 async function updateStatus(id, status) {
   const { error } = await sb.from(TABLE).update({ status }).eq("id", id);
   if (error) throw error;
@@ -323,7 +331,6 @@ async function updateStatus(id, status) {
   const idx = allAppointments.findIndex((x) => x.id === id);
   if (idx >= 0) allAppointments[idx].status = status;
 
-  // re-render both (today list depends on status/cancelled)
   renderToday();
   renderTable();
 }
@@ -337,24 +344,18 @@ async function deleteAppointment(id) {
   renderTable();
 }
 
-// ---------- Auth ----------
+// ---------- auth ----------
 async function signIn() {
   setLoginError("");
   const email = ($("emailInput")?.value || "").trim();
   const password = $("passwordInput")?.value || "";
 
-  if (!email || !password) {
-    setLoginError("נא למלא אימייל וסיסמה.");
-    return;
-  }
+  if (!email || !password) return setLoginError("נא למלא אימייל וסיסמה.");
 
   setLoginError("מתחבר...");
 
   const { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) {
-    setLoginError("התחברות נכשלה: " + error.message);
-    return;
-  }
+  if (error) return setLoginError("התחברות נכשלה: " + error.message);
 
   setLoginError("");
   await onAuthReady();
@@ -379,47 +380,32 @@ async function onAuthReady() {
 
   show("loginPanel", false);
   show("appPanel", true);
+
   const logout = $("logoutLink");
   if (logout) logout.style.display = "";
+
+  await loadClinicSettings();
   await loadAppointments();
 }
 
-// ---------- Events ----------
+// ---------- events ----------
 function bindEvents() {
-  // Title & links
-  const t = $("clinicTitle");
-  const s = $("clinicSub");
-  if (t) t.textContent = "ניהול מרפאה";
-  if (s) s.textContent = `${CLINIC_NAME} | ${DOCTOR_NAME}`;
-
-  const acc = $("accountingLink");
-  if (acc) acc.href = ACCOUNTING_URL;
-
-  const cal = $("calendarLink");
-  if (cal) cal.href = CALENDAR_URL;
-
-  // Login / logout / refresh
   on("loginBtn", "click", () => signIn().catch((err) => setLoginError(err.message)));
   on("logoutLink", "click", (e) => { e.preventDefault(); signOut(); });
+
   on("refreshBtn", "click", () => loadAppointments().catch((err) => alert(err.message)));
 
-  // Quick search
   $("searchInput")?.addEventListener("input", () => renderTable());
-
-  // Advanced filters
   $("statusFilter")?.addEventListener("change", () => renderTable());
   $("serviceFilter")?.addEventListener("change", () => renderTable());
   $("dateFilter")?.addEventListener("change", () => renderTable());
 
-  // Toggle filters panel
   on("toggleFiltersBtn", "click", () => {
     const p = $("filtersPanel");
     if (!p) return;
-    const isOpen = p.style.display !== "none" && p.style.display !== "";
-    p.style.display = isOpen ? "none" : "";
+    p.style.display = (p.style.display === "none" || p.style.display === "") ? "" : "none";
   });
 
-  // Status updates
   document.addEventListener("change", (e) => {
     if (e.target && e.target.classList.contains("admin-status")) {
       updateStatus(e.target.getAttribute("data-id"), e.target.value)
@@ -427,13 +413,12 @@ function bindEvents() {
     }
   });
 
-  // Clicks: open patient / delete
   document.addEventListener("click", (e) => {
     const openBtn = e.target.closest && e.target.closest(".patient-open");
     if (openBtn) {
-      const patientId = openBtn.getAttribute("data-patient-id");
-      if (!patientId) return;
-      window.location.href = `./patient.html?patient_id=${encodeURIComponent(patientId)}`;
+      const pid = openBtn.getAttribute("data-patient-id");
+      if (!pid) return;
+      window.location.href = `./patient.html?patient_id=${encodeURIComponent(pid)}`;
       return;
     }
 
