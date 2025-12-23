@@ -421,9 +421,10 @@ input:focus, select:focus, textarea:focus{
     min-height: 430px !important;
   }
   .hero-content::before{
-    width: 390px !important;
-    height: 390px !important;
-    top: 10px !important;
+    width: 300px !important;
+    height: 300px !important;
+    top: 24px !important;
+    border-width: 8px !important;
   }
 }
 
