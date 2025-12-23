@@ -4,14 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Back Office | ניהול בקשות תור</title>
+
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="admin.css">
 </head>
+
 <body>
   <header class="header">
     <div class="container">
       <nav class="nav">
         <div class="logo">Back Office</div>
+
         <ul class="nav-links active" style="position: static; box-shadow:none; padding:0; flex-direction: row; gap: 1rem;">
           <li>
             <a href="./index.html" onclick="window.location.href='./index.html'; return false;">חזרה לאתר</a>
@@ -44,7 +47,7 @@
           </div>
 
           <div class="admin-actions" style="margin-top: .5rem;">
-            <button class="btn-primary" id="loginBtn">התחברות</button>
+            <button class="btn-primary" id="loginBtn" type="button">התחברות</button>
           </div>
 
           <p id="loginError" style="margin-top:1rem; color:#b00020; display:none;"></p>
@@ -58,9 +61,10 @@
             <h1 class="admin-title">ניהול בקשות תור</h1>
             <p class="admin-subtitle">תצוגה מרכזית של כל הבקשות שנשלחו מהטופס באתר.</p>
           </div>
+
           <div class="admin-actions">
-            <button class="btn-secondary" id="refreshBtn">רענן</button>
-            <button class="btn-outline" id="exportBtn">ייצוא CSV</button>
+            <button class="btn-secondary" id="refreshBtn" type="button">רענן</button>
+            <button class="btn-outline" id="exportBtn" type="button">ייצוא CSV</button>
           </div>
         </div>
 
@@ -126,13 +130,19 @@
   <!-- Supabase SDK -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-  <!-- Supabase client config (inline fallback - no extra file required) -->
+  <!-- Supabase client config -->
   <script>
     window.SUPABASE_URL = "https://bvwnltducovnojinlhji.supabase.co";
     window.SUPABASE_ANON_KEY = "sb_publishable_-OsnXhn12GepRjo-iXxyjA_5KpIsUs1";
+
     window.getSupabaseClient = function () {
-      if (!window.supabase) throw new Error("Supabase SDK not loaded");
-      return supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+      if (!window.supabase) {
+        throw new Error("Supabase SDK not loaded. Check the CDN script tag.");
+      }
+      return window.supabase.createClient(
+        window.SUPABASE_URL,
+        window.SUPABASE_ANON_KEY
+      );
     };
   </script>
 
