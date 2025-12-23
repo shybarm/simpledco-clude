@@ -888,3 +888,12 @@ section {
         flex-direction: column;
     }
 }
+/* keep links clickable but not “blue/underlined” */
+.admin-table a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.admin-table a:hover {
+  text-decoration: underline;
+}
