@@ -1,4 +1,5 @@
 // script.js — Website + Appointment submit via RPC (create_appointment)
+
 async function uploadAppointmentFiles(supabase, appointmentId) {
   const input = document.getElementById("appointmentFiles");
   if (!input || !input.files || input.files.length === 0) return;
@@ -14,6 +15,7 @@ async function uploadAppointmentFiles(supabase, appointmentId) {
 
     if (uploadError) {
       console.error("File upload failed:", uploadError);
+      // Do not fail the appointment if a file fails
       continue;
     }
 
@@ -124,9 +126,18 @@ async function uploadAppointmentFiles(supabase, appointmentId) {
       }
 
       // data returns appointment UUID
+      const appointmentId = data;
+      console.log("Appointment created:", appointmentId);
+
+      // Upload files (optional) — safe: never blocks appointment success
+      try {
+        await uploadAppointmentFiles(sb, appointmentId);
+      } catch (uploadErr) {
+        console.error("Upload flow error:", uploadErr);
+      }
+
       form.reset();
       showToast("✅ הבקשה נשלחה! נחזור אליך בהקדם לאישור התור.", "success");
-      console.log("Appointment created:", data);
 
     } catch (err) {
       console.error(err);
