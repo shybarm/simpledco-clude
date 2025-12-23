@@ -585,3 +585,14 @@ input:focus, select:focus, textarea:focus{
   font-weight: 900;
   cursor: pointer;
 }
+/* REMOVE "פופולרי" BADGES (visual layer) */
+.badge,
+.badge-pill,
+.badge-popular,
+.popular,
+.tag,
+.pill,
+.status,
+.ribbon {
+  display: none !important;
+}
