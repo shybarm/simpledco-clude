@@ -1,22 +1,24 @@
-/* admin.css — v3 “Welcoming Pro Admin”
-   Goal: clean, premium, organized backend (no flow/logic changes)
-   Scope: applies to admin.html + patient page if it uses common classes.
+/* admin.css — BRMLY STYLE MATCH (backend cleanup)
+   Goal: same palette/typography as Dr. Ana’s site; clean layout & readable tables.
+   SAFE: CSS only; no JS/flow changes. Scoped to admin pages via .admin.
 */
 
-/* Root */
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&family=Assistant:wght@400;600;700&display=swap');
+
 :root{
-  --primary:#2b74e4;
-  --primary-dark:#1f5fcd;
-  --accent:#ff5a5f;
-  --bg:#f3f8ff;
-  --surface:#ffffff;
-  --text:#0f172a;
-  --muted:#6b7a90;
-  --line:rgba(15,23,42,.10);
-  --shadow:0 14px 34px rgba(15,23,42,.08);
-  --shadow2:0 18px 44px rgba(15,23,42,.10);
-  --r:18px;
-  --r2:24px;
+  --background: 30 8% 98%;
+  --foreground: 30 8% 12%;
+  --border: 30 8% 90%;
+  --primary: 185 65% 42%;
+  --primary-foreground: 185 65% 98%;
+  --accent: 185 20% 88%;
+  --accent-foreground: 185 20% 18%;
+  --bg: hsl(var(--background));
+  --text: hsl(var(--foreground));
+  --brand: hsl(var(--primary));
+  --line: rgba(0,0,0,.10);
+  --shadow-sm: 0 10px 28px rgba(0,0,0,.06);
+  --shadow-md: 0 18px 44px rgba(0,0,0,.10);
 }
 
 html,body{
@@ -24,15 +26,14 @@ html,body{
   color: var(--text);
   direction: rtl;
   text-align: right;
-  font-family:"Heebo",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  font-family: Heebo, Assistant, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* IMPORTANT: high specificity to override inline mess safely */
+/* High specificity to defeat inline/old CSS safely */
 main.admin, .admin, body.admin{
   background: transparent !important;
 }
 
-/* Layout wrapper (works with your existing .layout structure) */
 .admin .container{
   width: min(1180px, calc(100% - 32px));
 }
@@ -46,25 +47,24 @@ main.admin, .admin, body.admin{
 .admin .sidebar{
   position: sticky;
   top: 86px;
-  background: rgba(255,255,255,.92);
+  background: #fff;
   border: 1px solid var(--line);
-  border-radius: var(--r);
-  box-shadow: var(--shadow2);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
   padding: 16px;
 }
 
 .admin .side-title{
-  font-weight: 1000;
+  font-weight: 900;
   font-size: 16px;
   margin: 0 0 6px;
 }
 .admin .side-sub{
   margin: 0 0 12px;
-  color: rgba(15,23,42,.62);
+  color: rgba(0,0,0,.58);
   font-size: 13px;
 }
 
-/* Sidebar links/buttons */
 .admin .side-links{
   display: grid;
   gap: 10px;
@@ -74,162 +74,139 @@ main.admin, .admin, body.admin{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:10px;
+  gap: 10px;
   background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.14);
+  border-radius: 12px;
   padding: 10px 12px;
-  font-weight: 900;
-  box-shadow: 0 10px 22px rgba(15,23,42,.06);
+  font-weight: 800;
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
-  transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
-}
-.admin .side-links a:hover,
-.admin .side-links button:hover{
-  transform: translateY(-1px);
-  border-color: rgba(43,116,228,.22);
-  box-shadow: 0 16px 32px rgba(15,23,42,.10);
 }
 .admin .side-links .active{
-  background: linear-gradient(135deg, rgba(43,116,228,.12), rgba(43,116,228,.06));
-  border-color: rgba(43,116,228,.34);
+  border-color: rgba(37,165,176,.45);
+  background: hsl(var(--accent));
 }
 
-/* Main content blocks */
-.admin .content{
-  flex: 1;
-  min-width: 0;
-}
-
-/* Heading */
-.admin .clinic-title{
+/* Titles */
+.admin .admin-title, .admin .clinic-title{
   font-size: clamp(22px, 2.4vw, 34px);
-  font-weight: 1000;
+  font-weight: 900;
   margin: 0;
 }
-.admin .clinic-sub{
+.admin .admin-subtitle, .admin .clinic-sub{
   margin-top: 6px;
-  color: rgba(15,23,42,.62);
+  color: rgba(0,0,0,.58);
 }
 
-/* Filters card */
+/* Filters */
 .admin .admin-filters{
   margin-top: 14px;
-  background: rgba(255,255,255,.92);
+  background: #fff;
   border: 1px solid var(--line);
-  border-radius: var(--r2);
-  box-shadow: var(--shadow);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
   padding: 14px;
 }
 
-/* Form controls */
 .admin label{
   font-weight: 800;
   font-size: 13px;
-  color: rgba(15,23,42,.70);
+  color: rgba(0,0,0,.62);
 }
+
 .admin input[type="text"],
 .admin input[type="date"],
 .admin select{
   background: #fff;
-  border: 1px solid rgba(15,23,42,.12);
-  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.14);
+  border-radius: 12px;
   min-height: 44px;
   padding: 10px 12px;
-  box-shadow: 0 12px 24px rgba(15,23,42,.06);
+  box-shadow: 0 10px 22px rgba(0,0,0,.05);
 }
 .admin input:focus,
 .admin select:focus{
   outline: none;
-  border-color: rgba(43,116,228,.42);
-  box-shadow: 0 0 0 4px rgba(43,116,228,.12), 0 16px 36px rgba(15,23,42,.10);
+  border-color: rgba(37,165,176,.55);
+  box-shadow: 0 0 0 4px rgba(37,165,176,.15), 0 16px 34px rgba(0,0,0,.10);
 }
 
-/* Today card / panels (if present) */
-.admin .today-wrap,
-.admin .today-card,
-.admin .panel,
-.admin .card{
-  background: rgba(255,255,255,.92);
+/* Cards */
+.admin .admin-card, .admin .today-card, .admin .panel{
+  background: #fff;
   border: 1px solid var(--line);
-  border-radius: var(--r2);
-  box-shadow: var(--shadow);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
 }
 
 /* Table wrap */
 .admin .admin-table-wrap{
   margin-top: 14px;
   background: #fff;
-  border: 1px solid rgba(15,23,42,.10);
-  border-radius: var(--r2);
-  box-shadow: var(--shadow2);
+  border: 1px solid rgba(0,0,0,.10);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
 /* Table */
-.admin table{
+.admin table.admin-table, .admin table{
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 }
 
 .admin thead th{
-  background: rgba(237,238,240,.78);
-  color: rgba(15,23,42,.78);
-  font-weight: 1000;
+  background: rgba(0,0,0,.03);
+  color: rgba(0,0,0,.70);
+  font-weight: 900;
   font-size: 13px;
   padding: 12px 12px;
-  border-bottom: 1px solid rgba(15,23,42,.08);
+  border-bottom: 1px solid rgba(0,0,0,.08);
   white-space: nowrap;
 }
 
 .admin tbody td{
   padding: 12px 12px;
-  border-bottom: 1px solid rgba(15,23,42,.06);
-  color: rgba(15,23,42,.86);
+  border-bottom: 1px solid rgba(0,0,0,.06);
+  color: rgba(0,0,0,.82);
   font-size: 14px;
 }
 
 .admin tbody tr:nth-child(even){
-  background: rgba(243,248,255,.55);
+  background: rgba(0,0,0,.015);
 }
-
 .admin tbody tr:hover{
-  background: rgba(43,116,228,.06);
+  background: rgba(37,165,176,.06);
 }
-
 .admin tbody tr:last-child td{ border-bottom: 0; }
 
-/* Clickable tel/mail stay unstyled */
+/* Buttons */
+.admin .btn-primary{
+  background: var(--brand);
+  color: hsl(var(--primary-foreground));
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 900;
+  box-shadow: 0 12px 26px rgba(37,165,176,.14);
+}
+.admin .btn-outline, .admin .btn-secondary{
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.14);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 900;
+  box-shadow: 0 10px 22px rgba(0,0,0,.05);
+}
+
+/* Keep tel/mail unstyled */
 .admin a[href^="tel:"], .admin a[href^="mailto:"]{
   color: inherit;
   text-decoration: none;
 }
 
-/* Buttons */
-.admin .btn,
-.admin button{
-  border-radius: 999px;
-  font-weight: 900;
-  border: 1px solid rgba(15,23,42,.12);
-  background: #fff;
-  padding: 10px 14px;
-  box-shadow: 0 10px 22px rgba(15,23,42,.06);
-  cursor: pointer;
-  transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
-}
-.admin .btn-primary{
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: #fff;
-  border-color: transparent;
-}
-.admin button:hover, .admin .btn:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 16px 32px rgba(15,23,42,.10);
-  border-color: rgba(43,116,228,.20);
-}
-
-/* Responsive */
 @media (max-width: 980px){
   .admin .sidebar{ position: static; top:auto; }
 }
