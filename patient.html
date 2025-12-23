@@ -1,356 +1,181 @@
-// patient.js — Patient file: details, visits, invoices, and send via Edge Function
-const sb = window.getSupabaseClient();
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patient File | תיק מטופל</title>
 
-function $(id){ return document.getElementById(id); }
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
 
-function qparam(name){
-  const u = new URL(window.location.href);
-  return u.searchParams.get(name);
-}
+  <style>
+    .patient-wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    .patient-top { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:16px; }
+    .patient-actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .patient-card { background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:14px; padding:16px; }
+    .patient-grid { display:grid; grid-template-columns: 2fr 1fr 1fr; gap:12px; }
+    .tabs { display:flex; gap:10px; margin: 18px 0 10px; flex-wrap:wrap; }
+    .tab { padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15); background:#fff; cursor:pointer; }
+    .tab.active { border-color: rgba(0,0,0,.35); font-weight:700; }
+    .panel { display:none; }
+    .panel.active { display:block; }
+    .list { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+    .row { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:12px; border:1px solid rgba(0,0,0,.08); border-radius:12px; background:#fff; }
+    .row .meta { display:flex; flex-direction:column; gap:4px; }
+    .row .actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .btn-linklike { background: transparent; border: none; padding: 0; cursor: pointer; font: inherit; }
+    table.items { width:100%; border-collapse:collapse; }
+    table.items th, table.items td { border-bottom:1px solid rgba(0,0,0,.08); padding:8px; }
+    .totals { display:flex; gap:18px; margin-top:10px; justify-content:flex-end; }
+    .totals div { display:flex; gap:6px; }
+  </style>
+</head>
 
-function money(n){
-  const x = Number(n || 0);
-  return x.toFixed(2);
-}
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <div class="logo">Back Office</div>
 
-function setActiveTab(tab){
-  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
-  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === `panel-${tab}`));
-}
+        <ul class="nav-links active" style="position: static; box-shadow:none; padding:0; flex-direction: row; gap: 1rem;">
+          <li><a href="./admin.html">חזרה לניהול</a></li>
+          <li><a href="#" id="logoutLink">התנתקות</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-async function requireAuth(){
-  const { data } = await sb.auth.getSession();
-  if (!data?.session){
-    window.location.href = "./admin.html";
-    return null;
-  }
-  return data.session;
-}
-
-async function logout(){
-  await sb.auth.signOut();
-  window.location.href = "./admin.html";
-}
-
-let patientId = null;
-let patient = null;
-
-async function loadPatient(){
-  const { data, error } = await sb.from("patients").select("*").eq("id", patientId).single();
-  if (error) throw error;
-  patient = data;
-
-  $("patientIdLabel").textContent = `patient_id: ${patient.id}`;
-  $("fullNameInput").value = patient.full_name || "";
-  $("emailInput").value = patient.email || "";
-  $("phoneInput").value = patient.phone || "";
-  $("patientMeta").textContent = `נוצר: ${new Date(patient.created_at).toLocaleString("he-IL")}`;
-}
-
-async function savePatient(){
-  const full_name = ($("fullNameInput").value || "").trim();
-  const email = ($("emailInput").value || "").trim();
-  const phone = ($("phoneInput").value || "").trim();
-
-  const { error } = await sb.from("patients").update({ full_name, email, phone }).eq("id", patientId);
-  if (error) throw error;
-  await loadPatient();
-  alert("✅ נשמר");
-}
-
-async function loadAppointments(){
-  const { data, error } = await sb
-    .from("appointments")
-    .select("*")
-    .eq("patient_id", patientId)
-    .order("created_at", { ascending: false });
-
-  if (error) throw error;
-
-  const wrap = $("appointmentsList");
-  wrap.innerHTML = "";
-
-  if (!data?.length){
-    wrap.innerHTML = `<div class="muted">אין תורים מקושרים למטופל.</div>`;
-    return;
-  }
-
-  data.forEach(a => {
-    const div = document.createElement("div");
-    div.className = "row";
-    div.innerHTML = `
+  <main class="patient-wrap">
+    <div class="patient-top">
       <div>
-        <strong>${a.service || ""}</strong>
-        <small>נוצר: ${new Date(a.created_at).toLocaleString("he-IL")}</small>
-        <small>תאריך/שעה: ${a.date || ""} ${a.time || ""}</small>
-        <small>סטטוס: ${a.status || ""}</small>
+        <h1 class="admin-title" style="margin:0;">תיק מטופל</h1>
+        <p class="admin-subtitle" id="patientIdLabel" style="margin:.25rem 0 0;">patient_id:</p>
+        <p class="admin-subtitle" id="patientMeta" style="margin:.25rem 0 0;">—</p>
       </div>
-      <div class="actions">
-        <button class="btn-outline" data-appt="${a.id}" type="button">קשר לביקור</button>
+
+      <div class="patient-actions">
+        <button class="btn-secondary" id="refreshBtn" type="button">רענן</button>
+        <button class="btn-primary" id="savePatientBtn" type="button">שמור פרטים</button>
       </div>
-    `;
-    div.querySelector("button").addEventListener("click", () => {
-      // Optional: set default appointment_id when creating next visit
-      window.__LINK_APPOINTMENT_ID__ = a.id;
-      alert("✅ התור יקושר לביקור הבא שתשמור.");
-    });
-    wrap.appendChild(div);
-  });
-}
+    </div>
 
-async function loadVisits(){
-  const { data, error } = await sb
-    .from("visits")
-    .select("*")
-    .eq("patient_id", patientId)
-    .order("created_at", { ascending: false });
+    <section class="patient-card">
+      <div class="patient-grid">
+        <div class="form-group" style="margin:0;">
+          <label>שם מלא</label>
+          <input id="fullNameInput" type="text" placeholder="שם מלא" />
+        </div>
 
-  if (error) throw error;
+        <div class="form-group" style="margin:0;">
+          <label>אימייל</label>
+          <input id="emailInput" type="email" placeholder="name@email.com" />
+        </div>
 
-  const wrap = $("visitsList");
-  wrap.innerHTML = "";
-
-  if (!data?.length){
-    wrap.innerHTML = `<div class="muted">אין ביקורים עדיין.</div>`;
-    return;
-  }
-
-  data.forEach(v => {
-    const div = document.createElement("div");
-    div.className = "row";
-    div.innerHTML = `
-      <div>
-        <strong>${v.visit_date || ""}</strong>
-        <small><strong>סיכום:</strong> ${(v.summary || "").replace(/</g,"&lt;")}</small>
-        <small><strong>הערות:</strong> ${(v.doctor_notes || "").replace(/</g,"&lt;")}</small>
+        <div class="form-group" style="margin:0;">
+          <label>טלפון</label>
+          <input id="phoneInput" type="text" placeholder="05XXXXXXXX" />
+        </div>
       </div>
-      <div class="actions">
-        <button class="btn-outline" data-visit="${v.id}" type="button">צור חשבונית לביקור</button>
+    </section>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="appointments" type="button">תורים</button>
+      <button class="tab" data-tab="visits" type="button">ביקורים</button>
+      <button class="tab" data-tab="invoices" type="button">חשבוניות</button>
+    </div>
+
+    <!-- Appointments -->
+    <section class="panel active" id="panel-appointments">
+      <div class="patient-card">
+        <h3 style="margin:0 0 8px;">תורים</h3>
+        <div class="list" id="appointmentsList"></div>
       </div>
-    `;
-    div.querySelector("button").addEventListener("click", async () => {
-      await createInvoice({ visit_id: v.id });
-      setActiveTab("invoices");
-    });
-    wrap.appendChild(div);
-  });
-}
+    </section>
 
-async function createVisit(){
-  const visit_date = $("visitDateInput").value || new Date().toISOString().slice(0,10);
-  const summary = ($("visitSummaryInput").value || "").trim();
-  const doctor_notes = ($("visitNotesInput").value || "").trim();
-  const appointment_id = window.__LINK_APPOINTMENT_ID__ || null;
+    <!-- Visits -->
+    <section class="panel" id="panel-visits">
+      <div class="patient-card">
+        <h3 style="margin:0 0 10px;">ביקור חדש</h3>
 
-  const { data, error } = await sb
-    .from("visits")
-    .insert([{
-      patient_id: patientId,
-      appointment_id,
-      visit_date,
-      summary,
-      doctor_notes
-    }])
-    .select("*")
-    .single();
+        <div class="patient-grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="form-group" style="margin:0;">
+            <label>תאריך ביקור</label>
+            <input id="visitDateInput" type="date" />
+          </div>
 
-  if (error) throw error;
+          <div class="form-group" style="margin:0;">
+            <label>סיכום קצר</label>
+            <input id="visitSummaryInput" type="text" placeholder="למשל: בדיקה כללית" />
+          </div>
 
-  window.__LINK_APPOINTMENT_ID__ = null;
-  $("visitSummaryInput").value = "";
-  $("visitNotesInput").value = "";
+          <div class="form-group" style="margin:0; grid-column: 1 / -1;">
+            <label>הערות רופא</label>
+            <textarea id="visitNotesInput" rows="4" placeholder="פרטים קליניים..."></textarea>
+          </div>
+        </div>
 
-  alert("✅ ביקור נשמר");
-  await loadVisits();
-}
+        <div style="margin-top:10px;">
+          <button class="btn-primary" id="createVisitBtn" type="button">צור ביקור</button>
+        </div>
 
-function addItemRow(item = { description:"", qty:1, unit_price:0 }){
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td><input class="desc" type="text" value="${item.description || ""}"></td>
-    <td><input class="qty" type="number" min="0" step="1" value="${Number(item.qty || 1)}"></td>
-    <td><input class="price" type="number" min="0" step="0.01" value="${Number(item.unit_price || 0)}"></td>
-    <td class="line_total">${money((item.qty||1)*(item.unit_price||0))}</td>
-  `;
-  $("itemsBody").appendChild(tr);
-
-  const recalc = () => {
-    const qty = Number(tr.querySelector(".qty").value || 0);
-    const price = Number(tr.querySelector(".price").value || 0);
-    tr.querySelector(".line_total").textContent = money(qty * price);
-    recalcTotals();
-  };
-
-  tr.querySelector(".qty").addEventListener("input", recalc);
-  tr.querySelector(".price").addEventListener("input", recalc);
-
-  recalcTotals();
-}
-
-function recalcTotals(){
-  let subtotal = 0;
-  document.querySelectorAll("#itemsBody tr").forEach(tr => {
-    subtotal += Number(tr.querySelector(".line_total").textContent || 0);
-  });
-  $("subTotalLabel").textContent = money(subtotal);
-  $("totalLabel").textContent = money(subtotal);
-}
-
-async function createInvoice({ visit_id = null } = {}){
-  const toEmail = ($("invoiceToEmailInput").value || "").trim() || (patient?.email || "");
-
-  // 1) create invoice header (invoice_number auto by trigger)
-  const { data: inv, error: invErr } = await sb
-    .from("invoices")
-    .insert([{
-      patient_id: patientId,
-      visit_id,
-      status: "draft",
-      currency: "ILS",
-      sent_to_email: toEmail || null
-    }])
-    .select("*")
-    .single();
-
-  if (invErr) throw invErr;
-
-  // 2) insert items
-  const rows = [];
-  document.querySelectorAll("#itemsBody tr").forEach(tr => {
-    const description = (tr.querySelector(".desc").value || "").trim();
-    const qty = Number(tr.querySelector(".qty").value || 0);
-    const unit_price = Number(tr.querySelector(".price").value || 0);
-    if (!description) return;
-    rows.push({
-      invoice_id: inv.id,
-      description,
-      qty,
-      unit_price,
-      line_total: qty * unit_price
-    });
-  });
-
-  if (!rows.length){
-    // create at least one default item if user forgot
-    rows.push({
-      invoice_id: inv.id,
-      description: "ביקור רפואי",
-      qty: 1,
-      unit_price: 0,
-      line_total: 0
-    });
-  }
-
-  const { error: itemsErr } = await sb.from("invoice_items").insert(rows);
-  if (itemsErr) throw itemsErr;
-
-  // Totals will auto-recalc via trigger
-  $("itemsBody").innerHTML = "";
-  addItemRow({ description:"ביקור רפואי", qty:1, unit_price:0 });
-
-  alert(`✅ נוצרה חשבונית: ${inv.invoice_number || "(ממתין)"}`);
-  await loadInvoices();
-}
-
-async function loadInvoices(){
-  const { data, error } = await sb
-    .from("invoices")
-    .select("*")
-    .eq("patient_id", patientId)
-    .order("created_at", { ascending: false });
-
-  if (error) throw error;
-
-  const wrap = $("invoicesList");
-  wrap.innerHTML = "";
-
-  if (!data?.length){
-    wrap.innerHTML = `<div class="muted">אין חשבוניות עדיין.</div>`;
-    return;
-  }
-
-  data.forEach(inv => {
-    const div = document.createElement("div");
-    div.className = "row";
-    div.innerHTML = `
-      <div>
-        <strong>${inv.invoice_number || "INV-..."}</strong>
-        <small>סטטוס: ${inv.status}</small>
-        <small>סה״כ: ${money(inv.total)} ${inv.currency || "ILS"}</small>
-        <small>נוצר: ${new Date(inv.created_at).toLocaleString("he-IL")}</small>
-        <small>נשלח ל: ${inv.sent_to_email || "-"}</small>
+        <h3 style="margin:18px 0 8px;">היסטוריית ביקורים</h3>
+        <div class="list" id="visitsList"></div>
       </div>
-      <div class="actions">
-        <button class="btn-secondary" data-send="${inv.id}" type="button">שלח במייל</button>
-        <button class="btn-outline" data-paid="${inv.id}" type="button">סמן כשולם</button>
+    </section>
+
+    <!-- Invoices -->
+    <section class="panel" id="panel-invoices">
+      <div class="patient-card">
+        <h3 style="margin:0 0 10px;">חשבונית חדשה</h3>
+
+        <div class="patient-grid" style="grid-template-columns: 2fr 1fr;">
+          <div class="form-group" style="margin:0;">
+            <label>שליחה לכתובת מייל</label>
+            <input id="invoiceToEmailInput" type="email" placeholder="ברירת מחדל: מייל המטופל" />
+          </div>
+
+          <div style="display:flex; align-items:flex-end; gap:10px;">
+            <button class="btn-outline" id="addItemBtn" type="button">הוסף שורה</button>
+            <button class="btn-primary" id="createInvoiceBtn" type="button">צור חשבונית</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <table class="items">
+            <thead>
+              <tr>
+                <th>תיאור</th>
+                <th style="width:110px;">כמות</th>
+                <th style="width:140px;">מחיר יח׳</th>
+                <th style="width:140px;">סה״כ שורה</th>
+              </tr>
+            </thead>
+            <tbody id="itemsBody"></tbody>
+          </table>
+
+          <div class="totals">
+            <div><strong>סכום ביניים:</strong> <span id="subTotalLabel">0.00</span></div>
+            <div><strong>סה״כ:</strong> <span id="totalLabel">0.00</span></div>
+          </div>
+        </div>
+
+        <h3 style="margin:18px 0 8px;">חשבוניות</h3>
+        <div class="list" id="invoicesList"></div>
       </div>
-    `;
+    </section>
 
-    div.querySelector("[data-send]").addEventListener("click", () => sendInvoice(inv.id));
-    div.querySelector("[data-paid]").addEventListener("click", () => markPaid(inv.id));
+    <p class="admin-footnote" style="margin-top:14px;">
+      ✅ נתונים נטענים מה-DB של Supabase. רק משתמשים מחוברים יכולים לראות ולנהל.
+    </p>
+  </main>
 
-    wrap.appendChild(div);
-  });
-}
+  <!-- Supabase SDK -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-async function markPaid(invoiceId){
-  const { error } = await sb.from("invoices").update({ status:"paid" }).eq("id", invoiceId);
-  if (error) throw error;
-  await loadInvoices();
-  alert("✅ עודכן ל'שולם'");
-}
+  <!-- Shared Supabase client -->
+  <script src="supabase-client.js"></script>
 
-async function sendInvoice(invoiceId){
-  // Calls Edge Function: /functions/v1/send-invoice
-  // Requires RESEND secrets configured in Supabase
-  const { data, error } = await sb.functions.invoke("send-invoice", {
-    body: { invoice_id: invoiceId }
-  });
-
-  if (error){
-    console.error(error);
-    alert("שליחה נכשלה: " + (error.message || "error"));
-    return;
-  }
-
-  alert("✅ נשלח במייל");
-  await loadInvoices();
-}
-
-async function refreshAll(){
-  await loadPatient();
-  await loadAppointments();
-  await loadVisits();
-  await loadInvoices();
-}
-
-document.addEventListener("DOMContentLoaded", async () => {
-  const ok = await requireAuth();
-  if (!ok) return;
-
-  patientId = qparam("patient_id");
-  if (!patientId){
-    alert("Missing patient_id");
-    window.location.href = "./admin.html";
-    return;
-  }
-
-  $("logoutLink").addEventListener("click", (e) => { e.preventDefault(); logout(); });
-  $("refreshBtn").addEventListener("click", refreshAll);
-
-  document.querySelectorAll(".tab").forEach(btn => {
-    btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
-  });
-
-  $("savePatientBtn").addEventListener("click", () => savePatient().catch(e => alert(e.message)));
-  $("createVisitBtn").addEventListener("click", () => createVisit().catch(e => alert(e.message)));
-
-  $("addItemBtn").addEventListener("click", () => addItemRow());
-  $("createInvoiceBtn").addEventListener("click", () => createInvoice().catch(e => alert(e.message)));
-
-  // defaults
-  $("visitDateInput").value = new Date().toISOString().slice(0,10);
-  addItemRow({ description:"ביקור רפואי", qty:1, unit_price:0 });
-
-  await refreshAll();
-});
+  <!-- Patient logic -->
+  <script src="patient.js"></script>
+</body>
+</html>
