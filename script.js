@@ -1,4 +1,33 @@
 // script.js — Website + Appointment submit via RPC (create_appointment)
+async function uploadAppointmentFiles(supabase, appointmentId) {
+  const input = document.getElementById("appointmentFiles");
+  if (!input || !input.files || input.files.length === 0) return;
+
+  for (const file of input.files) {
+    const safeName = file.name.replace(/[^\w.\-() ]/g, "_");
+    const filePath = `appointments/${appointmentId}/${Date.now()}_${safeName}`;
+
+    // Upload to Storage bucket: appointment-files
+    const { error: uploadError } = await supabase.storage
+      .from("appointment-files")
+      .upload(filePath, file);
+
+    if (uploadError) {
+      console.error("File upload failed:", uploadError);
+      continue;
+    }
+
+    // Save reference in DB table: appointment_files
+    const { error: dbError } = await supabase.from("appointment_files").insert({
+      appointment_id: appointmentId,
+      file_name: file.name,
+      file_path: filePath,
+      file_type: file.type || null,
+    });
+
+    if (dbError) console.error("DB insert failed:", dbError);
+  }
+}
 
 (function () {
   function byId(id) { return document.getElementById(id); }
