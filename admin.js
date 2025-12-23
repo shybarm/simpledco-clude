@@ -147,14 +147,7 @@ function render() {
 async function loadAppointments() {
   const { data, error } = await sb
     .from(TABLE)
-   .select(`
-  *,
-  patients (
-    id,
-    first_name,
-    last_name
-  )
-`)
+  .select("*")
     .order("created_at", { ascending: false });
 
   if (error) throw error;
