@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Back Office | ניהול בקשות תור</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <div class="logo">Back Office</div>
+        <ul class="nav-links active" style="position: static; box-shadow:none; padding:0; flex-direction: row; gap: 1rem;">
+          <li><a href="index.html">חזרה לאתר</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="admin">
+    <div class="container">
+      <div class="admin-top">
+        <div>
+          <h1 class="admin-title">ניהול בקשות תור</h1>
+          <p class="admin-subtitle">תצוגה פשוטה של כל הבקשות שנשלחו מהטופס באתר.</p>
+        </div>
+        <div class="admin-actions">
+          <button class="btn-secondary" id="refreshBtn">רענן</button>
+          <button class="btn-outline" id="exportBtn">ייצוא CSV</button>
+          <button class="btn-outline" id="clearBtn">מחיקת הכל</button>
+        </div>
+      </div>
+
+      <div class="admin-filters">
+        <div class="form-group" style="margin:0;">
+          <label>חיפוש</label>
+          <input type="text" id="searchInput" placeholder="שם, טלפון, אימייל..." />
+        </div>
+
+        <div class="form-group" style="margin:0;">
+          <label>סטטוס</label>
+          <select id="statusFilter">
+            <option value="all">הכל</option>
+            <option value="new">חדש</option>
+            <option value="confirmed">אושר</option>
+            <option value="cancelled">בוטל</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin:0;">
+          <label>שירות</label>
+          <select id="serviceFilter">
+            <option value="all">הכל</option>
+            <option value="general">ייעוץ רפואי כללי</option>
+            <option value="home-visit">ביקור בית</option>
+            <option value="chronic">ניהול מחלות כרוניות</option>
+            <option value="preventive">רפואה מונעת</option>
+            <option value="pediatric">טיפול ילדים</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="admin-kpis" id="kpis"></div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>נוצר</th>
+              <th>מטופל</th>
+              <th>טלפון</th>
+              <th>אימייל</th>
+              <th>שירות</th>
+              <th>תאריך</th>
+              <th>שעה</th>
+              <th>הערות</th>
+              <th>סטטוס</th>
+              <th>פעולות</th>
+            </tr>
+          </thead>
+          <tbody id="appointmentsBody"></tbody>
+        </table>
+      </div>
+
+      <p class="admin-footnote">
+        ⚠️ הערה: הגרסה הזו שומרת נתונים ב-localStorage של הדפדפן (כלומר זה נשמר רק באותו מחשב/דפדפן).
+        אם צריך Back Office אמיתי ורב-משתמשים—צריך חיבור לשרת/DB.
+      </p>
+    </div>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>

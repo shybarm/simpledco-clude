@@ -107,15 +107,47 @@ function getBotResponse(message) {
     return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
 }
 
+// ---- Appointment storage (simple back-office) ----
+const APPOINTMENTS_STORAGE_KEY = 'appointments_v1';
+
+function loadAppointments() {
+    try {
+        const raw = localStorage.getItem(APPOINTMENTS_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+        console.warn('Failed to load appointments from localStorage', e);
+        return [];
+    }
+}
+
+function saveAppointments(list) {
+    try {
+        localStorage.setItem(APPOINTMENTS_STORAGE_KEY, JSON.stringify(list));
+        return true;
+    } catch (e) {
+        console.warn('Failed to save appointments to localStorage', e);
+        return false;
+    }
+}
+
+function addAppointment(appointment) {
+    const list = loadAppointments();
+    list.unshift(appointment); // newest first
+    saveAppointments(list);
+}
+
 // Form Submission
 function handleSubmit(event) {
     event.preventDefault();
-    
+
     const form = event.target;
     const formData = new FormData(form);
-    
+
     // Get form values
     const data = {
+        id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('apt_' + Date.now() + '_' + Math.random().toString(16).slice(2)),
+        createdAt: new Date().toISOString(),
+        status: 'new', // new | confirmed | cancelled
         firstName: formData.get('firstName'),
         lastName: formData.get('lastName'),
         email: formData.get('email'),
@@ -125,19 +157,39 @@ function handleSubmit(event) {
         time: formData.get('time'),
         notes: formData.get('notes')
     };
-    
-    // Here you would normally send to a server
-    // For now, just show success message
+
+    // Store locally for admin back office (same browser/device)
+    addAppointment(data);
+
+    // Operational telemetry (optional)
     console.log('Appointment request:', data);
-    
-    alert('✅ תודה! בקשת התור שלך נשלחה בהצלחה.\n\nנחזור אליך תוך 24 שעות לאישור התור.\n\nפרטי התור:\nשם: ' + data.firstName + ' ' + data.lastName + '\nתאריך: ' + data.date + '\nשעה: ' + data.time);
-    
+
+    alert(
+        '✅ תודה! בקשת התור שלך נשלחה בהצלחה.
+
+' +
+        'נחזור אליך תוך 24 שעות לאישור התור.
+
+' +
+        'פרטי התור:
+' +
+        'שם: ' + data.firstName + ' ' + data.lastName + '
+' +
+        'תאריך: ' + data.date + '
+' +
+        'שעה: ' + data.time + '
+
+' +
+        '🛠 לניהול בקשות (Back Office): /admin.html'
+    );
+
     // Reset form
     form.reset();
-    
+
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
 
 // Set minimum date for appointment (tomorrow)
 document.addEventListener('DOMContentLoaded', function() {
