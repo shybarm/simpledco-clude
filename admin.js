@@ -1,4 +1,4 @@
-// admin.js — Supabase Auth Back Office (FULL FILE, patient navigation fixed)
+// admin.js — Supabase Auth Back Office (FULL FILE, patient navigation bulletproof)
 
 window.__ADMIN_LOADED = true;
 console.log("[ADMIN] admin.js loaded ✅");
@@ -95,7 +95,7 @@ function render() {
 
   if (!list.length) {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td colspan="11" class="admin-empty">אין בקשות להצגה</td>`;
+    tr.innerHTML = `<td colspan="10" class="admin-empty">אין בקשות להצגה</td>`;
     body.appendChild(tr);
     return;
   }
@@ -105,8 +105,6 @@ function render() {
       a.patients?.full_name || `${a.first_name || ""} ${a.last_name || ""}`.trim();
 
     const patientId = a.patient_id ? String(a.patient_id) : "";
-    const openDisabled = patientId ? "" : "disabled";
-    const openTitle = patientId ? "פתח תיק מטופל" : "אין patient_id (להריץ backfill)";
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -115,12 +113,12 @@ function render() {
       <td class="patient-cell">
         <button
           type="button"
-          class="patient-open"
+          class="patient-open btn-linklike"
           data-patient-id="${patientId}"
-          ${openDisabled}
-          title="${openTitle}"
+          ${patientId ? "" : "disabled"}
+          title="${patientId ? "פתח תיק מטופל" : "אין patient_id"}"
         >
-          ${patientName || "—"}
+          <strong>${patientName || "—"}</strong>
         </button>
       </td>
 
@@ -130,7 +128,6 @@ function render() {
       <td>${a.date || ""}</td>
       <td>${a.time || ""}</td>
       <td class="admin-notes">${(a.notes || "").replace(/</g, "&lt;")}</td>
-
       <td>
         <select class="admin-status" data-id="${a.id}">
           <option value="new" ${a.status === "new" ? "selected" : ""}>חדש</option>
@@ -138,7 +135,6 @@ function render() {
           <option value="cancelled" ${a.status === "cancelled" ? "selected" : ""}>בוטל</option>
         </select>
       </td>
-
       <td class="admin-row-actions">
         <button class="btn-outline admin-delete" data-id="${a.id}" type="button">מחק</button>
       </td>
@@ -300,18 +296,18 @@ function bindEvents() {
 
   // Clicks: patient open + delete
   document.addEventListener("click", (e) => {
-    // Patient open (button is the most reliable click target)
     const openBtn = e.target.closest && e.target.closest(".patient-open");
     if (openBtn) {
       const patientId = openBtn.getAttribute("data-patient-id");
+      console.log("[ADMIN] OPEN PATIENT:", patientId);
+
       if (!patientId) return;
 
-      // IMPORTANT: use ./ for Vercel/static routes
+      // If patient.html is in same folder as admin.html
       window.location.href = `./patient.html?patient_id=${patientId}`;
       return;
     }
 
-    // Delete
     const delBtn = e.target.closest && e.target.closest(".admin-delete");
     if (delBtn) {
       const id = delBtn.getAttribute("data-id");
