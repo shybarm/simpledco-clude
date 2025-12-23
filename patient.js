@@ -1,4 +1,4 @@
-// patient.js — Patient file: details, appointments, visits, invoices
+// patient.js — Patient file: details, appointments, visits, invoices (+ allergies checkbox)
 
 console.log("[PATIENT] patient.js loaded ✅");
 
@@ -39,6 +39,12 @@ function serviceLabel(value) {
   return map[value] || value || "";
 }
 
+function safeShow(id, yes) {
+  const el = $(id);
+  if (!el) return;
+  el.style.display = yes ? "" : "none";
+}
+
 // ---------- auth ----------
 async function requireAuth() {
   const { data } = await sb.auth.getSession();
@@ -63,6 +69,25 @@ if (!patientId) {
 
 let patient = null;
 
+// ---------- allergies UI ----------
+function syncAllergiesUiFromValue(value) {
+  const has = !!(value && String(value).trim());
+  const cb = $("hasAllergiesCheckbox");
+  if (cb) cb.checked = has;
+  safeShow("allergiesBox", has);
+}
+
+function bindAllergiesToggle() {
+  const cb = $("hasAllergiesCheckbox");
+  if (!cb) return;
+
+  cb.addEventListener("change", (e) => {
+    const yes = !!e.target.checked;
+    safeShow("allergiesBox", yes);
+    if (!yes && $("allergiesInput")) $("allergiesInput").value = "";
+  });
+}
+
 // ---------- load patient ----------
 async function loadPatient() {
   const { data, error } = await sb
@@ -76,9 +101,10 @@ async function loadPatient() {
   patient = data;
 
   // hide internal id – show only created date
-  $("patientMeta").textContent = `נוצר: ${new Date(
-    patient.created_at
-  ).toLocaleString("he-IL")}`;
+  const meta = $("patientMeta");
+  if (meta) {
+    meta.textContent = `נוצר: ${new Date(patient.created_at).toLocaleString("he-IL")}`;
+  }
 
   $("fullNameInput").value = patient.full_name || "";
   $("emailInput").value = patient.email || "";
@@ -86,7 +112,10 @@ async function loadPatient() {
 
   $("personalIdInput").value = patient.personal_id || "";
   $("dobInput").value = patient.date_of_birth || "";
-  $("allergiesInput").value = patient.allergies || "";
+
+  // allergies + checkbox
+  if ($("allergiesInput")) $("allergiesInput").value = patient.allergies || "";
+  syncAllergiesUiFromValue(patient.allergies || "");
 }
 
 // ---------- save patient ----------
@@ -97,7 +126,9 @@ async function savePatient() {
 
   const personal_id = $("personalIdInput").value.trim();
   const date_of_birth = $("dobInput").value || null;
-  const allergies = $("allergiesInput").value.trim();
+
+  const hasAllergies = $("hasAllergiesCheckbox") ? $("hasAllergiesCheckbox").checked : false;
+  const allergies = hasAllergies ? ($("allergiesInput")?.value || "").trim() : null;
 
   const { error } = await sb
     .from("patients")
@@ -264,6 +295,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     $("createVisitBtn").addEventListener("click", () =>
       createVisit().catch((err) => alert(err.message))
     );
+
+    // allergies checkbox toggle
+    bindAllergiesToggle();
 
     // defaults
     $("visitDateInput").value = new Date().toISOString().slice(0, 10);
