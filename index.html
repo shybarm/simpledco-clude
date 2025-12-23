@@ -4,9 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ד״ר גל גולדהבר | רופא משפחה</title>
-  
+
   <meta name="keywords" content="רופא משפחה, רופא עד הבית, ביקור בית, רפואה מונעת, ניהול מחלות כרוניות, מרפאה, ד״ר גל גולדהבר" />
   <meta name="author" content="ד״ר גל גולדהבר" />
+  <meta name="description" content="ד״ר גל גולדהבר - רופא משפחה מנוסה. ביקורי בית, טיפול במחלות כרוניות, רפואה מונעת." />
+
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="he_IL" />
   <meta property="og:title" content="ד״ר גל גולדהבר | רופא משפחה" />
@@ -14,12 +16,9 @@
   <meta property="og:image" content="assets/doctor-anna.png" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <meta name="description" content="ד״ר גל גולדהבר - רופא משפחה מנוסה. ביקורי בית, טיפול במחלות כרוניות, רפואה מונעת." />
-
-  <!-- Base site styles -->
+  <!-- Base styles -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Doctreat-inspired skin (add this file after style.css) -->
+  <!-- Skin -->
   <link rel="stylesheet" href="theme-doctreat.css" />
 
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -42,9 +41,11 @@
     ]
   }
   </script>
-<script src="cleanup.js" defer></script>
+
+  <!-- Optional: cleanup helper (kept if you already use it) -->
+  <script src="cleanup.js" defer></script>
 </head>
-<script src="chatbot.js" defer></script>
+
 <body>
   <!-- Header -->
   <header class="header">
@@ -52,7 +53,7 @@
       <nav class="nav">
         <div class="logo">ד״ר גל גולדהבר</div>
 
-        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <button class="menu-toggle" type="button" onclick="toggleMenu()">☰</button>
 
         <ul class="nav-links" id="navLinks">
           <li><a href="#home">בית</a></li>
@@ -78,9 +79,9 @@
         </p>
 
         <div class="hero-buttons">
-          <a href="#appointment" class="btn-primary btn-large">📅 קביעת תור</a>
-          <a href="tel:+972-3-123-4567" class="btn-secondary btn-large">📞 03-123-4567</a>
-          <a href="./admin.html" class="btn-outline btn-large">🔐 Admin Login</a>
+          <a href="#appointment" class="btn-primary btn-large">קביעת תור</a>
+          <a href="tel:+972-3-123-4567" class="btn-secondary btn-large">03-123-4567</a>
+          <a href="./admin.html" class="btn-outline btn-large">Admin Login</a>
         </div>
 
         <div class="trust-badges">
@@ -144,51 +145,45 @@
 
       <div class="services-grid">
         <div class="service-card">
-          <div class="service-icon">🏥</div>
           <h3>ייעוץ רפואי כללי</h3>
           <p>הערכות בריאות מקיפות, אבחון ותכנון טיפול למצבים חריפים וכרוניים.</p>
-          <div class="service-details"><span>⏱ 30-45 דקות</span></div>
+          <div class="service-details"><span>30-45 דקות</span></div>
           <a href="#appointment" class="btn-outline">קבע תור</a>
         </div>
 
         <div class="service-card featured">
-          <div class="featured-badge">פופולרי</div>
-          <div class="service-icon">🏠</div>
+          <!-- REMOVED: פופולרי -->
           <h3>ביקורי בית רפואיים</h3>
           <p>טיפול רפואי נוח בבית למטופלים עם מגבלות ניידות או אלה המעדיפים ייעוץ ביתי.</p>
-          <div class="service-details"><span>⏱ 45-60 דקות</span></div>
+          <div class="service-details"><span>45-60 דקות</span></div>
           <a href="#appointment" class="btn-primary">קבע תור</a>
         </div>
 
         <div class="service-card">
-          <div class="service-icon">💊</div>
           <h3>ניהול מחלות כרוניות</h3>
           <p>טיפול שוטף לסוכרת, יתר לחץ דם, מחלות לב ומצבים כרוניים אחרים.</p>
-          <div class="service-details"><span>⏱ 45 דקות</span></div>
+          <div class="service-details"><span>45 דקות</span></div>
           <a href="#appointment" class="btn-outline">קבע תור</a>
         </div>
 
         <div class="service-card">
-          <div class="service-icon">🛡️</div>
           <h3>רפואה מונעת ובדיקות</h3>
           <p>בדיקות שנתיות, סקרי בריאות, חיסונים וייעוץ לבריאות.</p>
-          <div class="service-details"><span>⏱ 30 דקות</span></div>
+          <div class="service-details"><span>30 דקות</span></div>
           <a href="#appointment" class="btn-outline">קבע תור</a>
         </div>
 
         <div class="service-card">
-          <div class="service-icon">👶</div>
           <h3>טיפול ילדים</h3>
           <p>בריאות מקיפה לילדים כולל ביקורי ילד בריא, ביקורי מחלה והערכות התפתחותיות.</p>
-          <div class="service-details"><span>⏱ 30 דקות</span></div>
+          <div class="service-details"><span>30 דקות</span></div>
           <a href="#appointment" class="btn-outline">קבע תור</a>
         </div>
 
         <div class="service-card">
-          <div class="service-icon">🩺</div>
           <h3>בדיקות מעבדה ובדיקות</h3>
           <p>בדיקות דם, אק״ג, חיסונים ובדיקות בריאות נוספות.</p>
-          <div class="service-details"><span>⏱ 15 דקות</span></div>
+          <div class="service-details"><span>15 דקות</span></div>
           <a href="#appointment" class="btn-outline">קבע תור</a>
         </div>
       </div>
@@ -231,7 +226,6 @@
       <div class="contact-content">
         <div class="contact-info">
           <div class="contact-item">
-            <div class="contact-icon">📍</div>
             <div>
               <h3>כתובת</h3>
               <p>רחוב רוטשילד 123<br />תל אביב, 6688101</p>
@@ -239,7 +233,6 @@
           </div>
 
           <div class="contact-item">
-            <div class="contact-icon">📞</div>
             <div>
               <h3>טלפון</h3>
               <p><a href="tel:+972-3-123-4567">03-123-4567</a></p>
@@ -247,7 +240,6 @@
           </div>
 
           <div class="contact-item">
-            <div class="contact-icon">✉️</div>
             <div>
               <h3>אימייל</h3>
               <p><a href="mailto:info@goldhabermd.co.il">info@goldhabermd.co.il</a></p>
@@ -255,7 +247,6 @@
           </div>
 
           <div class="contact-item">
-            <div class="contact-icon">💬</div>
             <div>
               <h3>WhatsApp</h3>
               <p><a href="https://wa.me/972501234567">050-123-4567</a></p>
@@ -270,9 +261,9 @@
           </div>
 
           <div class="navigation-buttons">
-            <a href="https://waze.com/ul?q=רחוב רוטשילד 123 תל אביב&navigate=yes" target="_blank" class="btn-primary">נווט ב-Waze 🚗</a>
-            <a href="https://www.google.com/maps/search/?api=1&query=רחוב רוטשילד 123 תל אביב" target="_blank" class="btn-secondary">Google Maps 🗺️</a>
-            <a href="./admin.html" class="btn-outline">🔐 Admin Login</a>
+            <a href="https://waze.com/ul?q=רחוב רוטשילד 123 תל אביב&navigate=yes" target="_blank" class="btn-primary">Waze</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=רחוב רוטשילד 123 תל אביב" target="_blank" class="btn-secondary">Google Maps</a>
+            <a href="./admin.html" class="btn-outline">Admin Login</a>
           </div>
         </div>
 
@@ -356,6 +347,13 @@
           <textarea name="notes" rows="4"></textarea>
         </div>
 
+        <!-- FILE UPLOAD (NEW) -->
+        <div class="form-group">
+          <label>צירוף מסמכים רפואיים (אופציונלי)</label>
+          <input type="file" id="appointmentFiles" multiple accept=".pdf,image/*,.doc,.docx" />
+          <p class="form-note">ניתן לצרף בדיקות, הפניות או תמונות</p>
+        </div>
+
         <button type="submit" class="btn-primary btn-large">שלח בקשה</button>
         <p class="form-note">* לאחר שליחת הטופס, נחזור אליך תוך 24 שעות לאישור התור</p>
       </form>
@@ -390,8 +388,8 @@
 
         <div class="footer-section">
           <h3>צור קשר</h3>
-          <p>📞 03-123-4567</p>
-          <p>✉️ info@goldhabermd.co.il</p>
+          <p>03-123-4567</p>
+          <p>info@goldhabermd.co.il</p>
         </div>
       </div>
 
@@ -415,8 +413,10 @@
     };
   </script>
 
-  <!-- Your existing site logic (appointment submit, menu, chatbot, etc.) -->
+  <!-- Site logic -->
   <script src="script.js"></script>
+
+  <!-- Bot (load ONCE) -->
   <script src="chatbot.js" defer></script>
 </body>
 </html>
