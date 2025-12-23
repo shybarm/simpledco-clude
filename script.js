@@ -69,7 +69,7 @@ function getBotResponse(message) {
     
     // Services
     if (lowerMessage.includes('שירות') || lowerMessage.includes('מחיר') || lowerMessage.includes('עלות')) {
-        return 'אנו מציעים: ייעוץ כללי (₪400), ביקורי בית (₪600), ניהול מחלות כרוניות (₪450), רפואה מונעת (₪350), וטיפול ילדים (₪350).';
+        return 'אנו מציעים: ייעוץ רפואי כללי, ביקורי בית, ניהול מחלות כרוניות, רפואה מונעת, וטיפול ילדים. למידע נוסף התקשר ל-03-123-4567.';
     }
     
     // Hours
@@ -89,7 +89,7 @@ function getBotResponse(message) {
     
     // Home visits
     if (lowerMessage.includes('בית') || lowerMessage.includes('ביקור בבית')) {
-        return 'כן! אנו מציעים ביקורי בית רפואיים באזור תל אביב. המחיר ₪600 למפגש של 45-60 דקות.';
+        return 'כן! אנו מציעים ביקורי בית רפואיים באזור תל אביב. למידע נוסף התקשר ל-03-123-4567.';
     }
     
     // Emergency

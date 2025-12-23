@@ -304,18 +304,12 @@ section {
 
 .service-details {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     padding: 1rem 0;
     border-top: 1px solid #eee;
     border-bottom: 1px solid #eee;
     margin-bottom: 1.5rem;
     font-size: 0.9rem;
-}
-
-.price {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--secondary);
 }
 
 /* Testimonials */
