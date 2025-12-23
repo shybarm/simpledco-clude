@@ -1,14 +1,9 @@
-// script.js
-// Website logic + appointment form submission to Supabase (appointments table)
+// script.js — Website + Appointment submit via RPC (create_appointment)
 
 (function () {
-  // ---------- Helpers ----------
-  function byId(id) {
-    return document.getElementById(id);
-  }
+  function byId(id) { return document.getElementById(id); }
 
   function showToast(message, type) {
-    // Minimal inline toast (no CSS dependencies)
     const toast = document.createElement("div");
     toast.style.position = "fixed";
     toast.style.left = "16px";
@@ -24,7 +19,6 @@
     toast.style.background = type === "error" ? "#ffe5e5" : "#e9fff1";
     toast.style.color = type === "error" ? "#8a0000" : "#0b5a2a";
     toast.textContent = message;
-
     document.body.appendChild(toast);
     setTimeout(() => {
       toast.style.opacity = "0";
@@ -35,138 +29,81 @@
 
   function getFormValue(form, name) {
     const el = form.elements[name];
-    if (!el) return "";
-    return (el.value || "").toString().trim();
+    return el ? (el.value || "").toString().trim() : "";
   }
 
-  // ---------- Navigation / Menu ----------
-  window.toggleMenu = function toggleMenu() {
+  window.toggleMenu = function () {
     const navLinks = byId("navLinks");
     if (!navLinks) return;
     navLinks.classList.toggle("active");
   };
 
-  // ---------- Chat (optional; keep if your UI has it) ----------
-  window.toggleChat = function toggleChat() {
-    const chatWindow = byId("chatWindow");
-    if (!chatWindow) return;
-    chatWindow.style.display = chatWindow.style.display === "block" ? "none" : "block";
-  };
-
-  window.handleChatKey = function handleChatKey(e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      window.sendMessage();
-    }
-  };
-
-  window.sendMessage = function sendMessage() {
-    const input = byId("chatInput");
-    const messages = byId("chatMessages");
-    if (!input || !messages) return;
-
-    const text = (input.value || "").trim();
-    if (!text) return;
-
-    const userMsg = document.createElement("div");
-    userMsg.className = "user-message";
-    userMsg.textContent = text;
-    messages.appendChild(userMsg);
-
-    const botMsg = document.createElement("div");
-    botMsg.className = "bot-message";
-    botMsg.textContent = "תודה! אם תרצה, אתה יכול גם להשאיר פרטים בטופס קביעת התור ואנחנו נחזור אליך.";
-    messages.appendChild(botMsg);
-
-    input.value = "";
-    messages.scrollTop = messages.scrollHeight;
-  };
-
-  // ---------- Appointment submit to Supabase ----------
-  window.handleSubmit = async function handleSubmit(event) {
+  // Appointment submit
+  window.handleSubmit = async function (event) {
     event.preventDefault();
-
     const form = event.target;
 
-    // Collect fields from your index.html
     const firstName = getFormValue(form, "firstName");
-    const lastName = getFormValue(form, "lastName");
-    const email = getFormValue(form, "email");
-    const phone = getFormValue(form, "phone");
-    const service = getFormValue(form, "service");
-    const date = getFormValue(form, "date");
-    const time = getFormValue(form, "time");
-    const notes = getFormValue(form, "notes");
+    const lastName  = getFormValue(form, "lastName");
+    const email     = getFormValue(form, "email");
+    const phone     = getFormValue(form, "phone");
+    const service   = getFormValue(form, "service");
+    const date      = getFormValue(form, "date");  // YYYY-MM-DD from <input type="date">
+    const time      = getFormValue(form, "time");
+    const notes     = getFormValue(form, "notes");
 
-    // Basic validation (HTML required should already handle most)
     if (!firstName || !lastName || !email || !phone || !service || !date || !time) {
       showToast("נא למלא את כל השדות החובה.", "error");
       return;
     }
 
-    // Ensure Supabase client exists
     if (typeof window.getSupabaseClient !== "function") {
       showToast("שגיאת מערכת: חסר חיבור למסד הנתונים (Supabase).", "error");
-      console.error("getSupabaseClient() not found. Make sure Supabase scripts are included in index.html.");
       return;
     }
 
     let sb;
     try {
       sb = window.getSupabaseClient();
-    } catch (err) {
+    } catch (e) {
+      console.error(e);
       showToast("שגיאת מערכת: לא ניתן ליצור חיבור למסד הנתונים.", "error");
-      console.error(err);
       return;
     }
 
-    // Disable submit button to prevent double submits
     const submitBtn = form.querySelector('button[type="submit"]');
     const oldBtnText = submitBtn ? submitBtn.textContent : "";
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.textContent = "שולח...";
-    }
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "שולח..."; }
 
     try {
-      // Insert into public.appointments (matches your table schema)
-      const payload = {
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-        phone: phone,
-        service: service,
-        date: date,     // stored as date
-        time: time,     // stored as text
-        notes: notes,
-        status: "new"
-      };
-
-      const { error } = await sb
-        .from("appointments")
-        .insert([payload]);
+      // Call the RPC (safe public entry point)
+      const { data, error } = await sb.rpc("create_appointment", {
+        p_first_name: firstName,
+        p_last_name: lastName,
+        p_email: email,
+        p_phone: phone,
+        p_service: service,
+        p_date: date,
+        p_time: time,
+        p_notes: notes || null
+      });
 
       if (error) {
-        console.error("Supabase insert error:", error);
+        console.error("RPC error:", error);
         showToast("שליחה נכשלה: " + error.message, "error");
         return;
       }
 
-      // Success
+      // data returns appointment UUID
       form.reset();
       showToast("✅ הבקשה נשלחה! נחזור אליך בהקדם לאישור התור.", "success");
-
-      // Optional: scroll to top or to confirmation area
-      // window.scrollTo({ top: 0, behavior: "smooth" });
+      console.log("Appointment created:", data);
 
     } catch (err) {
       console.error(err);
-      showToast("שליחה נכשלה: Failed to fetch / Network error", "error");
+      showToast("שליחה נכשלה: Network error", "error");
     } finally {
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = oldBtnText || "שלח בקשה";
-      }
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = oldBtnText || "שלח בקשה"; }
     }
   };
 })();
