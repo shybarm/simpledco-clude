@@ -97,16 +97,19 @@ function render() {
       a.patients?.full_name ||
       `${a.first_name || ""} ${a.last_name || ""}`;
 
-    const nameCell = a.patient_id
-      ? `<a href="patient.html?patient_id=${a.patient_id}">
-           <strong>${patientName}</strong>
-         </a>`
-      : `<strong>${patientName}</strong>`;
+const nameCell = `
+  <td
+    ${a.patient_id ? `onclick="window.location='patient.html?patient_id=${a.patient_id}'"` : ""}
+    style="cursor:${a.patient_id ? "pointer" : "default"}"
+  >
+    <strong>${patientName}</strong>
+  </td>
+`;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${fmtDate(a.created_at)}</td>
-      <td>${nameCell}</td>
+   ${nameCell}
       <td><a href="tel:${a.phone || ""}">${a.phone || ""}</a></td>
       <td><a href="mailto:${a.email || ""}">${a.email || ""}</a></td>
       <td>${serviceLabel(a.service)}</td>
