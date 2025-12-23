@@ -395,3 +395,193 @@ input:focus, select:focus, textarea:focus{
 @media (max-width: 767px){
   .nav-links{ gap: 12px !important; }
 }
+/* ───────────────────────── FIX 1: HERO WIDTH (match Dr. Brameli – wide, airy) */
+
+/* Expand overall container slightly like her layout */
+:root{ --container: 1320px; }
+.container{ width:min(var(--container), calc(100% - 40px)) !important; }
+
+/* Ensure hero section uses full available width and same spacing */
+.hero{
+  position: relative;
+  padding: 56px 0 40px !important;
+}
+
+/* Remove any max-width constraints applied by older CSS */
+.hero .container,
+.hero-content{
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* Make hero content behave like a two-column layout (portrait + copy) */
+@media (min-width: 1024px){
+  .hero-content{
+    padding-inline-start: 460px !important;
+    min-height: 430px !important;
+  }
+  .hero-content::before{
+    width: 390px !important;
+    height: 390px !important;
+    top: 10px !important;
+  }
+}
+
+/* Reproduce her “wide light band” look */
+.hero::after{
+  content:"";
+  position:absolute;
+  inset-inline:0;
+  top: 70px;
+  height: 470px;
+  background:
+    radial-gradient(1200px 520px at 45% 25%, rgba(0,0,0,.12), transparent 60%),
+    linear-gradient(to bottom, rgba(0,0,0,.025), rgba(0,0,0,0));
+  opacity: .20;
+  pointer-events:none;
+  z-index:-2;
+}
+
+/* ───────────────────────── FIX 2: REMOVE ICONS (clean cards like you asked) */
+
+/* Kill “service icons” and any decorative icons inside service cards / content cards */
+.service-icon,
+.service-card .service-icon,
+.service-card img,
+.service-card svg,
+.service-card i,
+.service-card [class*="icon"],
+.service-card [class*="Icon"],
+.card img.icon,
+.card svg.icon,
+.card i.icon,
+.feature-card img,
+.feature-card svg,
+.feature-card i,
+.panel img,
+.panel svg,
+.panel i{
+  display: none !important;
+}
+
+/* If an icon is rendered inside a small square bubble, hide the bubble too */
+.service-card .icon-badge,
+.service-card .icon-wrap,
+.service-card .badge-icon{
+  display: none !important;
+}
+
+/* Tighten card padding now that icons are gone */
+.service-card,
+.card,
+.feature-card,
+.panel{
+  padding-top: 18px !important;
+}
+
+/* ───────────────────────── BOT (floating assistant) — if you include chatbot.js */
+
+/* Button */
+.chatbot-launcher{
+  position: fixed;
+  inset-inline-start: 20px;
+  bottom: 20px;
+  z-index: 9999;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,.10);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 18px 44px rgba(0,0,0,.18);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.chatbot-panel{
+  position: fixed;
+  inset-inline-start: 20px;
+  bottom: 86px;
+  width: min(360px, calc(100vw - 40px));
+  max-height: 70vh;
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.10);
+  border-radius: 16px;
+  box-shadow: 0 24px 70px rgba(0,0,0,.20);
+  overflow: hidden;
+  display: none;
+}
+
+.chatbot-panel.open{ display: flex; flex-direction: column; }
+
+.chatbot-head{
+  padding: 12px 14px;
+  background: rgba(0,0,0,.03);
+  border-bottom: 1px solid rgba(0,0,0,.08);
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.chatbot-title{
+  font-weight: 900;
+  color: rgba(0,0,0,.82);
+}
+.chatbot-close{
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,.12);
+  background: #fff;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.chatbot-body{
+  padding: 12px 14px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chatbot-msg{
+  border-radius: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: rgba(0,0,0,.02);
+  color: rgba(0,0,0,.78);
+  line-height: 1.6;
+}
+.chatbot-msg.me{
+  background: hsl(var(--accent));
+  border-color: rgba(0,0,0,.06);
+}
+
+.chatbot-foot{
+  padding: 10px 12px;
+  border-top: 1px solid rgba(0,0,0,.08);
+  display:flex;
+  gap: 8px;
+  align-items:center;
+}
+.chatbot-input{
+  flex:1;
+  min-height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.14);
+  padding: 0 12px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.05);
+}
+.chatbot-send{
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.10);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 900;
+  cursor: pointer;
+}
