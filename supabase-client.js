@@ -2,8 +2,8 @@
 // Frontend-safe Supabase configuration
 // Uses Publishable Key + RLS (secure for browser)
 
-window.SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co";
-window.SUPABASE_ANON_KEY = "sb_publishable_REPLACE_ME";
+window.SUPABASE_URL = "https://bvwnltducovnojfnlhji.supabase.co";
+window.SUPABASE_ANON_KEY = "sb_publishable_-OsnXhn12GepRjo-iXxyjA_5KpIsUs1";
 
 window.getSupabaseClient = function () {
   if (!window.supabase) {
