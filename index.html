@@ -1,418 +1,826 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ד״ר גל גולדהבר | רופא משפחה</title>
-    <meta name="description" content="ד״ר גל גולדהבר - רופא משפחה מנוסה בתל אביב. ביקורי בית, טיפול במחלות כרוניות, רפואה מונעת.">
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ניהול מרפאה | דף הבית</title>
+
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:rgba(15,23,42,.10);
+      --primary:#2563eb;
+      --primary2:#1d4ed8;
+      --success:#16a34a;
+      --warn:#f59e0b;
+      --shadow:0 10px 30px rgba(15,23,42,.08);
+      --radius:16px;
+      --radius2:22px;
+      --container:1180px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans Hebrew", sans-serif;
+      color:var(--text);
+      background:var(--bg);
+      line-height:1.5;
+      direction:rtl;
+      text-align:right;
+    }
+    a{color:inherit; text-decoration:none}
+    img{max-width:100%; display:block}
+
+    .container{
+      width: min(var(--container), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .topbar{
+      background:#0b1220;
+      color:#e2e8f0;
+      font-size:13px;
+    }
+    .topbar .container{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 0;
+      flex-wrap:wrap;
+    }
+    .topbar .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border:1px solid rgba(226,232,240,.18);
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      white-space:nowrap;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:50;
+      background:rgba(246,248,251,.86);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 0;
+      gap:12px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .logoMark{
+      width:38px; height:38px;
+      border-radius:12px;
+      background:linear-gradient(135deg, var(--primary), #60a5fa);
+      box-shadow: 0 10px 22px rgba(37,99,235,.22);
+      position:relative;
+    }
+    .logoMark:after{
+      content:"";
+      position:absolute;
+      inset:10px 13px 10px 13px;
+      border-radius:8px;
+      border:2px solid rgba(255,255,255,.85);
+    }
+    .navlinks{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      flex-wrap:wrap;
+      color:#0f172a;
+      font-weight:600;
+    }
+    .navlinks a{
+      opacity:.85;
+    }
+    .navlinks a:hover{opacity:1}
+    .navcta{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow: 0 8px 18px rgba(15,23,42,.06);
+      white-space:nowrap;
+    }
+    .btn.primary{
+      background:linear-gradient(135deg, var(--primary), var(--primary2));
+      color:#fff;
+      border-color:transparent;
+      box-shadow: 0 12px 28px rgba(37,99,235,.22);
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{transform:translateY(0)}
+
+    /* Hero */
+    .hero{
+      padding: 28px 0 10px;
+    }
+    .heroGrid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:18px;
+      align-items:stretch;
+    }
+    .heroCard{
+      background: radial-gradient(1100px 420px at 20% 10%, rgba(37,99,235,.12), transparent 60%),
+                  radial-gradient(900px 380px at 80% 25%, rgba(14,165,233,.12), transparent 60%),
+                  #fff;
+      border:1px solid var(--line);
+      border-radius: var(--radius2);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .heroTitle{
+      font-size: 42px;
+      line-height:1.15;
+      margin: 0 0 10px;
+      font-weight: 900;
+      letter-spacing:.2px;
+    }
+    .heroSub{
+      margin:0 0 16px;
+      color:var(--muted);
+      font-size:15px;
+      max-width: 62ch;
+    }
+
+    .searchPanel{
+      margin-top: 14px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+      box-shadow: 0 12px 26px rgba(15,23,42,.08);
+    }
+    .searchGrid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr .7fr auto;
+      gap:10px;
+      align-items:end;
+    }
+    .field label{
+      font-size:12px;
+      color:var(--muted);
+      display:block;
+      margin-bottom:6px;
+      font-weight:700;
+    }
+    .input, select{
+      width:100%;
+      padding:11px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      outline:none;
+      background:#fff;
+      font-size:14px;
+    }
+    .input:focus, select:focus{
+      border-color: rgba(37,99,235,.45);
+      box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+    }
+
+    .miniStats{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 14px;
+    }
+    .stat{
+      flex:1 1 160px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 12px;
+      box-shadow: 0 10px 22px rgba(15,23,42,.06);
+    }
+    .stat b{display:block; font-size:18px}
+    .stat span{color:var(--muted); font-size:13px}
+
+    .heroSide{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+    .sideCard{
+      background: #fff;
+      border:1px solid var(--line);
+      border-radius: var(--radius2);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      height:100%;
+    }
+    .sideTitle{
+      margin:0 0 10px;
+      font-size:16px;
+      font-weight:900;
+    }
+    .chips{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .chip{
+      padding:7px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:#fff;
+      color:#334155;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    /* Sections */
+    section{
+      padding: 26px 0;
+    }
+    .sectionHead{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 14px;
+    }
+    .h2{
+      margin:0;
+      font-size:22px;
+      font-weight:900;
+    }
+    .hint{
+      color:var(--muted);
+      font-size:14px;
+      margin:0;
+      max-width: 70ch;
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:12px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: 0 10px 22px rgba(15,23,42,.06);
+    }
+    .cardTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .avatar{
+      width:44px;height:44px;
+      border-radius:14px;
+      background:linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    }
+    .rating{
+      font-weight:900;
+      font-size:13px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+    }
+    .card h3{
+      margin:0 0 6px;
+      font-size:15px;
+      font-weight:900;
+    }
+    .muted{color:var(--muted); font-size:13px}
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:10px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      font-size:13px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+    .badge.success{border-color: rgba(22,163,74,.35); color:#0f3d22; background: rgba(22,163,74,.06)}
+    .badge.warn{border-color: rgba(245,158,11,.35); color:#5a3a00; background: rgba(245,158,11,.08)}
+    .link{
+      color:var(--primary);
+      font-weight:900;
+      font-size:13px;
+    }
+
+    .iconGrid{
+      display:grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap:10px;
+    }
+    .iconCard{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+      box-shadow: 0 10px 22px rgba(15,23,42,.06);
+      text-align:center;
+    }
+    .iconCircle{
+      width:42px;height:42px;
+      border-radius:16px;
+      background:linear-gradient(135deg, rgba(37,99,235,.12), rgba(14,165,233,.12));
+      margin: 0 auto 10px;
+      border:1px solid rgba(37,99,235,.18);
+    }
+    .iconCard b{display:block; font-size:13px}
+    .iconCard span{display:block; color:var(--muted); font-size:12px; margin-top:4px}
+
+    .steps{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+    }
+    .step{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius: var(--radius2);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .num{
+      width:42px;height:42px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:1000;
+      background:linear-gradient(135deg, var(--primary), #60a5fa);
+      color:#fff;
+      box-shadow: 0 12px 24px rgba(37,99,235,.24);
+      margin-bottom: 10px;
+    }
+    .step h3{margin:0 0 6px; font-size:16px; font-weight:900}
+    .step p{margin:0; color:var(--muted); font-size:14px}
+
+    .cta{
+      background:linear-gradient(135deg, rgba(37,99,235,.12), rgba(14,165,233,.10));
+      border:1px solid rgba(37,99,235,.18);
+      border-radius: var(--radius2);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .cta h3{margin:0; font-size:18px; font-weight:900}
+    .cta p{margin:6px 0 0; color:var(--muted); font-size:14px}
+    .ctaBtns{display:flex; gap:10px; flex-wrap:wrap}
+
+    footer{
+      background:#0b1220;
+      color:#cbd5e1;
+      padding: 26px 0;
+      margin-top: 18px;
+    }
+    .footGrid{
+      display:grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr;
+      gap:12px;
+    }
+    footer h4{margin:0 0 10px; color:#fff}
+    footer a{color:#cbd5e1; opacity:.9}
+    footer a:hover{opacity:1}
+    .copy{
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top:1px solid rgba(226,232,240,.14);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      color:#94a3b8;
+      font-size:13px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px){
+      .cards{grid-template-columns: repeat(2, 1fr);}
+      .iconGrid{grid-template-columns: repeat(3, 1fr);}
+      .heroGrid{grid-template-columns: 1fr;}
+      .searchGrid{grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 620px){
+      .heroTitle{font-size:34px}
+      .cards{grid-template-columns: 1fr;}
+      .iconGrid{grid-template-columns: repeat(2, 1fr);}
+      .steps{grid-template-columns: 1fr;}
+      .footGrid{grid-template-columns: 1fr;}
+      .searchGrid{grid-template-columns: 1fr;}
+      .navlinks{display:none;}
+    }
+  </style>
 </head>
+
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <nav class="nav">
-                <div class="logo">ד״ר גל גולדהבר</div>
-                <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-                <ul class="nav-links" id="navLinks">
-                    <li><a href="#home">בית</a></li>
-                    <li><a href="#about">אודות</a></li>
-                    <li><a href="#services">שירותים</a></li>
-                    <li><a href="#contact">צור קשר</a></li>
-                    <li><a href="#appointment" class="btn-primary">קביעת תור</a></li>
 
-                    <!-- NEW: Admin Login -->
-                    <li><a href="./admin.html" class="btn-outline">Admin Login</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>חיים עם פחות תסמינים.<br>יותר בריאות.</h1>
-                <p class="subtitle">ד״ר גל גולדהבר | רופא משפחה</p>
-                <p class="hero-description">
-                    טיפול רפואי מקיף ומקצועי לכל המשפחה.<br>
-                    מתמחה ברפואה מונעת, ביקורי בית וניהול מחלות כרוניות.
-                </p>
-                <div class="hero-buttons">
-                    <a href="#appointment" class="btn-primary btn-large">📅 קביעת תור</a>
-                    <a href="tel:+972-3-123-4567" class="btn-secondary btn-large">📞 03-123-4567</a>
-                    <!-- NEW: Admin Login button in hero -->
-                    <a href="./admin.html" class="btn-outline btn-large">🔐 Admin Login</a>
-                </div>
-                <div class="trust-badges">
-                    <div class="badge">
-                        <div class="badge-number">15+</div>
-                        <div class="badge-text">שנות ניסיון</div>
-                    </div>
-                    <div class="badge">
-                        <div class="badge-number">1,000+</div>
-                        <div class="badge-text">מטופלים</div>
-                    </div>
-                    <div class="badge">
-                        <div class="badge-number">24/7</div>
-                        <div class="badge-text">זמינות</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <h2 class="section-title">אודות ד״ר גולדהבר</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>
-                        ד״ר גל גולדהבר הוא רופא משפחה מוסמך עם למעלה מ-15 שנות ניסיון במתן שירותי בריאות מקיפים. 
-                        בהתמחות ברפואה מונעת, ניהול מחלות כרוניות וביקורי בית רפואיים, ד״ר גולדהבר מחויב למתן טיפול 
-                        מותאם אישית וממוקד במטופל.
-                    </p>
-                    <p>
-                        עם מחויבות עמוקה לבריאות נגישה, ד״ר גולדהבר מציע שירותי ביקור בית גמישים באזור תל אביב, 
-                        ומבטיח שמטופלים מקבלים טיפול רפואי איכותי בנוחות ביתם.
-                    </p>
-                    <h3>השכלה והכשרה</h3>
-                    <ul class="education-list">
-                        <li><strong>דוקטור לרפואה (MD)</strong> - אוניברסיטת תל אביב, הפקולטה לרפואה ע״ש סאקלר (2005)</li>
-                        <li><strong>התמחות ברפואת משפחה</strong> - המרכז הרפואי שיבא (2009)</li>
-                        <li><strong>הסמכת מועצה</strong> - האיגוד הרפואי הישראלי (2010)</li>
-                    </ul>
-                    <h3>הסמכות וחברויות</h3>
-                    <ul class="certifications-list">
-                        <li>המועצה הישראלית לרפואת משפחה</li>
-                        <li>תמיכת חיים מתקדמת בלב (ACLS)</li>
-                        <li>תמיכת חיים בסיסית (BLS)</li>
-                        <li>חבר - האיגוד הרפואי הישראלי</li>
-                        <li>חבר - האיגוד הישראלי לרופאי משפחה</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Services Section -->
-    <section id="services" class="services">
-        <div class="container">
-            <h2 class="section-title">מה אנחנו מטפלים</h2>
-            <p class="section-subtitle">שירותים רפואיים מקיפים לכל המשפחה</p>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">🏥</div>
-                    <h3>ייעוץ רפואי כללי</h3>
-                    <p>הערכות בריאות מקיפות, אבחון ותכנון טיפול למצבים חריפים וכרוניים.</p>
-                    <div class="service-details">
-                        <span>⏱ 30-45 דקות</span>
-                    </div>
-                    <a href="#appointment" class="btn-outline">קבע תור</a>
-                </div>
-
-                <div class="service-card featured">
-                    <div class="featured-badge">פופולרי</div>
-                    <div class="service-icon">🏠</div>
-                    <h3>ביקורי בית רפואיים</h3>
-                    <p>טיפול רפואי נוח בבית למטופלים עם מגבלות ניידות או אלה המעדיפים ייעוץ ביתי.</p>
-                    <div class="service-details">
-                        <span>⏱ 45-60 דקות</span>
-                    </div>
-                    <a href="#appointment" class="btn-primary">קבע תור</a>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">💊</div>
-                    <h3>ניהול מחלות כרוניות</h3>
-                    <p>טיפול שוטף לסוכרת, יתר לחץ דם, מחלות לב ומצבים כרוניים אחרים.</p>
-                    <div class="service-details">
-                        <span>⏱ 45 דקות</span>
-                    </div>
-                    <a href="#appointment" class="btn-outline">קבע תור</a>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">🛡️</div>
-                    <h3>רפואה מונעת ובדיקות</h3>
-                    <p>בדיקות שנתיות, סקרי בריאות, חיסונים וייעוץ לבריאות.</p>
-                    <div class="service-details">
-                        <span>⏱ 30 דקות</span>
-                    </div>
-                    <a href="#appointment" class="btn-outline">קבע תור</a>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">👶</div>
-                    <h3>טיפול ילדים</h3>
-                    <p>בריאות מקיפה לילדים כולל ביקורי ילד בריא, ביקורי מחלה והערכות התפתחותיות.</p>
-                    <div class="service-details">
-                        <span>⏱ 30 דקות</span>
-                    </div>
-                    <a href="#appointment" class="btn-outline">קבע תור</a>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">🩺</div>
-                    <h3>בדיקות מעבדה ובדיקות</h3>
-                    <p>בדיקות דם מקיפות, אק״ג, חיסונים ובדיקות בריאות נוספות.</p>
-                    <div class="service-details">
-                        <span>⏱ 15 דקות</span>
-                    </div>
-                    <a href="#appointment" class="btn-outline">קבע תור</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="testimonials">
-        <div class="container">
-            <h2 class="section-title">המלצות מטופלים</h2>
-            <p class="section-subtitle">מה המטופלים שלנו אומרים</p>
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">
-                        "ד״ר גולדהבר הוא רופא מצוין! הוא קשוב, מקצועי ותמיד זמין. השירות של ביקורי בית שינה את חיי."
-                    </p>
-                    <div class="testimonial-author">
-                        <strong>שרה כהן</strong>
-                        <span>ביקורי בית</span>
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">
-                        "טיפול מעולה וגישה אישית. הרופא לקח את הזמן להסביר כל דבר בצורה ברורה. ממליץ בחום!"
-                    </p>
-                    <div class="testimonial-author">
-                        <strong>דוד לוי</strong>
-                        <span>טיפול כללי</span>
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">
-                        "מקצועיות ברמה הגבוהה ביותר. ניהול המחלה הכרונית שלי השתפר משמעותית תחת הטיפול של ד״ר גולדהבר."
-                    </p>
-                    <div class="testimonial-author">
-                        <strong>מרים אברהם</strong>
-                        <span>ניהול מחלות כרוניות</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2 class="section-title">צור קשר</h2>
-            <div class="contact-content">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <div class="contact-icon">📍</div>
-                        <div>
-                            <h3>כתובת</h3>
-                            <p>רחוב רוטשילד 123<br>תל אביב, 6688101</p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon">📞</div>
-                        <div>
-                            <h3>טלפון</h3>
-                            <p><a href="tel:+972-3-123-4567">03-123-4567</a></p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon">✉️</div>
-                        <div>
-                            <h3>אימייל</h3>
-                            <p><a href="mailto:info@goldhabermd.co.il">info@goldhabermd.co.il</a></p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon">💬</div>
-                        <div>
-                            <h3>WhatsApp</h3>
-                            <p><a href="https://wa.me/972501234567">050-123-4567</a></p>
-                        </div>
-                    </div>
-
-                    <div class="hours">
-                        <h3>שעות פעילות</h3>
-                        <p>א׳-ה׳: 9:00 - 18:00</p>
-                        <p>ו׳: 9:00 - 13:00</p>
-                        <p>שבת: סגור</p>
-                    </div>
-
-                    <div class="navigation-buttons">
-                        <a href="https://waze.com/ul?q=רחוב רוטשילד 123 תל אביב&navigate=yes" target="_blank" class="btn-primary">נווט ב-Waze 🚗</a>
-                        <a href="https://www.google.com/maps/search/?api=1&query=רחוב רוטשילד 123 תל אביב" target="_blank" class="btn-secondary">Google Maps 🗺️</a>
-                        <!-- NEW: Admin shortcut -->
-                        <a href="./admin.html" class="btn-outline">🔐 Admin Login</a>
-                    </div>
-                </div>
-
-                <div class="map-container">
-                    <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3381.0!2d34.7818!3d32.0853!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM!5e0!3m2!1sen!2sil!4v1234567890"
-                        width="100%" 
-                        height="100%" 
-                        style="border:0;" 
-                        allowfullscreen="" 
-                        loading="lazy">
-                    </iframe>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Appointment Section -->
-    <section id="appointment" class="appointment">
-        <div class="container">
-            <h2 class="section-title">קביעת תור</h2>
-            <form class="appointment-form" id="appointmentForm" onsubmit="handleSubmit(event)">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>שם פרטי *</label>
-                        <input type="text" name="firstName" required>
-                    </div>
-                    <div class="form-group">
-                        <label>שם משפחה *</label>
-                        <input type="text" name="lastName" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>אימייל *</label>
-                        <input type="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label>טלפון *</label>
-                        <input type="tel" name="phone" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>בחר שירות *</label>
-                    <select name="service" required>
-                        <option value="">בחר שירות</option>
-                        <option value="general">ייעוץ רפואי כללי</option>
-                        <option value="home-visit">ביקור בית</option>
-                        <option value="chronic">ניהול מחלות כרוניות</option>
-                        <option value="preventive">רפואה מונעת</option>
-                        <option value="pediatric">טיפול ילדים</option>
-                    </select>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>תאריך מועדף *</label>
-                        <input type="date" name="date" required>
-                    </div>
-                    <div class="form-group">
-                        <label>שעה מועדפת *</label>
-                        <select name="time" required>
-                            <option value="">בחר שעה</option>
-                            <option value="09:00">09:00</option>
-                            <option value="10:00">10:00</option>
-                            <option value="11:00">11:00</option>
-                            <option value="12:00">12:00</option>
-                            <option value="14:00">14:00</option>
-                            <option value="15:00">15:00</option>
-                            <option value="16:00">16:00</option>
-                            <option value="17:00">17:00</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>הערות</label>
-                    <textarea name="notes" rows="4"></textarea>
-                </div>
-
-                <button type="submit" class="btn-primary btn-large">שלח בקשה</button>
-                <p class="form-note">* לאחר שליחת הטופס, נחזור אליך תוך 24 שעות לאישור התור</p>
-            </form>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>ד״ר גל גולדהבר</h3>
-                    <p>רופא משפחה מוסמך</p>
-                    <p>15+ שנות ניסיון</p>
-                </div>
-                <div class="footer-section">
-                    <h3>קישורים מהירים</h3>
-                    <ul>
-                        <li><a href="#home">בית</a></li>
-                        <li><a href="#about">אודות</a></li>
-                        <li><a href="#services">שירותים</a></li>
-                        <li><a href="#contact">צור קשר</a></li>
-                        <li><a href="./admin.html">Admin Login</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>קופות חולים</h3>
-                    <p>כללית • מכבי<br>מאוחדת • לאומית</p>
-                </div>
-                <div class="footer-section">
-                    <h3>צור קשר</h3>
-                    <p>📞 03-123-4567</p>
-                    <p>✉️ info@goldhabermd.co.il</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>© 2024 ד״ר גל גולדהבר. כל הזכויות שמורות.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Chatbot -->
-    <div class="chatbot" id="chatbot">
-        <button class="chatbot-toggle" onclick="toggleChat()">💬</button>
-        <div class="chatbot-window" id="chatWindow">
-            <div class="chatbot-header">
-                <h4>עוזר וירטואלי</h4>
-                <button onclick="toggleChat()">✕</button>
-            </div>
-            <div class="chatbot-messages" id="chatMessages">
-                <div class="bot-message">שלום! איך אוכל לעזור לך היום?</div>
-            </div>
-            <div class="chatbot-input">
-                <input type="text" id="chatInput" placeholder="הקלד הודעה..." onkeypress="handleChatKey(event)">
-                <button onclick="sendMessage()">שלח</button>
-            </div>
-        </div>
+  <!-- top bar -->
+  <div class="topbar">
+    <div class="container">
+      <div class="pill">תמיכה: 24/7</div>
+      <div class="pill">הצטרפות כרופא / מרפאה</div>
+      <div class="pill">כניסה למטופלים</div>
     </div>
+  </div>
 
-    <!-- Supabase SDK (must be BEFORE supabase client + script.js) -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <!-- header -->
+  <header>
+    <div class="container">
+      <div class="nav">
+        <div class="brand">
+          <div class="logoMark" aria-hidden="true"></div>
+          <div>
+            <div style="font-size:16px;">מרפאה+</div>
+            <div style="font-size:12px;color:var(--muted);font-weight:700;">איתור רופאים • קביעת תורים</div>
+          </div>
+        </div>
 
-    <!-- Supabase client config (inline fallback - no extra file required) -->
-    <script>
-      window.SUPABASE_URL = "https://bvwnltducovnojfnlhji.supabase.co";
-      window.SUPABASE_ANON_KEY = "sb_publishable_-OsnXhn12GepRjo-iXxyjA_5KpIsUs1";
-      window.getSupabaseClient = function () {
-        if (!window.supabase) throw new Error("Supabase SDK not loaded");
-        return supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-      };
-    </script>
+        <nav class="navlinks" aria-label="ניווט">
+          <a href="#doctors">רופאים</a>
+          <a href="#specialties">התמחויות</a>
+          <a href="#how">איך זה עובד</a>
+          <a href="#reviews">המלצות</a>
+          <a href="#contact">צור קשר</a>
+        </nav>
 
-    <script src="script.js"></script>
+        <div class="navcta">
+          <a class="btn" href="#doctors">חפש רופא</a>
+          <a class="btn primary" href="#book">קבע תור</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- hero -->
+  <main class="hero">
+    <div class="container">
+      <div class="heroGrid">
+
+        <div class="heroCard">
+          <h1 class="heroTitle">מצאו רופא מומחה.<br/>קבעו תור בקליק.</h1>
+          <p class="heroSub">
+            פלטפורמה רפואית מודרנית: חיפוש לפי התמחות, אזור ושעה — עם תצוגת זמינות, דירוגים ומידע ברור.
+          </p>
+
+          <div class="searchPanel" id="book">
+            <div class="searchGrid">
+              <div class="field">
+                <label>מה מחפשים?</label>
+                <input class="input" placeholder="לדוגמה: רופא עיניים / אורטופד / ילדים" />
+              </div>
+
+              <div class="field">
+                <label>אזור</label>
+                <select>
+                  <option>כל הארץ</option>
+                  <option>מרכז</option>
+                  <option>ירושלים</option>
+                  <option>צפון</option>
+                  <option>דרום</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>תאריך</label>
+                <input class="input" type="date" />
+              </div>
+
+              <div class="field">
+                <label>&nbsp;</label>
+                <button class="btn primary" type="button">חיפוש</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="miniStats">
+            <div class="stat">
+              <b>1,250+</b>
+              <span>רופאים מאומתים</span>
+            </div>
+            <div class="stat">
+              <b>320+</b>
+              <span>מרפאות ומרכזים</span>
+            </div>
+            <div class="stat">
+              <b>24/7</b>
+              <span>קביעת תורים אונליין</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="heroSide">
+          <div class="sideCard">
+            <h3 class="sideTitle">חיפושים פופולריים</h3>
+            <div class="chips">
+              <span class="chip">רופא עיניים</span>
+              <span class="chip">רפואת ילדים</span>
+              <span class="chip">אורטופד</span>
+              <span class="chip">רפואת עור</span>
+              <span class="chip">קרדיולוג</span>
+              <span class="chip">רפואת משפחה</span>
+            </div>
+          </div>
+
+          <div class="sideCard">
+            <h3 class="sideTitle">למה זה עובד</h3>
+            <p class="muted" style="margin:0;">
+              תוצאות מסודרות לפי זמינות, מיקום ודירוגים. אפשרות קלה ליצור קשר ולקבוע תור.
+            </p>
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+              <span class="badge success">זמינות בזמן אמת</span>
+              <span class="badge warn">תורים מהירים</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- featured doctors -->
+  <section id="doctors">
+    <div class="container">
+      <div class="sectionHead">
+        <div>
+          <h2 class="h2">רופאים מומלצים</h2>
+          <p class="hint">כרטיסים לדוגמה — כאן תטעינו נתונים אמיתיים מהמערכת שלכם.</p>
+        </div>
+        <a class="link" href="#">לכל הרופאים ←</a>
+      </div>
+
+      <div class="cards">
+        <article class="card">
+          <div class="cardTop">
+            <div style="display:flex; gap:10px; align-items:center;">
+              <div class="avatar"></div>
+              <div>
+                <h3>ד״ר מרים כהן</h3>
+                <div class="muted">רפואת עיניים • תל אביב</div>
+              </div>
+            </div>
+            <div class="rating">★ 4.9</div>
+          </div>
+          <div class="muted">זמינות: היום 17:30 • מחר 10:15</div>
+          <div class="row">
+            <span class="badge success">קבלה מהירה</span>
+            <a class="link" href="#">צפייה בפרופיל</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="cardTop">
+            <div style="display:flex; gap:10px; align-items:center;">
+              <div class="avatar"></div>
+              <div>
+                <h3>פרופ׳ יואב לוי</h3>
+                <div class="muted">אורטופדיה • ירושלים</div>
+              </div>
+            </div>
+            <div class="rating">★ 4.8</div>
+          </div>
+          <div class="muted">זמינות: מחר 09:00 • חמישי 13:10</div>
+          <div class="row">
+            <span class="badge warn">תורים מוגבלים</span>
+            <a class="link" href="#">צפייה בפרופיל</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="cardTop">
+            <div style="display:flex; gap:10px; align-items:center;">
+              <div class="avatar"></div>
+              <div>
+                <h3>ד״ר סאמר ח׳טיב</h3>
+                <div class="muted">רפואת ילדים • חיפה</div>
+              </div>
+            </div>
+            <div class="rating">★ 4.7</div>
+          </div>
+          <div class="muted">זמינות: היום 19:00 • מחר 12:30</div>
+          <div class="row">
+            <span class="badge success">אונליין</span>
+            <a class="link" href="#">צפייה בפרופיל</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="cardTop">
+            <div style="display:flex; gap:10px; align-items:center;">
+              <div class="avatar"></div>
+              <div>
+                <h3>ד״ר נועה בר</h3>
+                <div class="muted">רפואת עור • מרכז</div>
+              </div>
+            </div>
+            <div class="rating">★ 4.9</div>
+          </div>
+          <div class="muted">זמינות: מחר 16:00 • שישי 10:00</div>
+          <div class="row">
+            <span class="badge success">דירוג גבוה</span>
+            <a class="link" href="#">צפייה בפרופיל</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- specialties -->
+  <section id="specialties">
+    <div class="container">
+      <div class="sectionHead">
+        <div>
+          <h2 class="h2">חיפוש לפי התמחות</h2>
+          <p class="hint">בחרו התמחות כדי להתחיל — עמוד תוצאות יציג רופאים, זמינות וסינונים.</p>
+        </div>
+        <a class="link" href="#">כל ההתמחויות ←</a>
+      </div>
+
+      <div class="iconGrid">
+        <div class="iconCard"><div class="iconCircle"></div><b>עיניים</b><span>בדיקות • ניתוחים</span></div>
+        <div class="iconCard"><div class="iconCircle"></div><b>ילדים</b><span>מעקבים • חיסונים</span></div>
+        <div class="iconCard"><div class="iconCircle"></div><b>עור</b><span>אבחון • טיפול</span></div>
+        <div class="iconCard"><div class="iconCircle"></div><b>אורטופדיה</b><span>כאבים • שיקום</span></div>
+        <div class="iconCard"><div class="iconCircle"></div><b>קרדיולוגיה</b><span>בדיקות • ייעוץ</span></div>
+        <div class="iconCard"><div class="iconCircle"></div><b>משפחה</b><span>רפואה כללית</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- how it works -->
+  <section id="how">
+    <div class="container">
+      <div class="sectionHead">
+        <div>
+          <h2 class="h2">איך זה עובד</h2>
+          <p class="hint">תהליך קצר וברור — ללא טפסים מסובכים.</p>
+        </div>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <h3>חיפוש לפי צורך</h3>
+          <p>התמחות, אזור ותאריך — כדי להגיע לתוצאה מדויקת.</p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h3>השוואה ובחירה</h3>
+          <p>דירוגים, פרופיל, זמינות ושעות — הכל במקום אחד.</p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h3>קביעת תור</h3>
+          <p>אישור מהיר + תזכורות (אופציונלי) בהתאם להגדרות המרפאה.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- testimonials -->
+  <section id="reviews">
+    <div class="container">
+      <div class="sectionHead">
+        <div>
+          <h2 class="h2">מה אומרים מטופלים</h2>
+          <p class="hint">בלוקים לדוגמה — תוכלו לחבר לנתוני ביקורות אמיתיים.</p>
+        </div>
+      </div>
+
+      <div class="cards" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="card">
+          <h3 style="margin:0 0 6px;">“מהיר וברור”</h3>
+          <div class="muted">מצאתי תור פנוי תוך דקה, בלי שיחות והמתנות.</div>
+          <div class="row"><span class="badge success">★ 5.0</span><span class="muted">אורית</span></div>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 6px;">“נראות מקצועית”</h3>
+          <div class="muted">הפרופיל של הרופא מסודר, עם זמינות ומיקום.</div>
+          <div class="row"><span class="badge success">★ 4.9</span><span class="muted">רועי</span></div>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 6px;">“חוויה מצוינת”</h3>
+          <div class="muted">תהליך התור קצר, הכל בעברית, ומותאם לנייד.</div>
+          <div class="row"><span class="badge success">★ 5.0</span><span class="muted">נעמה</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section>
+    <div class="container">
+      <div class="cta">
+        <div>
+          <h3>רוצים להפוך את המרפאה לדיגיטלית?</h3>
+          <p>קביעת תורים, תיק מטופל, ביקורים, חשבוניות ותזכורות — בממשק אחד.</p>
+        </div>
+        <div class="ctaBtns">
+          <a class="btn primary" href="#book">קבע תור</a>
+          <a class="btn" href="#contact">דברו איתנו</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer id="contact">
+    <div class="container">
+      <div class="footGrid">
+        <div>
+          <h4>מרפאה+</h4>
+          <div style="color:#94a3b8;font-size:13px; max-width:40ch;">
+            דף בית לדוגמה בסגנון “דירקטורי רפואי + קביעת תורים”. ניתן לחבר ל-DB ולמערכת התורים הקיימת.
+          </div>
+        </div>
+        <div>
+          <h4>לינקים</h4>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <a href="#doctors">רופאים</a>
+            <a href="#specialties">התמחויות</a>
+            <a href="#how">איך זה עובד</a>
+            <a href="#reviews">המלצות</a>
+          </div>
+        </div>
+        <div>
+          <h4>לרופאים</h4>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <a href="#">הצטרפות</a>
+            <a href="#">ניהול יומן</a>
+            <a href="#">תמחור</a>
+            <a href="#">שאלות נפוצות</a>
+          </div>
+        </div>
+        <div>
+          <h4>צור קשר</h4>
+          <div style="display:flex; flex-direction:column; gap:8px; color:#cbd5e1;">
+            <span>אימייל: info@example.com</span>
+            <span>טלפון: 03-0000000</span>
+            <span>שעות פעילות: א׳-ה׳ 09:00-17:00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="copy">
+        <span>© <span id="y"></span> מרפאה+ — כל הזכויות שמורות</span>
+        <span>בנוי ל-RTL • מותאם לנייד</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("y").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
