@@ -67,6 +67,7 @@ function applyFilters(list) {
       a.date,
       a.time,
       a.status,
+      a.patients?.full_name,
     ]
       .join(" ")
       .toLowerCase();
@@ -87,29 +88,27 @@ function render() {
   body.innerHTML = "";
 
   if (!list.length) {
-    body.innerHTML =
-      `<tr><td colspan="10" class="admin-empty">אין בקשות להצגה</td></tr>`;
+    body.innerHTML = `<tr><td colspan="10" class="admin-empty">אין בקשות להצגה</td></tr>`;
     return;
   }
 
   list.forEach((a) => {
     const patientName =
-      a.patients?.full_name ||
-      `${a.first_name || ""} ${a.last_name || ""}`;
+      a.patients?.full_name || `${a.first_name || ""} ${a.last_name || ""}`;
 
-const nameCell = `
-  <td
-    ${a.patient_id ? `onclick="window.location='patient.html?patient_id=${a.patient_id}'"` : ""}
-    style="cursor:${a.patient_id ? "pointer" : "default"}"
-  >
-    <strong>${patientName}</strong>
-  </td>
-`;
+    const patientIdAttr = a.patient_id ? String(a.patient_id) : "";
+
+    // patient cell is clickable via delegated click handler (bindEvents)
+    const patientCell = `
+      <td class="patient-cell ${patientIdAttr ? "is-clickable" : ""}" data-patient-id="${patientIdAttr}">
+        <strong>${patientName}</strong>
+      </td>
+    `;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${fmtDate(a.created_at)}</td>
-   ${nameCell}
+      ${patientCell}
       <td><a href="tel:${a.phone || ""}">${a.phone || ""}</a></td>
       <td><a href="mailto:${a.email || ""}">${a.email || ""}</a></td>
       <td>${serviceLabel(a.service)}</td>
@@ -124,7 +123,7 @@ const nameCell = `
         </select>
       </td>
       <td>
-        <button class="admin-delete" data-id="${a.id}">מחק</button>
+        <button class="admin-delete" data-id="${a.id}" type="button">מחק</button>
       </td>
     `;
     body.appendChild(tr);
@@ -135,13 +134,15 @@ const nameCell = `
 async function loadAppointments() {
   const { data, error } = await sb
     .from(TABLE)
-    .select(`
+    .select(
+      `
       *,
       patients (
         id,
         full_name
       )
-    `)
+    `
+    )
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -150,14 +151,18 @@ async function loadAppointments() {
 }
 
 async function updateStatus(id, status) {
-  await sb.from(TABLE).update({ status }).eq("id", id);
+  const { error } = await sb.from(TABLE).update({ status }).eq("id", id);
+  if (error) throw error;
+
   const row = allAppointments.find((x) => x.id === id);
   if (row) row.status = status;
   render();
 }
 
 async function deleteAppointment(id) {
-  await sb.from(TABLE).delete().eq("id", id);
+  const { error } = await sb.from(TABLE).delete().eq("id", id);
+  if (error) throw error;
+
   allAppointments = allAppointments.filter((x) => x.id !== id);
   render();
 }
@@ -165,12 +170,13 @@ async function deleteAppointment(id) {
 // ---------------- auth ----------------
 async function signIn() {
   setLoginError("");
-  const email = $("emailInput")?.value || "";
+  const email = ($("emailInput")?.value || "").trim();
   const password = $("passwordInput")?.value || "";
   if (!email || !password) return setLoginError("נא למלא אימייל וסיסמה");
 
   const { error } = await sb.auth.signInWithPassword({ email, password });
   if (error) return setLoginError(error.message);
+
   await onAuthReady();
 }
 
@@ -190,35 +196,68 @@ async function onAuthReady() {
 
 // ---------------- events ----------------
 function bindEvents() {
-  on("loginBtn", "click", signIn);
+  on("loginBtn", "click", () => signIn().catch((err) => setLoginError(err.message)));
   on("logoutLink", "click", (e) => {
     e.preventDefault();
     signOut();
   });
-  on("refreshBtn", "click", loadAppointments);
+  on("refreshBtn", "click", () => loadAppointments().catch((err) => alert(err.message)));
+  on("exportBtn", "click", () => alert("exportCsv not wired in this version"));
 
   $("searchInput")?.addEventListener("input", render);
   $("statusFilter")?.addEventListener("change", render);
   $("serviceFilter")?.addEventListener("change", render);
 
+  // status change
   document.addEventListener("change", (e) => {
-    if (e.target.classList.contains("admin-status")) {
-      updateStatus(e.target.dataset.id, e.target.value);
+    const target = e.target;
+    if (target && target.classList.contains("admin-status")) {
+      updateStatus(target.getAttribute("data-id"), target.value).catch((err) =>
+        alert("עדכון נכשל: " + err.message)
+      );
     }
   });
 
+  // clicks: delete + patient navigation
   document.addEventListener("click", (e) => {
-    if (e.target.classList.contains("admin-delete")) {
+    const target = e.target;
+
+    // delete button
+    const delBtn = target.closest?.(".admin-delete");
+    if (delBtn) {
+      const id = delBtn.getAttribute("data-id");
       if (!confirm("למחוק?")) return;
-      deleteAppointment(e.target.dataset.id);
+      deleteAppointment(id).catch((err) => alert("מחיקה נכשלה: " + err.message));
+      return;
     }
+
+    // don't hijack clicks on interactive elements
+    if (target.closest?.("a, button, select, input, textarea, label")) return;
+
+    // patient cell navigation
+    const cell = target.closest?.(".patient-cell");
+    if (!cell) return;
+
+    const patientId = cell.getAttribute("data-patient-id");
+    if (!patientId) return;
+
+    window.location.href = `patient.html?patient_id=${patientId}`;
   });
 }
 
 // ---------------- init ----------------
 document.addEventListener("DOMContentLoaded", async () => {
-  sb = window.getSupabaseClient();
-  bindEvents();
-  sb.auth.onAuthStateChange(onAuthReady);
-  await onAuthReady();
+  try {
+    sb = window.getSupabaseClient();
+    bindEvents();
+
+    sb.auth.onAuthStateChange(() => {
+      onAuthReady().catch((err) => alert("Auth error: " + err.message));
+    });
+
+    await onAuthReady();
+  } catch (err) {
+    console.error("[ADMIN] Fatal init error:", err);
+    alert("Admin init error: " + err.message);
+  }
 });
