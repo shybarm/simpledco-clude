@@ -1,0 +1,267 @@
+/* theme-doctreat.css
+   Doctreat-inspired polish layer (RTL, modern medical UI)
+   Drop-in: include AFTER style.css
+*/
+
+:root{
+  --dt-bg: #f6f8fb;
+  --dt-card: #ffffff;
+  --dt-text: #0f172a;
+  --dt-muted:#64748b;
+  --dt-line: rgba(15,23,42,.10);
+  --dt-primary:#2563eb;
+  --dt-primary2:#1d4ed8;
+  --dt-accent:#0ea5e9;
+  --dt-success:#16a34a;
+  --dt-warn:#f59e0b;
+
+  --dt-radius:16px;
+  --dt-radius2:22px;
+  --dt-shadow: 0 12px 28px rgba(15,23,42,.08);
+  --dt-shadow2: 0 16px 40px rgba(37,99,235,.14);
+}
+
+html, body{
+  background: var(--dt-bg) !important;
+  color: var(--dt-text) !important;
+  direction: rtl;
+  text-align: right;
+  font-family: "Heebo", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* container */
+.container{
+  width: min(1180px, calc(100% - 32px)) !important;
+}
+
+/* Header / Nav */
+.header{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(246,248,251,.86) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--dt-line) !important;
+}
+
+.nav{
+  padding: 14px 0 !important;
+}
+
+.logo{
+  font-weight: 900 !important;
+  letter-spacing: .2px;
+}
+
+.nav-links{
+  gap: 14px !important;
+}
+
+.nav-links a{
+  font-weight: 700 !important;
+  opacity: .9;
+}
+
+.nav-links a:hover{ opacity: 1; }
+
+/* Buttons */
+.btn-primary,
+.btn-secondary,
+.btn-outline{
+  border-radius: 999px !important;
+  padding: 10px 16px !important;
+  font-weight: 800 !important;
+  border: 1px solid var(--dt-line) !important;
+  box-shadow: 0 10px 24px rgba(15,23,42,.06);
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+}
+
+.btn-primary{
+  background: linear-gradient(135deg, var(--dt-primary), var(--dt-primary2)) !important;
+  color:#fff !important;
+  border-color: transparent !important;
+  box-shadow: var(--dt-shadow2) !important;
+}
+
+.btn-secondary{
+  background: #fff !important;
+  color: var(--dt-text) !important;
+}
+
+.btn-outline{
+  background: transparent !important;
+  color: var(--dt-text) !important;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-outline:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(15,23,42,.10);
+}
+
+.btn-large{
+  padding: 12px 18px !important;
+  font-size: 15px !important;
+}
+
+/* Hero */
+.hero{
+  background:
+    radial-gradient(900px 380px at 15% 15%, rgba(37,99,235,.14), transparent 60%),
+    radial-gradient(900px 380px at 80% 25%, rgba(14,165,233,.12), transparent 60%),
+    transparent !important;
+}
+
+.hero-content{
+  background: var(--dt-card);
+  border: 1px solid var(--dt-line);
+  border-radius: var(--dt-radius2);
+  padding: 22px !important;
+  box-shadow: var(--dt-shadow);
+}
+
+.hero h1{
+  font-weight: 900 !important;
+  letter-spacing: .2px;
+}
+
+.hero-description, .subtitle{
+  color: var(--dt-muted) !important;
+}
+
+/* Trust badges */
+.trust-badges .badge{
+  background: #fff !important;
+  border: 1px solid var(--dt-line) !important;
+  border-radius: var(--dt-radius) !important;
+  box-shadow: 0 10px 22px rgba(15,23,42,.06);
+}
+
+.badge-number{
+  color: var(--dt-primary) !important;
+  font-weight: 900 !important;
+}
+
+/* Section titles */
+.section-title{
+  font-weight: 900 !important;
+  letter-spacing: .2px;
+}
+
+.section-subtitle{
+  color: var(--dt-muted) !important;
+}
+
+/* Cards */
+.service-card,
+.testimonial-card,
+.admin-card,
+.patient-card,
+.card{
+  background: var(--dt-card) !important;
+  border: 1px solid var(--dt-line) !important;
+  border-radius: var(--dt-radius2) !important;
+  box-shadow: var(--dt-shadow);
+}
+
+.service-card h3,
+.testimonial-card strong{
+  font-weight: 900 !important;
+}
+
+.service-card .service-icon{
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(37,99,235,.12), rgba(14,165,233,.10));
+  border: 1px solid rgba(37,99,235,.18);
+  width: 54px;
+  height: 54px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Featured card polish */
+.service-card.featured{
+  border-color: rgba(37,99,235,.25) !important;
+  box-shadow: 0 18px 44px rgba(37,99,235,.16) !important;
+}
+.featured-badge{
+  background: linear-gradient(135deg, var(--dt-primary), var(--dt-accent)) !important;
+  color:#fff !important;
+  border-radius: 999px !important;
+  font-weight: 900 !important;
+}
+
+/* Forms */
+.appointment-form,
+.form-group input,
+.form-group select,
+.form-group textarea{
+  font-family: inherit;
+}
+
+.appointment-form{
+  background: #fff !important;
+  border: 1px solid var(--dt-line) !important;
+  border-radius: var(--dt-radius2) !important;
+  box-shadow: var(--dt-shadow);
+  padding: 18px !important;
+}
+
+.form-group label{
+  font-weight: 800 !important;
+  color: var(--dt-muted) !important;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+  border: 1px solid var(--dt-line) !important;
+  border-radius: 14px !important;
+  padding: 11px 12px !important;
+  outline: none;
+  background: #fff !important;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
+  border-color: rgba(37,99,235,.45) !important;
+  box-shadow: 0 0 0 4px rgba(37,99,235,.12) !important;
+}
+
+/* Contact blocks */
+.contact-item{
+  background:#fff !important;
+  border:1px solid var(--dt-line) !important;
+  border-radius: var(--dt-radius) !important;
+  box-shadow: 0 10px 22px rgba(15,23,42,.06);
+}
+
+/* Footer */
+.footer{
+  background:#0b1220 !important;
+  color:#cbd5e1 !important;
+}
+.footer a{ color:#cbd5e1 !important; opacity:.9; }
+.footer a:hover{ opacity:1; }
+
+/* Chatbot polish */
+.chatbot-window{
+  border-radius: var(--dt-radius2) !important;
+  border:1px solid var(--dt-line) !important;
+  box-shadow: var(--dt-shadow) !important;
+}
+.chatbot-toggle{
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, var(--dt-primary), var(--dt-primary2)) !important;
+  box-shadow: var(--dt-shadow2) !important;
+}
+
+/* Mobile menu */
+.menu-toggle{
+  border-radius: 12px !important;
+  border:1px solid var(--dt-line) !important;
+  background:#fff !important;
+}
