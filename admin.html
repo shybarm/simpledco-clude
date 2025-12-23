@@ -8,97 +8,135 @@
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-  <div class="bg-decor" aria-hidden="true"></div>
-
-  <header class="topbar">
-    <div class="container nav">
-      <a class="brand" href="index.html" aria-label="חזרה לדף הבית">
-        <span class="brand-mark" aria-hidden="true">👁️</span>
-        <span class="brand-name">EyeCare</span>
-      </a>
-
-      <nav class="links" id="navLinks">
-        <a href="index.html#book">קביעת תור</a>
-        <a href="index.html#contact">יצירת קשר</a>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <div class="logo">Back Office</div>
+        <ul class="nav-links active" style="position: static; box-shadow:none; padding:0; flex-direction: row; gap: 1rem;">
+          <li>
+            <a href="./index.html" onclick="window.location.href='./index.html'; return false;">חזרה לאתר</a>
+          </li>
+          <li>
+            <a href="#" id="logoutLink" style="display:none;">התנתקות</a>
+          </li>
+        </ul>
       </nav>
-
-      <div class="nav-cta">
-        <a class="btn btn-ghost" href="index.html" id="backToSiteLink">חזרה לאתר</a>
-      </div>
     </div>
   </header>
 
   <main class="admin">
     <div class="container">
-      <div class="admin-top">
-        <div>
-          <h1 class="admin-title">ניהול בקשות תור</h1>
-          <p class="admin-subtitle">תצוגה תפעולית של הבקשות שנשלחו מהטופס באתר.</p>
+
+      <!-- LOGIN PANEL -->
+      <section id="loginPanel" class="admin-card">
+        <h1 class="admin-title" style="margin-bottom:.5rem;">Admin Login</h1>
+        <p class="admin-subtitle" style="margin-bottom:1.5rem;">התחבר כדי לצפות ולנהל בקשות תור.</p>
+
+        <div class="admin-login-grid">
+          <div class="form-group" style="margin:0;">
+            <label>אימייל</label>
+            <input type="email" id="emailInput" placeholder="you@domain.com" autocomplete="email" />
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <label>סיסמה</label>
+            <input type="password" id="passwordInput" placeholder="********" autocomplete="current-password" />
+          </div>
+
+          <div class="admin-actions" style="margin-top: .5rem;">
+            <button class="btn-primary" id="loginBtn">התחברות</button>
+          </div>
+
+          <p id="loginError" style="margin-top:1rem; color:#b00020; display:none;"></p>
         </div>
-        <div class="admin-actions">
-          <button class="btn btn-ghost" id="refreshBtn" type="button">רענן</button>
-          <button class="btn btn-ghost" id="exportBtn" type="button">ייצוא CSV</button>
-          <button class="btn btn-ghost danger" id="clearBtn" type="button">מחיקת הכל</button>
-        </div>
-      </div>
+      </section>
 
-      <div class="admin-filters card">
-        <div class="form-group" style="margin:0;">
-          <label>חיפוש</label>
-          <input type="text" id="searchInput" placeholder="שם, טלפון, אימייל..." />
-        </div>
-
-        <div class="form-group" style="margin:0;">
-          <label>סטטוס</label>
-          <select id="statusFilter">
-            <option value="all">הכל</option>
-            <option value="new">חדש</option>
-            <option value="confirmed">אושר</option>
-            <option value="cancelled">בוטל</option>
-          </select>
+      <!-- APP PANEL -->
+      <section id="appPanel" style="display:none;">
+        <div class="admin-top">
+          <div>
+            <h1 class="admin-title">ניהול בקשות תור</h1>
+            <p class="admin-subtitle">תצוגה מרכזית של כל הבקשות שנשלחו מהטופס באתר.</p>
+          </div>
+          <div class="admin-actions">
+            <button class="btn-secondary" id="refreshBtn">רענן</button>
+            <button class="btn-outline" id="exportBtn">ייצוא CSV</button>
+          </div>
         </div>
 
-        <div class="form-group" style="margin:0;">
-          <label>שירות</label>
-          <select id="serviceFilter">
-            <option value="all">הכל</option>
-            <option value="general">ייעוץ רפואי כללי</option>
-            <option value="home-visit">ביקור בית</option>
-            <option value="chronic">ניהול מחלות כרוניות</option>
-            <option value="preventive">רפואה מונעת</option>
-            <option value="pediatric">טיפול ילדים</option>
-          </select>
+        <div class="admin-filters">
+          <div class="form-group" style="margin:0;">
+            <label>חיפוש</label>
+            <input type="text" id="searchInput" placeholder="שם, טלפון, אימייל..." />
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <label>סטטוס</label>
+            <select id="statusFilter">
+              <option value="all">הכל</option>
+              <option value="new">חדש</option>
+              <option value="confirmed">אושר</option>
+              <option value="cancelled">בוטל</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <label>שירות</label>
+            <select id="serviceFilter">
+              <option value="all">הכל</option>
+              <option value="general">ייעוץ רפואי כללי</option>
+              <option value="home-visit">ביקור בית</option>
+              <option value="chronic">ניהול מחלות כרוניות</option>
+              <option value="preventive">רפואה מונעת</option>
+              <option value="pediatric">טיפול ילדים</option>
+            </select>
+          </div>
         </div>
-      </div>
 
-      <div class="admin-kpis" id="kpis"></div>
+        <div class="admin-kpis" id="kpis"></div>
 
-      <div class="admin-table-wrap card">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>נוצר</th>
-              <th>מטופל</th>
-              <th>טלפון</th>
-              <th>אימייל</th>
-              <th>שירות</th>
-              <th>תאריך</th>
-              <th>שעה</th>
-              <th>הערות</th>
-              <th>סטטוס</th>
-              <th>פעולות</th>
-            </tr>
-          </thead>
-          <tbody id="appointmentsBody"></tbody>
-        </table>
-      </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>נוצר</th>
+                <th>מטופל</th>
+                <th>טלפון</th>
+                <th>אימייל</th>
+                <th>שירות</th>
+                <th>תאריך</th>
+                <th>שעה</th>
+                <th>הערות</th>
+                <th>סטטוס</th>
+                <th>פעולות</th>
+              </tr>
+            </thead>
+            <tbody id="appointmentsBody"></tbody>
+          </table>
+        </div>
 
-      <p class="admin-footnote">
-        הערה תפעולית: גרסה זו משתמשת ב-localStorage (תצוגה מקומית בדפדפן). למערכת רב-משתמשים נדרש Backend.
-      </p>
+        <p class="admin-footnote">
+          ✅ נתונים נטענים מה-DB של Supabase. רק משתמשים מחוברים יכולים לראות ולנהל.
+        </p>
+      </section>
+
     </div>
   </main>
 
+  <!-- Supabase SDK -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+  <!-- Supabase client config (inline fallback - no extra file required) -->
+  <script>
+    window.SUPABASE_URL = "https://bvwnltducovnojinlhji.supabase.co";
+    window.SUPABASE_ANON_KEY = "sb_publishable_-OsnXhn12GepRjo-iXxyjA_5KpIsUs1";
+    window.getSupabaseClient = function () {
+      if (!window.supabase) throw new Error("Supabase SDK not loaded");
+      return supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+    };
+  </script>
+
+  <!-- Admin logic -->
   <script src="admin.js"></script>
 </body>
 </html>
