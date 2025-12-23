@@ -304,7 +304,7 @@ function bindEvents() {
       if (!patientId) return;
 
       // If patient.html is in same folder as admin.html
-      window.location.href = `./patient.html?patient_id=${patientId}`;
+     window.location.href = `/patient.html?patient_id=${encodeURIComponent(patientId)}`;
       return;
     }
 
