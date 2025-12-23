@@ -597,3 +597,7 @@ input:focus, select:focus, textarea:focus{
 .ribbon {
   display: none !important;
 }
+/* Hide popular badge if it appears as a styled element */
+.badge-popular, .popular, .is-popular, .ribbon, .pill-popular, .tag-popular {
+  display: none !important;
+}
