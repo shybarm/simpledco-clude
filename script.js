@@ -150,12 +150,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Add scroll effect to header
+// Add scroll effect to header (top bar)
 window.addEventListener('scroll', function() {
-    const header = document.querySelector('.header');
-    if (window.scrollY > 50) {
-        header.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)';
+    const header = document.querySelector('.topbar');
+    if (!header) return;
+    if (window.scrollY > 20) {
+        header.style.boxShadow = '0 14px 40px rgba(11,27,58,.10)';
     } else {
-        header.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+        header.style.boxShadow = 'none';
     }
 });

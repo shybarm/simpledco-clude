@@ -8,14 +8,23 @@
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-  <header class="header">
-    <div class="container">
-      <nav class="nav">
-        <div class="logo">Back Office</div>
-        <ul class="nav-links active" style="position: static; box-shadow:none; padding:0; flex-direction: row; gap: 1rem;">
-          <li><a href="./index.html" target="_self" id="backToSiteLink">חזרה לאתר</a></li>
-        </ul>
+  <div class="bg-decor" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="index.html" aria-label="חזרה לדף הבית">
+        <span class="brand-mark" aria-hidden="true">👁️</span>
+        <span class="brand-name">EyeCare</span>
+      </a>
+
+      <nav class="links" id="navLinks">
+        <a href="index.html#book">קביעת תור</a>
+        <a href="index.html#contact">יצירת קשר</a>
       </nav>
+
+      <div class="nav-cta">
+        <a class="btn btn-ghost" href="index.html" id="backToSiteLink">חזרה לאתר</a>
+      </div>
     </div>
   </header>
 
@@ -24,16 +33,16 @@
       <div class="admin-top">
         <div>
           <h1 class="admin-title">ניהול בקשות תור</h1>
-          <p class="admin-subtitle">תצוגה פשוטה של כל הבקשות שנשלחו מהטופס באתר.</p>
+          <p class="admin-subtitle">תצוגה תפעולית של הבקשות שנשלחו מהטופס באתר.</p>
         </div>
         <div class="admin-actions">
-          <button class="btn-secondary" id="refreshBtn">רענן</button>
-          <button class="btn-outline" id="exportBtn">ייצוא CSV</button>
-          <button class="btn-outline" id="clearBtn">מחיקת הכל</button>
+          <button class="btn btn-ghost" id="refreshBtn" type="button">רענן</button>
+          <button class="btn btn-ghost" id="exportBtn" type="button">ייצוא CSV</button>
+          <button class="btn btn-ghost danger" id="clearBtn" type="button">מחיקת הכל</button>
         </div>
       </div>
 
-      <div class="admin-filters">
+      <div class="admin-filters card">
         <div class="form-group" style="margin:0;">
           <label>חיפוש</label>
           <input type="text" id="searchInput" placeholder="שם, טלפון, אימייל..." />
@@ -64,7 +73,7 @@
 
       <div class="admin-kpis" id="kpis"></div>
 
-      <div class="admin-table-wrap">
+      <div class="admin-table-wrap card">
         <table class="admin-table">
           <thead>
             <tr>
@@ -85,24 +94,11 @@
       </div>
 
       <p class="admin-footnote">
-        ⚠️ הערה: הגרסה הזו שומרת נתונים ב-localStorage של הדפדפן (כלומר זה נשמר רק באותו מחשב/דפדפן).
-        אם צריך Back Office אמיתי ורב-משתמשים—צריך חיבור לשרת/DB.
+        הערה תפעולית: גרסה זו משתמשת ב-localStorage (תצוגה מקומית בדפדפן). למערכת רב-משתמשים נדרש Backend.
       </p>
     </div>
   </main>
 
-  <script>
-    // Force "back to site" navigation even if SPA routing is interfering
-    document.addEventListener('DOMContentLoaded', function () {
-      var a = document.getElementById('backToSiteLink');
-      if (a) {
-        a.addEventListener('click', function (e) {
-          e.preventDefault();
-          window.location.href = './index.html';
-        });
-      }
-    });
-  </script>
   <script src="admin.js"></script>
 </body>
 </html>

@@ -1,398 +1,274 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ד״ר גל גולדהבר | רופא משפחה</title>
-    <meta name="description" content="ד״ר גל גולדהבר - רופא משפחה מנוסה בתל אביב. ביקורי בית, טיפול במחלות כרוניות, רפואה מונעת.">
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מרפאת עיניים | ד"ר מומחה</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <nav class="nav">
-                <div class="logo">ד״ר גל גולדהבר</div>
-                <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-                <ul class="nav-links" id="navLinks">
-                    <li><a href="#home">בית</a></li>
-                    <li><a href="#about">אודות</a></li>
-                    <li><a href="#services">שירותים</a></li>
-                    <li><a href="#contact">צור קשר</a></li>
-                    <li><a href="#appointment" class="btn-primary">קביעת תור</a></li>
-                    <li><a href="admin.html" class="btn-outline">Admin Login</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+  <div class="bg-decor" aria-hidden="true"></div>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>חיים עם פחות תסמינים.<br>יותר בריאות.</h1>
-                <p class="subtitle">ד״ר גל גולדהבר | רופא משפחה</p>
-                <p class="hero-description">
-                    טיפול רפואי מקיף ומקצועי לכל המשפחה.<br>
-                    מתמחה ברפואה מונעת, ביקורי בית וניהול מחלות כרוניות.
-                </p>
-                <div class="hero-buttons">
-                    <a href="#appointment" class="btn-primary btn-large">📅 קביעת תור</a>
-                    <a href="tel:+972-3-123-4567" class="btn-secondary btn-large">📞 03-123-4567</a>
-                </div>
-                <div class="trust-badges">
-                    <div class="badge">
-                        <div class="badge-number">15+</div>
-                        <div class="badge-text">שנות ניסיון</div>
-                    </div>
-                    <div class="badge">
-                        <div class="badge-number">1,000+</div>
-                        <div class="badge-text">מטופלים</div>
-                    </div>
-                    <div class="badge">
-                        <div class="badge-number">24/7</div>
-                        <div class="badge-text">זמינות</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="#home" aria-label="דף הבית">
+        <span class="brand-mark" aria-hidden="true">👁️</span>
+        <span class="brand-name">EyeCare</span>
+      </a>
 
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <h2 class="section-title">אודות ד״ר גולדהבר</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>
-                        ד״ר גל גולדהבר הוא רופא משפחה מוסמך עם למעלה מ-15 שנות ניסיון במתן שירותי בריאות מקיפים. 
-                        בהתמחות ברפואה מונעת, ניהול מחלות כרוניות וביקורי בית רפואיים, ד״ר גולדהבר מחויב למתן טיפול 
-                        מותאם אישית וממוקד במטופל.
-                    </p>
-                    <p>
-                        עם מחויבות עמוקה לבריאות נגישה, ד״ר גולדהבר מציע שירותי ביקור בית גמישים באזור תל אביב, 
-                        ומבטיח שמטופלים מקבלים טיפול רפואי איכותי בנוחות ביתם.
-                    </p>
-                    <h3>השכלה והכשרה</h3>
-                    <ul class="education-list">
-                        <li><strong>דוקטור לרפואה (MD)</strong> - אוניברסיטת תל אביב, הפקולטה לרפואה ע״ש סאקלר (2005)</li>
-                        <li><strong>התמחות ברפואת משפחה</strong> - המרכז הרפואי שיבא (2009)</li>
-                        <li><strong>הסמכת מועצה</strong> - האיגוד הרפואי הישראלי (2010)</li>
-                    </ul>
-                    <h3>הסמכות וחברויות</h3>
-                    <ul class="certifications-list">
-                        <li>המועצה הישראלית לרפואת משפחה</li>
-                        <li>תמיכת חיים מתקדמת בלב (ACLS)</li>
-                        <li>תמיכת חיים בסיסית (BLS)</li>
-                        <li>חבר - האיגוד הרפואי הישראלי</li>
-                        <li>חבר - האיגוד הישראלי לרופאי משפחה</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
+      <button class="menu-btn" type="button" onclick="toggleMenu()" aria-label="תפריט">
+        ☰
+      </button>
 
-    <!-- Services Section -->
-    <section id="services" class="services">
-        <div class="container">
-            <h2 class="section-title">מה אנחנו מטפלים</h2>
-            <p class="section-subtitle">שירותים רפואיים מקיפים לכל המשפחה</p>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">🏥</div>
-                    <h3>ייעוץ רפואי כללי</h3>
-                    <p>הערכות בריאות מקיפות, אבחון ותכנון טיפול למצבים חריפים וכרוניים.</p>
-                    <div class="service-details">
-                        <span>⏱ 30-45 דקות</span>
-                    </div>
-                    <a href="#appointment" class="btn-outline">קבע תור</a>
-                </div>
+      <nav class="links" id="navLinks">
+        <a href="#home">בית</a>
+        <a href="#doctor">הרופא</a>
+        <a href="#services">שירותים</a>
+        <a href="#contact">יצירת קשר</a>
+      </nav>
 
-                <div class="service-card featured">
-                    <div class="featured-badge">פופולרי</div>
-                    <div class="service-icon">🏠</div>
-                    <h3>ביקורי בית רפואיים</h3>
-                    <p>טיפול רפואי נוח בבית למטופלים עם מגבלות ניידות או אלה המעדיפים ייעוץ ביתי.</p>
-                    <div class="service-details">
-                        <span>⏱ 45-60 דקות</span>
-                    </div>
-                    <a href="#appointment" class="btn-primary">קבע תור</a>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">💊</div>
-                    <h3>ניהול מחלות כרוניות</h3>
-                    <p>טיפול שוטף לסוכרת, יתר לחץ דם, מחלות לב ומצבים כרוניים אחרים.</p>
-                    <div class="service-details">
-                        <span>⏱ 45 דקות</span>
-                    </div>
-                    <a href="#appointment" class="btn-outline">קבע תור</a>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">🛡️</div>
-                    <h3>רפואה מונעת ובדיקות</h3>
-                    <p>בדיקות שנתיות, סקרי בריאות, חיסונים וייעוץ לבריאות.</p>
-                    <div class="service-details">
-                        <span>⏱ 30 דקות</span>
-                    </div>
-                    <a href="#appointment" class="btn-outline">קבע תור</a>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">👶</div>
-                    <h3>טיפול ילדים</h3>
-                    <p>בריאות מקיפה לילדים כולל ביקורי ילד בריא, ביקורי מחלה והערכות התפתחותיות.</p>
-                    <div class="service-details">
-                        <span>⏱ 30 דקות</span>
-                    </div>
-                    <a href="#appointment" class="btn-outline">קבע תור</a>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">🩺</div>
-                    <h3>בדיקות מעבדה ובדיקות</h3>
-                    <p>בדיקות דם מקיפות, אק״ג, חיסונים ובדיקות בריאות נוספות.</p>
-                    <div class="service-details">
-                        <span>⏱ 15 דקות</span>
-                    </div>
-                    <a href="#appointment" class="btn-outline">קבע תור</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="testimonials">
-        <div class="container">
-            <h2 class="section-title">המלצות מטופלים</h2>
-            <p class="section-subtitle">מה המטופלים שלנו אומרים</p>
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">
-                        "ד״ר גולדהבר הוא רופא מצוין! הוא קשוב, מקצועי ותמיד זמין. השירות של ביקורי בית שינה את חיי."
-                    </p>
-                    <div class="testimonial-author">
-                        <strong>שרה כהן</strong>
-                        <span>ביקורי בית</span>
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">
-                        "טיפול מעולה וגישה אישית. הרופא לקח את הזמן להסביר כל דבר בצורה ברורה. ממליץ בחום!"
-                    </p>
-                    <div class="testimonial-author">
-                        <strong>דוד לוי</strong>
-                        <span>טיפול כללי</span>
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">
-                        "מקצועיות ברמה הגבוהה ביותר. ניהול המחלה הכרונית שלי השתפר משמעותית תחת הטיפול של ד״ר גולדהבר."
-                    </p>
-                    <div class="testimonial-author">
-                        <strong>מרים אברהם</strong>
-                        <span>ניהול מחלות כרוניות</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2 class="section-title">צור קשר</h2>
-            <div class="contact-content">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <div class="contact-icon">📍</div>
-                        <div>
-                            <h3>כתובת</h3>
-                            <p>רחוב רוטשילד 123<br>תל אביב, 6688101</p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon">📞</div>
-                        <div>
-                            <h3>טלפון</h3>
-                            <p><a href="tel:+972-3-123-4567">03-123-4567</a></p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon">✉️</div>
-                        <div>
-                            <h3>אימייל</h3>
-                            <p><a href="mailto:info@goldhabermd.co.il">info@goldhabermd.co.il</a></p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon">💬</div>
-                        <div>
-                            <h3>WhatsApp</h3>
-                            <p><a href="https://wa.me/972501234567">050-123-4567</a></p>
-                        </div>
-                    </div>
-
-                    <div class="hours">
-                        <h3>שעות פעילות</h3>
-                        <p>א׳-ה׳: 9:00 - 18:00</p>
-                        <p>ו׳: 9:00 - 13:00</p>
-                        <p>שבת: סגור</p>
-                    </div>
-
-                    <div class="navigation-buttons">
-                        <a href="https://waze.com/ul?q=רחוב רוטשילד 123 תל אביב&navigate=yes" target="_blank" class="btn-primary">נווט ב-Waze 🚗</a>
-                        <a href="https://www.google.com/maps/search/?api=1&query=רחוב רוטשילד 123 תל אביב" target="_blank" class="btn-secondary">Google Maps 🗺️</a>
-                    </div>
-                </div>
-
-                <div class="map-container">
-                    <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3381.0!2d34.7818!3d32.0853!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM!5e0!3m2!1sen!2sil!4v1234567890"
-                        width="100%" 
-                        height="100%" 
-                        style="border:0;" 
-                        allowfullscreen="" 
-                        loading="lazy">
-                    </iframe>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Appointment Section -->
-    <section id="appointment" class="appointment">
-        <div class="container">
-            <h2 class="section-title">קביעת תור</h2>
-            <form class="appointment-form" id="appointmentForm" onsubmit="handleSubmit(event)">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>שם פרטי *</label>
-                        <input type="text" name="firstName" required>
-                    </div>
-                    <div class="form-group">
-                        <label>שם משפחה *</label>
-                        <input type="text" name="lastName" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>אימייל *</label>
-                        <input type="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label>טלפון *</label>
-                        <input type="tel" name="phone" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>בחר שירות *</label>
-                    <select name="service" required>
-                        <option value="">בחר שירות</option>
-                        <option value="general">ייעוץ רפואי כללי</option>
-                        <option value="home-visit">ביקור בית</option>
-                        <option value="chronic">ניהול מחלות כרוניות</option>
-                        <option value="preventive">רפואה מונעת</option>
-                        <option value="pediatric">טיפול ילדים</option>
-                    </select>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>תאריך מועדף *</label>
-                        <input type="date" name="date" required>
-                    </div>
-                    <div class="form-group">
-                        <label>שעה מועדפת *</label>
-                        <select name="time" required>
-                            <option value="">בחר שעה</option>
-                            <option value="09:00">09:00</option>
-                            <option value="10:00">10:00</option>
-                            <option value="11:00">11:00</option>
-                            <option value="12:00">12:00</option>
-                            <option value="14:00">14:00</option>
-                            <option value="15:00">15:00</option>
-                            <option value="16:00">16:00</option>
-                            <option value="17:00">17:00</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>הערות</label>
-                    <textarea name="notes" rows="4"></textarea>
-                </div>
-
-                <button type="submit" class="btn-primary btn-large">שלח בקשה</button>
-                <p class="form-note">* לאחר שליחת הטופס, נחזור אליך תוך 24 שעות לאישור התור</p>
-            </form>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>ד״ר גל גולדהבר</h3>
-                    <p>רופא משפחה מוסמך</p>
-                    <p>15+ שנות ניסיון</p>
-                </div>
-                <div class="footer-section">
-                    <h3>קישורים מהירים</h3>
-                    <ul>
-                        <li><a href="#home">בית</a></li>
-                        <li><a href="#about">אודות</a></li>
-                        <li><a href="#services">שירותים</a></li>
-                        <li><a href="#contact">צור קשר</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>קופות חולים</h3>
-                    <p>כללית • מכבי<br>מאוחדת • לאומית</p>
-                </div>
-                <div class="footer-section">
-                    <h3>צור קשר</h3>
-                    <p>📞 03-123-4567</p>
-                    <p>✉️ info@goldhabermd.co.il</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>© 2024 ד״ר גל גולדהבר. כל הזכויות שמורות.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Chatbot -->
-    <div class="chatbot" id="chatbot">
-        <button class="chatbot-toggle" onclick="toggleChat()">💬</button>
-        <div class="chatbot-window" id="chatWindow">
-            <div class="chatbot-header">
-                <h4>עוזר וירטואלי</h4>
-                <button onclick="toggleChat()">✕</button>
-            </div>
-            <div class="chatbot-messages" id="chatMessages">
-                <div class="bot-message">שלום! איך אוכל לעזור לך היום?</div>
-            </div>
-            <div class="chatbot-input">
-                <input type="text" id="chatInput" placeholder="הקלד הודעה..." onkeypress="handleChatKey(event)">
-                <button onclick="sendMessage()">שלח</button>
-            </div>
-        </div>
+      <div class="nav-cta">
+        <a class="btn btn-ghost" href="admin.html">Admin Login</a>
+        <a class="btn btn-primary" href="#book">קביעת תור</a>
+      </div>
     </div>
+  </header>
 
-    <script src="script.js"></script>
+  <main id="home" class="page">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="pill">בדיקות • אבחונים • טיפולים מתקדמים</div>
+          <h1>בדקו את הראייה<br/><span class="accent">בצורה חכמה</span></h1>
+          <p>
+            מרפאת עיניים מודרנית עם סטנדרט קליני גבוה, זמינות תורים נוחה ותקשורת ברורה לאורך כל הדרך.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#book">קביעת תור</a>
+            <a class="btn btn-link" href="#doctor">קראו על הרופא</a>
+          </div>
+
+          <div class="trust">
+            <div class="trust-item">
+              <div class="trust-num">10+</div>
+              <div class="trust-txt">שנות ניסיון</div>
+            </div>
+            <div class="trust-item">
+              <div class="trust-num">24h</div>
+              <div class="trust-txt">חזרה למטופל</div>
+            </div>
+            <div class="trust-item">
+              <div class="trust-num">5★</div>
+              <div class="trust-txt">שירות פרימיום</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-media" aria-label="תמונה מרפאת עיניים">
+          <div class="media-frame">
+            <img src="assets/hero.jpg" alt="מרפאת עיניים - תמונת אווירה" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="doctor" class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>ד"ר ________</h2>
+          <p>מומחה/ית לרפואת עיניים • יחס אישי • תהליך ברור ומקצועי</p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3>ההתמחות</h3>
+            <p>אבחון מקיף, התאמת טיפול, ומעקב איכותי—עם דגש על חוויית מטופל.</p>
+            <ul class="bullets">
+              <li>בדיקות עיניים כלליות</li>
+              <li>טיפול יבש/רגישות</li>
+              <li>בדיקות ילדים</li>
+              <li>ייעוץ לפני/אחרי ניתוח</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3>איך זה עובד</h3>
+            <ol class="steps">
+              <li>משאירים פרטים לקביעת תור</li>
+              <li>מתאמים מועד וסוג שירות</li>
+              <li>מגיעים לבדיקה ומקבלים סיכום ברור</li>
+              <li>מעקב והמשך טיפול לפי צורך</li>
+            </ol>
+          </article>
+
+          <article class="card">
+            <h3>שעות פעילות</h3>
+            <p class="muted">א׳-ה׳ 09:00–18:00 • ו׳ 09:00–13:00 • שבת סגור</p>
+            <div class="callout">
+              <div class="callout-title">לתיאום מהיר</div>
+              <a class="callout-link" href="tel:031234567">03-123-4567</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="services" class="section section-soft">
+      <div class="container">
+        <div class="section-head">
+          <h2>השירותים שלנו</h2>
+          <p>מבחר שירותים קליניים במיקוד יעילות, איכות ושקיפות.</p>
+        </div>
+
+        <div class="service-grid">
+          <div class="service">
+            <div class="service-ic">🔍</div>
+            <h3>ייעוץ רפואי כללי</h3>
+            <p>בדיקה, אבחון והמלצות טיפול מותאמות אישית.</p>
+          </div>
+          <div class="service">
+            <div class="service-ic">🏠</div>
+            <h3>ביקור בית</h3>
+            <p>למטופלים הזקוקים לנוחות מקסימלית.</p>
+          </div>
+          <div class="service">
+            <div class="service-ic">📈</div>
+            <h3>ניהול מחלות כרוניות</h3>
+            <p>תוכנית מעקב מסודרת ותיעוד ברור.</p>
+          </div>
+          <div class="service">
+            <div class="service-ic">🛡️</div>
+            <h3>רפואה מונעת</h3>
+            <p>בדיקות תקופתיות לזיהוי מוקדם.</p>
+          </div>
+          <div class="service">
+            <div class="service-ic">🧒</div>
+            <h3>טיפול ילדים</h3>
+            <p>גישה רגועה וסביבה נעימה לילדים.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="book" class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>קביעת תור</h2>
+          <p>מלאו פרטים — ואנחנו נחזור אליכם לאישור בתוך 24 שעות.</p>
+        </div>
+
+        <div class="book-grid">
+          <form class="form card" onsubmit="handleSubmit(event)">
+            <div class="two">
+              <div class="form-group">
+                <label>שם פרטי</label>
+                <input name="firstName" type="text" required />
+              </div>
+              <div class="form-group">
+                <label>שם משפחה</label>
+                <input name="lastName" type="text" required />
+              </div>
+            </div>
+
+            <div class="two">
+              <div class="form-group">
+                <label>אימייל</label>
+                <input name="email" type="email" required />
+              </div>
+              <div class="form-group">
+                <label>טלפון</label>
+                <input name="phone" type="tel" required />
+              </div>
+            </div>
+
+            <div class="two">
+              <div class="form-group">
+                <label>שירות</label>
+                <select name="service" required>
+                  <option value="general">ייעוץ רפואי כללי</option>
+                  <option value="home-visit">ביקור בית</option>
+                  <option value="chronic">ניהול מחלות כרוניות</option>
+                  <option value="preventive">רפואה מונעת</option>
+                  <option value="pediatric">טיפול ילדים</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>תאריך</label>
+                <input name="date" type="date" required />
+              </div>
+            </div>
+
+            <div class="two">
+              <div class="form-group">
+                <label>שעה</label>
+                <input name="time" type="time" required />
+              </div>
+              <div class="form-group">
+                <label>הערות</label>
+                <input name="notes" type="text" placeholder="אופציונלי" />
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-full" type="submit">שליחת בקשה</button>
+            <p class="muted small">לתפעול Back Office: היכנסו דרך <a href="admin.html">Admin Login</a>.</p>
+          </form>
+
+          <aside class="side card">
+            <h3>פרטי התקשרות</h3>
+            <div class="side-row">
+              <span class="side-label">טלפון</span>
+              <a href="tel:031234567">03-123-4567</a>
+            </div>
+            <div class="side-row">
+              <span class="side-label">כתובת</span>
+              <span>רוטשילד 123, תל אביב</span>
+            </div>
+            <div class="divider"></div>
+            <p class="muted">המערכת שומרת בקשות תור לגישה דרך Back Office פשוט.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section section-soft">
+      <div class="container">
+        <div class="section-head">
+          <h2>יצירת קשר</h2>
+          <p>יש שאלה? אנחנו זמינים ונשמח לסייע.</p>
+        </div>
+
+        <div class="contact-grid">
+          <div class="card">
+            <h3>טלפון</h3>
+            <p class="big"><a href="tel:031234567">03-123-4567</a></p>
+            <p class="muted">א׳-ה׳ 09:00–18:00 • ו׳ 09:00–13:00</p>
+          </div>
+          <div class="card">
+            <h3>אימייל</h3>
+            <p class="big"><a href="mailto:clinic@example.com">clinic@example.com</a></p>
+            <p class="muted">מענה בתוך יום עסקים</p>
+          </div>
+          <div class="card">
+            <h3>Back Office</h3>
+            <p class="muted">לצפייה בבקשות תור וניהול סטטוסים.</p>
+            <a class="btn btn-ghost" href="admin.html">Admin Login</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container foot">
+      <span>© <span id="year"></span> EyeCare Clinic</span>
+      <span class="muted">Scheduling + Back Office (simple)</span>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+  <script src="script.js"></script>
 </body>
 </html>
