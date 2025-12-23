@@ -1,4 +1,5 @@
-// admin.js — Supabase Auth Back Office (null-safe bindings)
+// admin.js — Supabase Auth Back Office (clean + patient-safe)
+
 window.__ADMIN_LOADED = true;
 console.log("[ADMIN] admin.js loaded ✅");
 
@@ -6,24 +7,18 @@ const TABLE = "appointments";
 let sb = null;
 let allAppointments = [];
 
-function $(id) {
-  return document.getElementById(id);
-}
+// ---------------- helpers ----------------
+const $ = (id) => document.getElementById(id);
 
 function on(id, event, handler) {
   const el = $(id);
-  if (!el) {
-    console.warn(`[ADMIN] Missing element #${id} (cannot bind ${event})`);
-    return false;
-  }
+  if (!el) return;
   el.addEventListener(event, handler);
-  return true;
 }
 
 function show(id, yes) {
   const el = $(id);
-  if (!el) return;
-  el.style.display = yes ? "" : "none";
+  if (el) el.style.display = yes ? "" : "none";
 }
 
 function setLoginError(msg) {
@@ -35,8 +30,10 @@ function setLoginError(msg) {
 
 function fmtDate(iso) {
   try {
-    const d = new Date(iso);
-    return d.toLocaleString("he-IL", { dateStyle: "short", timeStyle: "short" });
+    return new Date(iso).toLocaleString("he-IL", {
+      dateStyle: "short",
+      timeStyle: "short",
+    });
   } catch {
     return iso || "";
   }
@@ -53,40 +50,26 @@ function serviceLabel(value) {
   return map[value] || value || "";
 }
 
-function buildKpis(list) {
-  const kpis = $("kpis");
-  if (!kpis) return;
-
-  const counts = { all: list.length, new: 0, confirmed: 0, cancelled: 0 };
-  list.forEach((a) => (counts[a.status] = (counts[a.status] || 0) + 1));
-
-  kpis.innerHTML = "";
-
-  const items = [
-    { label: 'סה״כ', value: counts.all },
-    { label: 'חדש', value: counts.new || 0 },
-    { label: 'אושר', value: counts.confirmed || 0 },
-    { label: 'בוטל', value: counts.cancelled || 0 },
-  ];
-
-  items.forEach((it) => {
-    const div = document.createElement("div");
-    div.className = "admin-kpi";
-    div.innerHTML = `<div class="admin-kpi-value">${it.value}</div><div class="admin-kpi-label">${it.label}</div>`;
-    kpis.appendChild(div);
-  });
-}
-
+// ---------------- filters ----------------
 function applyFilters(list) {
-  const q = ($("searchInput")?.value || "").trim().toLowerCase();
+  const q = ($("searchInput")?.value || "").toLowerCase();
   const status = $("statusFilter")?.value || "all";
   const service = $("serviceFilter")?.value || "all";
 
   return list.filter((a) => {
     const hay = [
-      a.first_name, a.last_name, a.phone, a.email, a.notes,
-      a.service, a.date, a.time, a.status
-    ].join(" ").toLowerCase();
+      a.first_name,
+      a.last_name,
+      a.phone,
+      a.email,
+      a.notes,
+      a.service,
+      a.date,
+      a.time,
+      a.status,
+    ]
+      .join(" ")
+      .toLowerCase();
 
     if (q && !hay.includes(q)) return false;
     if (status !== "all" && a.status !== status) return false;
@@ -95,9 +78,8 @@ function applyFilters(list) {
   });
 }
 
+// ---------------- render ----------------
 function render() {
-  buildKpis(allAppointments);
-
   const body = $("appointmentsBody");
   if (!body) return;
 
@@ -105,24 +87,26 @@ function render() {
   body.innerHTML = "";
 
   if (!list.length) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td colspan="10" class="admin-empty">אין בקשות להצגה</td>`;
-    body.appendChild(tr);
+    body.innerHTML =
+      `<tr><td colspan="10" class="admin-empty">אין בקשות להצגה</td></tr>`;
     return;
   }
 
   list.forEach((a) => {
+    const patientName =
+      a.patients?.full_name ||
+      `${a.first_name || ""} ${a.last_name || ""}`;
+
+    const nameCell = a.patient_id
+      ? `<a href="patient.html?patient_id=${a.patient_id}">
+           <strong>${patientName}</strong>
+         </a>`
+      : `<strong>${patientName}</strong>`;
+
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${fmtDate(a.created_at)}</td>
-     <td>
-  ${a.patient_id
-    ? `<a href="patient.html?patient_id=${a.patient_id}">
-         <strong>${(a.first_name || "")} ${(a.last_name || "")}</strong>
-       </a>`
-    : `<strong>${(a.first_name || "")} ${(a.last_name || "")}</strong>`
-  }
-</td>
+      <td>${nameCell}</td>
       <td><a href="tel:${a.phone || ""}">${a.phone || ""}</a></td>
       <td><a href="mailto:${a.email || ""}">${a.email || ""}</a></td>
       <td>${serviceLabel(a.service)}</td>
@@ -136,86 +120,54 @@ function render() {
           <option value="cancelled" ${a.status === "cancelled" ? "selected" : ""}>בוטל</option>
         </select>
       </td>
-      <td class="admin-row-actions">
-        <button class="btn-outline admin-delete" data-id="${a.id}" type="button">מחק</button>
+      <td>
+        <button class="admin-delete" data-id="${a.id}">מחק</button>
       </td>
     `;
     body.appendChild(tr);
   });
 }
 
+// ---------------- data ----------------
 async function loadAppointments() {
   const { data, error } = await sb
     .from(TABLE)
-  .select("*")
+    .select(`
+      *,
+      patients (
+        id,
+        full_name
+      )
+    `)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
-
   allAppointments = data || [];
   render();
 }
 
 async function updateStatus(id, status) {
-  const { error } = await sb.from(TABLE).update({ status }).eq("id", id);
-  if (error) throw error;
-
-  const idx = allAppointments.findIndex((x) => x.id === id);
-  if (idx >= 0) allAppointments[idx].status = status;
+  await sb.from(TABLE).update({ status }).eq("id", id);
+  const row = allAppointments.find((x) => x.id === id);
+  if (row) row.status = status;
   render();
 }
 
 async function deleteAppointment(id) {
-  const { error } = await sb.from(TABLE).delete().eq("id", id);
-  if (error) throw error;
-
+  await sb.from(TABLE).delete().eq("id", id);
   allAppointments = allAppointments.filter((x) => x.id !== id);
   render();
 }
 
-function exportCsv() {
-  const list = allAppointments;
-  const headers = ["created_at","status","first_name","last_name","phone","email","service","date","time","notes"];
-  const rows = [headers.join(",")];
-
-  list.forEach((a) => {
-    const row = headers.map((h) => {
-      const val = (a[h] ?? "").toString().replace(/"/g, '""');
-      return `"${val}"`;
-    }).join(",");
-    rows.push(row);
-  });
-
-  const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "appointments.csv";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
-
+// ---------------- auth ----------------
 async function signIn() {
   setLoginError("");
-  const email = ($("emailInput")?.value || "").trim();
+  const email = $("emailInput")?.value || "";
   const password = $("passwordInput")?.value || "";
-
-  if (!email || !password) {
-    setLoginError("נא למלא אימייל וסיסמה.");
-    return;
-  }
-
-  setLoginError("מתחבר...");
+  if (!email || !password) return setLoginError("נא למלא אימייל וסיסמה");
 
   const { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) {
-    setLoginError("התחברות נכשלה: " + error.message);
-    return;
-  }
-
-  setLoginError("");
+  if (error) return setLoginError(error.message);
   await onAuthReady();
 }
 
@@ -228,64 +180,42 @@ async function onAuthReady() {
   const { data } = await sb.auth.getSession();
   const session = data?.session;
 
-  if (!session) {
-    show("loginPanel", true);
-    show("appPanel", false);
-    const logout = $("logoutLink");
-    if (logout) logout.style.display = "none";
-    return;
-  }
-
-  show("loginPanel", false);
-  show("appPanel", true);
-  const logout = $("logoutLink");
-  if (logout) logout.style.display = "";
-  await loadAppointments();
+  show("loginPanel", !session);
+  show("appPanel", !!session);
+  if (session) await loadAppointments();
 }
 
+// ---------------- events ----------------
 function bindEvents() {
-  on("loginBtn", "click", () => signIn().catch((err) => setLoginError(err.message)));
-  on("logoutLink", "click", (e) => { e.preventDefault(); signOut(); });
-  on("refreshBtn", "click", () => loadAppointments().catch((err) => alert(err.message)));
-  on("exportBtn", "click", exportCsv);
+  on("loginBtn", "click", signIn);
+  on("logoutLink", "click", (e) => {
+    e.preventDefault();
+    signOut();
+  });
+  on("refreshBtn", "click", loadAppointments);
 
-  const si = $("searchInput");
-  if (si) si.addEventListener("input", render);
-
-  const sf = $("statusFilter");
-  if (sf) sf.addEventListener("change", render);
-
-  const svc = $("serviceFilter");
-  if (svc) svc.addEventListener("change", render);
+  $("searchInput")?.addEventListener("input", render);
+  $("statusFilter")?.addEventListener("change", render);
+  $("serviceFilter")?.addEventListener("change", render);
 
   document.addEventListener("change", (e) => {
-    if (e.target && e.target.classList.contains("admin-status")) {
-      updateStatus(e.target.getAttribute("data-id"), e.target.value)
-        .catch((err) => alert("עדכון נכשל: " + err.message));
+    if (e.target.classList.contains("admin-status")) {
+      updateStatus(e.target.dataset.id, e.target.value);
     }
   });
 
   document.addEventListener("click", (e) => {
-    if (e.target && e.target.classList.contains("admin-delete")) {
-      const id = e.target.getAttribute("data-id");
-      if (!confirm("למחוק את הבקשה הזו?")) return;
-      deleteAppointment(id).catch((err) => alert("מחיקה נכשלה: " + err.message));
+    if (e.target.classList.contains("admin-delete")) {
+      if (!confirm("למחוק?")) return;
+      deleteAppointment(e.target.dataset.id);
     }
   });
 }
 
+// ---------------- init ----------------
 document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    sb = window.getSupabaseClient();
-    bindEvents();
-
-    sb.auth.onAuthStateChange(() => {
-      onAuthReady().catch((err) => alert("Auth error: " + err.message));
-    });
-
-    await onAuthReady();
-  } catch (err) {
-    console.error("[ADMIN] Fatal init error:", err);
-    alert("Admin init error: " + err.message);
-  }
+  sb = window.getSupabaseClient();
+  bindEvents();
+  sb.auth.onAuthStateChange(onAuthReady);
+  await onAuthReady();
 });
