@@ -1,175 +1,160 @@
-/* chatbot.js — front-end assistant (no backend)
-   Goal: smoother UX + higher conversion (SEO-friendly, non-intrusive).
-   Safe: does not touch appointment submit logic or Supabase.
-*/
-(function(){
-  const qs = (s, r=document) => r.querySelector(s);
+/* chatbot.js — front-end UX upgrade only (no backend changes) */
+(function () {
+  const BOT_VERSION = "v4";
 
-  // ---------- UI: launcher + panel ----------
-  const launcher = document.createElement('button');
-  launcher.className = 'chatbot-launcher';
-  launcher.type = 'button';
-  launcher.setAttribute('aria-label','פתיחת עוזר דיגיטלי');
-  launcher.innerHTML = '💬';
+  const style = document.createElement("style");
+  style.textContent = `
+    .bot-fab{position:fixed;left:18px;bottom:18px;z-index:9999;border-radius:999px;border:1px solid rgba(15,23,42,.12);
+      box-shadow:0 12px 30px rgba(15,23,42,.14);padding:12px 14px;background:#fff;cursor:pointer;display:flex;gap:10px;align-items:center}
+    .bot-fab .dot{width:10px;height:10px;border-radius:50%;background:#22c55e}
+    .bot-fab strong{font-weight:700}
+    .bot-panel{position:fixed;left:18px;bottom:76px;z-index:9999;width:min(360px, calc(100vw - 36px));
+      border-radius:18px;border:1px solid rgba(15,23,42,.12);background:#fff;box-shadow:0 18px 50px rgba(15,23,42,.18);overflow:hidden;display:none}
+    .bot-head{padding:14px 14px 10px;border-bottom:1px solid rgba(15,23,42,.08);display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .bot-head h4{margin:0;font-size:15px}
+    .bot-head p{margin:6px 0 0;font-size:12px;opacity:.75;line-height:1.35}
+    .bot-close{border:none;background:transparent;font-size:18px;cursor:pointer;line-height:1}
+    .bot-body{padding:12px;max-height:360px;overflow:auto}
+    .bot-msg{margin:10px 0;display:flex}
+    .bot-msg.me{justify-content:flex-end}
+    .bot-bubble{max-width:85%;padding:10px 12px;border-radius:16px;border:1px solid rgba(15,23,42,.10);line-height:1.35}
+    .bot-msg.bot .bot-bubble{background:rgba(15,23,42,.03)}
+    .bot-msg.me .bot-bubble{background:rgba(59,130,246,.10);border-color:rgba(59,130,246,.20)}
+    .bot-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .bot-chip{border:1px solid rgba(15,23,42,.14);background:#fff;border-radius:999px;padding:8px 10px;cursor:pointer;font-size:13px}
+    .bot-chip:hover{transform:translateY(-1px)}
+    .bot-foot{padding:10px 12px;border-top:1px solid rgba(15,23,42,.08);display:flex;gap:8px}
+    .bot-foot input{flex:1;border-radius:14px;border:1px solid rgba(15,23,42,.16);padding:10px 12px}
+    .bot-foot button{border-radius:999px;border:1px solid rgba(15,23,42,.14);background:#111827;color:#fff;padding:10px 12px;cursor:pointer}
+  `;
+  document.head.appendChild(style);
 
-  const panel = document.createElement('div');
-  panel.className = 'chatbot-panel';
-  panel.setAttribute('role','dialog');
-  panel.setAttribute('aria-label','עוזר דיגיטלי');
+  const fab = document.createElement("button");
+  fab.className = "bot-fab";
+  fab.type = "button";
+  fab.innerHTML = `<span class="dot"></span><strong>צ׳אט מהיר</strong><span style="opacity:.7;font-size:12px">(${BOT_VERSION})</span>`;
+  document.body.appendChild(fab);
+
+  const panel = document.createElement("div");
+  panel.className = "bot-panel";
   panel.innerHTML = `
-    <div class="chatbot-head">
-      <div class="chatbot-title">עוזר דיגיטלי</div>
-      <button class="chatbot-close" type="button" aria-label="סגור">✕</button>
+    <div class="bot-head">
+      <div>
+        <h4>עוזר המרפאה</h4>
+        <p>מידע כללי בלבד. במקרה חירום רפואי — פנו מיד למד״א 101 או לחדר מיון.</p>
+      </div>
+      <button class="bot-close" aria-label="סגירה">×</button>
     </div>
-    <div class="chatbot-disclaimer">
-      העוזר הדיגיטלי אינו תחליף לייעוץ רפואי. במקרה חירום – פנו מיידית למד״א/חדר מיון.
-    </div>
-    <div class="chatbot-quick" aria-label="קיצורי דרך"></div>
-    <div class="chatbot-body" role="log" aria-live="polite"></div>
-    <div class="chatbot-foot">
-      <input class="chatbot-input" type="text" inputmode="text" autocomplete="off" placeholder="מה תרצו לדעת?" />
-      <button class="chatbot-send" type="button">שלח</button>
+    <div class="bot-body" id="botBody"></div>
+    <div class="bot-foot">
+      <input id="botInput" placeholder="כתוב שאלה קצרה…" />
+      <button id="botSend" type="button">שלח</button>
     </div>
   `;
-
-  document.body.appendChild(launcher);
   document.body.appendChild(panel);
 
-  const closeBtn = qs('.chatbot-close', panel);
-  const body = qs('.chatbot-body', panel);
-  const input = qs('.chatbot-input', panel);
-  const sendBtn = qs('.chatbot-send', panel);
-  const quick = qs('.chatbot-quick', panel);
+  const body = panel.querySelector("#botBody");
+  const input = panel.querySelector("#botInput");
+  const sendBtn = panel.querySelector("#botSend");
 
-  // ---------- helpers ----------
-  const normalize = (s) => (s||'')
-    .toString()
-    .trim()
-    .toLowerCase();
-
-  const scrollToAny = (selectors) => {
-    for(const s of selectors){
-      const el = document.querySelector(s);
-      if(el){
-        el.scrollIntoView({behavior:'smooth', block:'start'});
-        return true;
-      }
-    }
-    return false;
-  };
-
-  function addMsg(text, who='bot'){
-    const d = document.createElement('div');
-    d.className = 'chatbot-msg' + (who==='me' ? ' me' : '');
-    d.textContent = text;
-    body.appendChild(d);
+  function addMsg(text, who = "bot") {
+    const wrap = document.createElement("div");
+    wrap.className = `bot-msg ${who}`;
+    const bubble = document.createElement("div");
+    bubble.className = "bot-bubble";
+    bubble.textContent = text;
+    wrap.appendChild(bubble);
+    body.appendChild(wrap);
     body.scrollTop = body.scrollHeight;
   }
 
-  function addChips(items){
-    quick.innerHTML = '';
-    items.forEach(({label, payload})=>{
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'chatbot-chip';
+  function addChips(chips) {
+    const row = document.createElement("div");
+    row.className = "bot-chips";
+    chips.forEach(({ label, onClick }) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "bot-chip";
       b.textContent = label;
-      b.addEventListener('click', ()=>{
-        open();
-        addMsg(label, 'me');
-        setTimeout(()=>reply(payload || label), 120);
-      });
-      quick.appendChild(b);
+      b.addEventListener("click", onClick);
+      row.appendChild(b);
     });
+    body.appendChild(row);
+    body.scrollTop = body.scrollHeight;
   }
 
-  // ---------- “template-like” flow ----------
-  const chipsHome = [
-    {label:'קביעת תור', payload:'קביעת תור'},
-    {label:'שעות פעילות', payload:'שעות פעילות'},
-    {label:'כתובת והגעה', payload:'כתובת'},
-    {label:'שירותים', payload:'שירותים'},
-    {label:'וואטסאפ/טלפון', payload:'טלפון'}
-  ];
-
-  const urgentSignals = [
-    'קוצר נשימה','כאב בחזה','התעלפ','עילפון','חנק','כיחל','דימום חזק','פרכוס','חוסר הכרה','אלרגיה קשה','אנפילקסיס'
-  ];
-
-  function reply(userText){
-    const t = normalize(userText);
-
-    if(!t){
-      addMsg('אפשר לבחור אפשרות למעלה, או לכתוב חופשי מה הבעיה / מה אתם צריכים.');
-      return;
+  function openPanel() {
+    panel.style.display = "block";
+    if (!panel.dataset.init) {
+      panel.dataset.init = "1";
+      addMsg("היי 🙂 איך אפשר לעזור?");
+      addChips([
+        { label: "קביעת תור", onClick: () => scrollToId("appointment") },
+        { label: "שעות פעילות", onClick: () => addMsg("א׳–ה׳: 9:00–18:00 | ו׳: 9:00–13:00 | שבת: סגור") },
+        { label: "כתובת", onClick: () => addMsg("רוטשילד 123, תל אביב") },
+        { label: "שירותים", onClick: () => addMsg("ייעוץ כללי, ביקורי בית, ניהול מחלות כרוניות, רפואה מונעת, ילדים ועוד.") },
+        { label: "WhatsApp", onClick: () => window.open("https://wa.me/972501234567", "_blank") }
+      ]);
     }
-
-    // Urgent triage (gentle, clear)
-    if(urgentSignals.some(x => t.includes(normalize(x)))){
-      addMsg('זה נשמע דחוף. במקרה של סכנה מיידית – פנו עכשיו למד״א 101 או לחדר מיון.');
-      addMsg('אם זה לא מצב חירום – כתבו גיל ותיאור קצר של הסימפטומים ואכוון אתכם.');
-      return;
-    }
-
-    if(t.includes('תור') || t.includes('קביעת') || t.includes('appointment')){
-      addMsg('מעולה — אני מגלגלת לטופס קביעת התור.');
-      if(!scrollToAny(['#appointment', '#book', '#contact', 'form', '.appointment-form'])){
-        addMsg('לא מצאתי טופס בעמוד הזה. אפשר להשאיר פרטים בטופס יצירת קשר.');
-        scrollToAny(['#contact', 'footer']);
-      }
-      return;
-    }
-
-    if(t.includes('שעות') || t.includes('פתוח') || t.includes('פעילות')){
-      addMsg('שעות הפעילות מופיעות באזור יצירת קשר. מגלגלת לשם.');
-      scrollToAny(['#hours', '#contact', 'footer']);
-      return;
-    }
-
-    if(t.includes('כתובת') || t.includes('מיקום') || t.includes('הגעה') || t.includes('חניה')){
-      addMsg('הנה אזור הכתובת וההגעה. מגלגלת ליצירת קשר.');
-      scrollToAny(['#contact', 'footer']);
-      return;
-    }
-
-    if(t.includes('טלפון') || t.includes('וואטסאפ') || t.includes('whatsapp') || t.includes('מייל') || t.includes('email')){
-      addMsg('אפשר ליצור קשר כאן. מגלגלת לאזור יצירת קשר.');
-      scrollToAny(['#contact', 'footer']);
-      return;
-    }
-
-    if(t.includes('שירות') || t.includes('טיפול') || t.includes('אלרג') || t.includes('אסתמה') || t.includes('בדיקה')){
-      addMsg('יש בעמוד פירוט שירותים. אם תכתבו מה הסימפטום/הצורך — אכוון לשירות המתאים.');
-      scrollToAny(['#services', 'section']);
-      return;
-    }
-
-    // fallback: guide to structured info for better conversion
-    addMsg('כדי לעזור מהר: כתבו “קביעת תור”, “שעות פעילות”, “כתובת”, או תיאור קצר של הבעיה (כולל גיל).');
-  }
-
-  function open(){
-    panel.classList.add('open');
     input.focus();
   }
-  function close(){
-    panel.classList.remove('open');
+
+  function closePanel() {
+    panel.style.display = "none";
   }
 
-  launcher.addEventListener('click', () => {
-    panel.classList.contains('open') ? close() : open();
+  function scrollToId(id) {
+    closePanel();
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    else addMsg("לא מצאתי את אזור קביעת התור בעמוד. תגיד לי אם תרצה שאפנה אותך ליצירת קשר.");
+  }
+
+  function isUrgent(t) {
+    const s = (t || "").toLowerCase();
+    return ["כאב בחזה","קוצר נשימה","עילפון","דימום","חוסר הכרה","שבץ","התקף"].some(k => s.includes(k));
+  }
+
+  function handle(text) {
+    const t = (text || "").trim();
+    if (!t) return;
+    addMsg(t, "me");
+
+    if (isUrgent(t)) {
+      addMsg("זה נשמע דחוף. במקרה של סכנת חיים — פנו מיד למד״א 101 או לחדר מיון.");
+      return;
+    }
+
+    const tl = t.toLowerCase();
+    if (tl.includes("תור") || tl.includes("לקבוע")) {
+      addMsg("מעולה — אני מעביר אותך לקביעת תור בעמוד.");
+      scrollToId("appointment");
+      return;
+    }
+    if (tl.includes("שעות") || tl.includes("פתוח")) {
+      addMsg("א׳–ה׳: 9:00–18:00 | ו׳: 9:00–13:00 | שבת: סגור");
+      return;
+    }
+    if (tl.includes("כתובת") || tl.includes("איפה")) {
+      addMsg("רוטשילד 123, תל אביב. אפשר גם ללחוץ על Waze/Google Maps באזור 'צור קשר'.");
+      return;
+    }
+    if (tl.includes("ווטסאפ") || tl.includes("whatsapp")) {
+      addMsg("פותח WhatsApp…");
+      window.open("https://wa.me/972501234567", "_blank");
+      return;
+    }
+
+    addMsg("אני יכול לעזור עם קביעת תור, שעות, כתובת ושירותים. מה תרצה?");
+  }
+
+  fab.addEventListener("click", () => (panel.style.display === "block" ? closePanel() : openPanel()));
+  panel.querySelector(".bot-close").addEventListener("click", closePanel);
+  sendBtn.addEventListener("click", () => handle(input.value) || (input.value = ""));
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      handle(input.value);
+      input.value = "";
+    }
   });
-  closeBtn.addEventListener('click', close);
-
-  function send(){
-    const v = input.value;
-    input.value = '';
-    addMsg(v, 'me');
-    setTimeout(()=>reply(v), 140);
-  }
-  sendBtn.addEventListener('click', send);
-  input.addEventListener('keydown', (e)=>{ if(e.key==='Enter') send(); });
-
-  // init
-  addChips(chipsHome);
-  addMsg('היי! אני העוזר הדיגיטלי 😊 איך אפשר לעזור?');
 })();
