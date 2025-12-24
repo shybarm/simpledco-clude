@@ -1,115 +1,478 @@
-/* =========================================================
-   🔥 FINAL HERO OVERRIDE — WIDE LIKE BRAMELI (NO COLLAPSE)
-   This FIXES:
-   - Narrow hero
-   - Site appearing "gone"
-   - Portrait overpowering layout
-========================================================= */
+/* theme-doctreat.css (FULL) — gentle/clean + WIDE hero + portrait LEFT + smaller
+   IMPORTANT: this version does NOT turn the hero into a narrow “card”.
+   It keeps the full site visible and only adjusts hero width/spacing + icon cleanup.
+*/
 
-/* Restore global flow */
-body, main, section {
-  overflow: visible !important;
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&family=Assistant:wght@400;600;700&display=swap');
+
+:root{
+  --background: 30 8% 98%;
+  --foreground: 30 8% 12%;
+  --border: 30 8% 90%;
+  --card: 30 6% 96%;
+  --card-foreground: 30 6% 14%;
+  --muted: 30 12% 90%;
+  --muted-foreground: 30 12% 28%;
+  --primary: 185 65% 42%;
+  --primary-foreground: 185 65% 98%;
+  --accent: 185 20% 88%;
+  --accent-foreground: 185 20% 18%;
+
+  --bg: hsl(var(--background));
+  --text: hsl(var(--foreground));
+  --line: hsl(var(--border));
+  --surface: #ffffff;
+  --surface-2: hsl(var(--card));
+  --muted-text: hsl(var(--muted-foreground));
+  --brand: hsl(var(--primary));
+  --brand-strong: hsl(185 65% 36%);
+  --brand-soft: hsl(var(--accent));
+  --shadow-sm: 0 10px 28px rgba(0,0,0,.06);
+  --shadow-md: 0 18px 44px rgba(0,0,0,.10);
+
+  /* WIDE like Brameli */
+  --container: 1320px;
+
+  /* hero image */
+  --hero-photo: url("assets/doctor-anna.png");
 }
 
-/* HERO must be FULL WIDTH — not a card */
-.hero {
-  padding: 80px 0 64px !important;
+html,body{
+  background: var(--bg) !important;
+  color: var(--text) !important;
+  direction: rtl;
+  text-align: right;
+  font-family: Heebo, Assistant, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container{
+  width: min(var(--container), calc(100% - 40px)) !important;
+}
+
+a{ color: inherit; text-decoration: none; }
+hr{ border:0; height:1px; background: rgba(0,0,0,.08); }
+
+a[href^="tel:"], a[href^="mailto:"]{
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+/* ───────── Header */
+.header{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(250,249,249,.92) !important;
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border-bottom: 1px solid rgba(0,0,0,.08) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,.04);
+}
+
+.nav{
+  padding: 12px 0 !important;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.logo{
+  font-weight: 900 !important;
+  letter-spacing: .2px;
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+.logo::before{
+  content:"א";
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display:grid;
+  place-items:center;
+  background: var(--brand);
+  color: hsl(var(--primary-foreground));
+  font-weight: 900;
+  box-shadow: 0 10px 24px rgba(37,165,176,.18);
+}
+
+.nav-links{
+  display:flex;
+  gap: 18px !important;
+  align-items:center;
+}
+
+.nav-links a{
+  font-weight: 700 !important;
+  color: rgba(0,0,0,.62);
+  transition: color .12s ease;
+}
+.nav-links a:hover{ color: rgba(0,0,0,.86); }
+
+.nav .btn-primary, .header .btn-primary{
+  border-radius: 10px !important;
+  padding: 10px 14px !important;
+}
+
+.menu-toggle{
+  border-radius: 10px !important;
+  border: 1px solid rgba(0,0,0,.10) !important;
+  background: #fff !important;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+  padding: 10px 12px !important;
+}
+
+/* ───────── Buttons */
+.btn-primary,
+button.btn-primary,
+input[type="submit"].btn-primary{
+  background: var(--brand) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  border: 1px solid rgba(0,0,0,.08) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 12px 26px rgba(37,165,176,.14);
+  font-weight: 800 !important;
+}
+
+.btn-outline,
+.btn-secondary,
+button.btn-outline,
+button.btn-secondary{
+  background: #fff !important;
+  color: rgba(0,0,0,.76) !important;
+  border: 1px solid rgba(0,0,0,.14) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 22px rgba(0,0,0,.05);
+  font-weight: 800 !important;
+}
+
+.btn-primary:hover,
+.btn-outline:hover,
+.btn-secondary:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(0,0,0,.10);
+}
+
+.btn-primary:active,
+.btn-outline:active,
+.btn-secondary:active{
+  transform: translateY(0);
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+
+/* ───────────────────────── HERO (WIDE + portrait LEFT + smaller) */
+.hero{
+  position: relative;
+  padding: 56px 0 40px !important;
   background: transparent !important;
 }
 
-/* Container wide like Brameli */
-.hero .container {
-  max-width: 1440px !important;
-  width: min(1440px, calc(100% - 64px)) !important;
+/* soft background band like Brameli (but still gentle) */
+.hero::before{
+  content:"";
+  position:absolute;
+  inset: 0;
+  top: 76px;
+  height: 460px;
+  background:
+    radial-gradient(1200px 520px at 50% 18%, rgba(0,0,0,.10), transparent 62%),
+    linear-gradient(to bottom, rgba(0,0,0,.02), rgba(0,0,0,0));
+  opacity: .18;
+  pointer-events:none;
+  z-index:-1;
 }
 
-/* HERO CONTENT — NOT a card */
-.hero-content {
+.hero .container{
+  /* ensure it stays WIDE (not narrow card) */
+  max-width: 1360px !important;
+  width: min(1360px, calc(100% - 48px)) !important;
+}
+
+.hero-content{
+  position: relative;
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
-  border-radius: 0 !important;
-
-  /* Two-column layout */
   padding: 0 !important;
-  min-height: 460px;
-  display: grid;
-  grid-template-columns: 420px 1fr;
-  align-items: center;
-  column-gap: 64px;
+
+  /* reserve space on the LEFT for the portrait */
+  padding-left: 440px !important;
+  min-height: 420px;
 }
 
-/* Portrait column */
-.hero-content::before {
-  content: "";
-  position: relative;
-  grid-column: 1;
-  width: 320px;
-  height: 320px;
-  margin: 0 auto;
-  border-radius: 50%;
-  background: #fff url("assets/doctor-anna.png") center/cover no-repeat;
-  border: 12px solid rgba(255,255,255,.95);
+/* portrait circle — LEFT side (explicit left, not inline-start) */
+.hero-content::before{
+  content:"";
+  position:absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 340px;       /* smaller */
+  height: 340px;      /* smaller */
+  border-radius: 999px;
+  background-image: var(--hero-photo);
+  background-size: cover;
+  background-position: center;
+  border: 12px solid rgba(255,255,255,.90);
   box-shadow: 0 26px 70px rgba(0,0,0,.18);
 }
 
-/* Text column */
-.hero-content > * {
-  grid-column: 2;
-}
-
-/* Typography scale like Brameli */
-.hero h1 {
-  font-size: clamp(44px, 4.2vw, 60px) !important;
+/* Typography */
+.hero h1{
+  font-size: clamp(38px, 4.2vw, 56px) !important;
   font-weight: 900 !important;
+  letter-spacing: -.2px;
   line-height: 1.1 !important;
+  margin: 0 0 10px 0 !important;
+  color: rgba(0,0,0,.86) !important;
 }
 
-.hero .subtitle {
+.hero .subtitle,
+.hero .hero-description{
   font-size: 18px !important;
-  margin-top: 8px;
-}
-
-.hero-description {
-  font-size: 18px !important;
+  line-height: 1.75 !important;
+  color: rgba(0,0,0,.62) !important;
   max-width: 720px;
-  line-height: 1.75;
 }
 
-/* CTA alignment */
-.hero-buttons {
-  margin-top: 18px;
-  display: flex;
-  gap: 12px;
+.hero-buttons{
+  display:flex;
   flex-wrap: wrap;
+  gap: 10px !important;
+  margin-top: 14px !important;
+  align-items:center;
 }
 
-/* Stats row visible again */
-.trust-badges {
-  margin-top: 36px;
-  padding-top: 28px;
-  border-top: 1px solid rgba(0,0,0,.12);
+/* Trust badges / stats row */
+.trust-badges{
+  display:flex;
+  gap: 34px;
+  justify-content: center;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-top: 34px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(0,0,0,.10);
 }
 
-/* ================= MOBILE ================= */
-@media (max-width: 980px) {
-  .hero-content {
-    grid-template-columns: 1fr;
+.trust-badges .badge{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  text-align:center;
+  min-width: 150px;
+}
+
+.trust-badges .badge-number{
+  display:block;
+  font-size: clamp(40px, 4vw, 60px);
+  font-weight: 900;
+  color: var(--brand);
+}
+.trust-badges .badge-text{
+  display:block;
+  margin-top: 6px;
+  color: rgba(0,0,0,.55);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Mobile hero */
+@media (max-width: 980px){
+  .hero-content{
+    padding-left: 0 !important;
+    min-height: auto;
     text-align: center;
   }
-
-  .hero-content::before {
-    margin-bottom: 24px;
-    width: 240px;
-    height: 240px;
+  .hero-content::before{
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    display:block;
+    margin: 0 auto 18px;
+    width: 230px;
+    height: 230px;
+    border-width: 10px;
   }
+  .hero-buttons{ justify-content:center; }
+}
 
-  .hero-content > * {
-    grid-column: 1;
-  }
+/* ───────── Section titles */
+.section-title{
+  font-size: clamp(26px, 3vw, 40px) !important;
+  font-weight: 900 !important;
+  color: rgba(0,0,0,.86) !important;
+}
+.section-subtitle{ color: rgba(0,0,0,.60) !important; }
 
-  .hero-buttons,
-  .trust-badges {
-    justify-content: center;
-  }
+/* ───────── Cards */
+.card, .service-card, .feature-card, .panel, .box,
+.admin-card, .today-card, .patient-card,
+.testimonial-card{
+  background: #fff !important;
+  border: 1px solid rgba(0,0,0,.10) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.card:hover, .service-card:hover, .feature-card:hover, .panel:hover, .box:hover, .testimonial-card:hover{
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* ───────── Remove icons everywhere you asked (clean) */
+.service-icon,
+.service-card .service-icon,
+.service-card img,
+.service-card svg,
+.service-card i,
+.service-card [class*="icon"],
+.service-card [class*="Icon"]{
+  display: none !important;
+}
+
+/* ───────── Forms */
+.appointment-form, form{
+  background: #fff !important;
+  border: 1px solid rgba(0,0,0,.10) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.form-group label{
+  font-weight: 800 !important;
+  color: rgba(0,0,0,.62) !important;
+  font-size: 13px !important;
+}
+
+input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="number"], select, textarea, input[type="file"]{
+  background: #fff !important;
+  border: 1px solid rgba(0,0,0,.14) !important;
+  border-radius: 12px !important;
+  min-height: 44px;
+  padding: 10px 12px !important;
+  box-shadow: 0 10px 22px rgba(0,0,0,.05);
+}
+
+input:focus, select:focus, textarea:focus{
+  outline: none !important;
+  border-color: rgba(37,165,176,.55) !important;
+  box-shadow: 0 0 0 4px rgba(37,165,176,.15), 0 16px 34px rgba(0,0,0,.10) !important;
+}
+
+/* ───────── Footer */
+.footer, footer{
+  border-top: 1px solid rgba(0,0,0,.10);
+  background: rgba(255,255,255,.75);
+}
+
+/* ───────── Mobile nav spacing */
+@media (max-width: 767px){
+  .nav-links{ gap: 12px !important; }
+}
+
+/* ───────── BOT styles (only if chatbot.js uses these classes) */
+.chatbot-launcher{
+  position: fixed;
+  inset-inline-start: 20px;
+  bottom: 20px;
+  z-index: 9999;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,.10);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 18px 44px rgba(0,0,0,.18);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.chatbot-panel{
+  position: fixed;
+  inset-inline-start: 20px;
+  bottom: 86px;
+  width: min(360px, calc(100vw - 40px));
+  max-height: 70vh;
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.10);
+  border-radius: 16px;
+  box-shadow: 0 24px 70px rgba(0,0,0,.20);
+  overflow: hidden;
+  display: none;
+}
+
+.chatbot-panel.open{ display: flex; flex-direction: column; }
+
+.chatbot-head{
+  padding: 12px 14px;
+  background: rgba(0,0,0,.03);
+  border-bottom: 1px solid rgba(0,0,0,.08);
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.chatbot-title{ font-weight: 900; color: rgba(0,0,0,.82); }
+.chatbot-close{
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,.12);
+  background: #fff;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.chatbot-body{
+  padding: 12px 14px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chatbot-msg{
+  border-radius: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: rgba(0,0,0,.02);
+  color: rgba(0,0,0,.78);
+  line-height: 1.6;
+}
+.chatbot-msg.me{
+  background: hsl(var(--accent));
+  border-color: rgba(0,0,0,.06);
+}
+
+.chatbot-foot{
+  padding: 10px 12px;
+  border-top: 1px solid rgba(0,0,0,.08);
+  display:flex;
+  gap: 8px;
+  align-items:center;
+}
+.chatbot-input{
+  flex:1;
+  min-height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.14);
+  padding: 0 12px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.05);
+}
+.chatbot-send{
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.10);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 900;
+  cursor: pointer;
 }
