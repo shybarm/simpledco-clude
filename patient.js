@@ -71,7 +71,8 @@ async function logout() {
 
 // ---------- state ----------
 const patientId = qparam("patient_id");
-if (!patientId) {
+// Hard guard: if the param is missing/invalid, DO NOT run any queries (avoids showing other patients' data).
+if (!patientId || patientId === "undefined" || patientId === "null") {
   alert("Missing patient_id");
   window.location.href = "./admin.html";
 }
@@ -181,6 +182,159 @@ async function loadAppointments() {
     `;
     wrap.appendChild(div);
   });
+}
+
+// ---------- appointment files (Storage + DB refs) ----------
+async function loadAppointmentFiles() {
+  const wrap = $("appointmentFilesList");
+  if (!wrap) return;
+  wrap.innerHTML = "";
+
+  // appointment_files rows contain (appointment_id, file_name, file_path, file_type)
+  // We join to appointments to ensure we only show files for this patient.
+  const { data, error } = await sb
+    .from("appointment_files")
+    .select("id, file_name, file_path, file_type, created_at, appointment_id, appointments:appointment_id(patient_id, date, time, service)")
+    .eq("appointments.patient_id", patientId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[PATIENT] loadAppointmentFiles error:", error);
+    wrap.innerHTML = `<div class="row">שגיאה בטעינת קבצים</div>`;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    wrap.innerHTML = `<div class="row">אין קבצים מצורפים</div>`;
+    return;
+  }
+
+  // Create short-lived signed URLs for download/view
+  for (const f of data) {
+    const appt = f.appointments || {};
+    const when = [appt.date, appt.time].filter(Boolean).join(" ");
+    const svc = serviceLabel(appt.service);
+
+    let signedUrl = null;
+    try {
+      const { data: urlData, error: urlErr } = await sb.storage
+        .from("appointment-files")
+        .createSignedUrl(f.file_path, 60 * 60); // 1 hour
+      if (!urlErr) signedUrl = urlData?.signedUrl || null;
+      else console.warn("[PATIENT] signedUrl error", urlErr);
+    } catch (e) {
+      console.warn("[PATIENT] signedUrl exception", e);
+    }
+
+    const div = document.createElement("div");
+    div.className = "row";
+    div.innerHTML = `
+      <div class="meta">
+        <strong>${escHtml(f.file_name || "קובץ")}</strong>
+        <span>${when ? `תור: ${escHtml(when)}${svc ? ` | ${escHtml(svc)}` : ""}` : ""}</span>
+        <span style="color:#607080;">${escHtml(f.file_type || "")}</span>
+      </div>
+      <div class="actions">
+        ${signedUrl ? `<a class="btn-outline" href="${signedUrl}" target="_blank" rel="noopener">פתח</a>` : `<span style="color:#889;">אין קישור</span>`}
+      </div>
+    `;
+    wrap.appendChild(div);
+  }
+}
+
+// ---------- uploaded files (appointments/<appointmentId>/...) ----------
+async function loadUploadedFiles() {
+  const wrap = $("filesList");
+  if (!wrap) return;
+  wrap.innerHTML = "";
+
+  // 1) Get appointments for this patient (so we can group files).
+  const { data: appts, error: apptsErr } = await sb
+    .from("appointments")
+    .select("id, date, time, service")
+    .eq("patient_id", patientId)
+    .order("created_at", { ascending: false });
+
+  if (apptsErr) throw apptsErr;
+
+  if (!appts || appts.length === 0) {
+    wrap.innerHTML = `<div class="row">אין קבצים</div>`;
+    return;
+  }
+
+  const apptIds = appts.map((a) => a.id);
+
+  // 2) Fetch file rows.
+  const { data: files, error: filesErr } = await sb
+    .from("appointment_files")
+    .select("id, appointment_id, file_name, file_path, file_type, created_at")
+    .in("appointment_id", apptIds)
+    .order("created_at", { ascending: false });
+
+  if (filesErr) throw filesErr;
+
+  if (!files || files.length === 0) {
+    wrap.innerHTML = `<div class="row">אין קבצים</div>`;
+    return;
+  }
+
+  // 3) Group by appointment_id.
+  const byAppt = new Map();
+  files.forEach((f) => {
+    const k = String(f.appointment_id);
+    if (!byAppt.has(k)) byAppt.set(k, []);
+    byAppt.get(k).push(f);
+  });
+
+  // 4) Render groups. Use signed URLs (private bucket-safe).
+  for (const a of appts) {
+    const list = byAppt.get(String(a.id));
+    if (!list || list.length === 0) continue;
+
+    const group = document.createElement("div");
+    group.className = "row";
+    group.innerHTML = `
+      <div class="meta">
+        <strong>קבצים לתור: ${escHtml(a.date || "")} ${escHtml(a.time || "")}</strong>
+        <span style="color:#607080;">${escHtml(serviceLabel(a.service))}</span>
+      </div>
+      <div class="files" style="margin-top:10px; display:flex; flex-direction:column; gap:8px;"></div>
+    `;
+
+    const filesWrap = group.querySelector(".files");
+
+    for (const f of list) {
+      // Signed URL for 1 hour
+      const { data: signed, error: signErr } = await sb.storage
+        .from("appointment-files")
+        .createSignedUrl(f.file_path, 60 * 60);
+
+      if (signErr || !signed?.signedUrl) {
+        const line = document.createElement("div");
+        line.innerHTML = `<span>${escHtml(f.file_name)}</span> <span style="color:#b91c1c;">(לא ניתן לייצר לינק)</span>`;
+        filesWrap.appendChild(line);
+        continue;
+      }
+
+      const aEl = document.createElement("a");
+      aEl.href = signed.signedUrl;
+      aEl.target = "_blank";
+      aEl.rel = "noopener";
+      aEl.className = "btn-outline";
+      aEl.style.display = "inline-flex";
+      aEl.style.alignItems = "center";
+      aEl.style.justifyContent = "center";
+      aEl.style.width = "fit-content";
+      aEl.style.gap = "8px";
+      aEl.textContent = `פתח: ${f.file_name}`;
+      filesWrap.appendChild(aEl);
+    }
+
+    wrap.appendChild(group);
+  }
+
+  // If we rendered nothing (no files per appt)
+  if (!wrap.children.length) wrap.innerHTML = `<div class="row">אין קבצים</div>`;
 }
 
 // ---------- visits (editable) ----------
@@ -349,6 +503,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       try {
         await loadPatient();
         await loadAppointments();
+        await loadAppointmentFiles();
         await loadVisits();
         await loadInvoices();
         resetVisitEditor();
@@ -371,6 +526,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await loadPatient();
     await loadAppointments();
+    await loadAppointmentFiles();
     await loadVisits();
     await loadInvoices();
   } catch (err) {
