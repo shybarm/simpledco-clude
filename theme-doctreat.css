@@ -1,106 +1,115 @@
-/* ================================
-   HERO — Brameli-aligned FINAL FIX
-==================================*/
+/* =========================================================
+   🔥 FINAL HERO OVERRIDE — WIDE LIKE BRAMELI (NO COLLAPSE)
+   This FIXES:
+   - Narrow hero
+   - Site appearing "gone"
+   - Portrait overpowering layout
+========================================================= */
 
-.hero{
-  padding: 64px 0 48px !important;
+/* Restore global flow */
+body, main, section {
+  overflow: visible !important;
+}
+
+/* HERO must be FULL WIDTH — not a card */
+.hero {
+  padding: 80px 0 64px !important;
+  background: transparent !important;
+}
+
+/* Container wide like Brameli */
+.hero .container {
+  max-width: 1440px !important;
+  width: min(1440px, calc(100% - 64px)) !important;
+}
+
+/* HERO CONTENT — NOT a card */
+.hero-content {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+
+  /* Two-column layout */
+  padding: 0 !important;
+  min-height: 460px;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  align-items: center;
+  column-gap: 64px;
+}
+
+/* Portrait column */
+.hero-content::before {
+  content: "";
   position: relative;
-}
-
-.hero .container{
-  max-width: 1360px !important;
-  width: min(1360px, calc(100% - 48px)) !important;
-}
-
-/* Main hero panel */
-.hero-content{
-  position: relative;
-  background: #ffffff !important;
-  border-radius: 28px !important;
-  border: 1px solid rgba(0,0,0,.08) !important;
-  box-shadow: 0 20px 48px rgba(0,0,0,.10) !important;
-
-  /* reserve space for portrait */
-  padding: 56px 56px 56px 520px !important;
-  min-height: 480px;
-}
-
-/* Portrait */
-.hero-content::before{
-  content:"";
-  position:absolute;
-  left: 56px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 340px;
-  height: 340px;
-  border-radius: 999px;
+  grid-column: 1;
+  width: 320px;
+  height: 320px;
+  margin: 0 auto;
+  border-radius: 50%;
   background: #fff url("assets/doctor-anna.png") center/cover no-repeat;
-  border: 12px solid rgba(255,255,255,.92);
-  box-shadow: 0 28px 70px rgba(0,0,0,.18);
+  border: 12px solid rgba(255,255,255,.95);
+  box-shadow: 0 26px 70px rgba(0,0,0,.18);
 }
 
-/* Typography */
-.hero h1{
-  font-size: clamp(40px, 4vw, 56px) !important;
+/* Text column */
+.hero-content > * {
+  grid-column: 2;
+}
+
+/* Typography scale like Brameli */
+.hero h1 {
+  font-size: clamp(44px, 4.2vw, 60px) !important;
   font-weight: 900 !important;
-  line-height: 1.1;
+  line-height: 1.1 !important;
 }
 
-.hero .subtitle{
+.hero .subtitle {
   font-size: 18px !important;
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
-.hero-description{
+.hero-description {
   font-size: 18px !important;
-  line-height: 1.7;
-  max-width: 640px;
+  max-width: 720px;
+  line-height: 1.75;
 }
 
-/* CTA row */
-.hero-buttons{
-  display:flex;
-  gap: 12px;
+/* CTA alignment */
+.hero-buttons {
   margin-top: 18px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-/* Stats */
-.trust-badges{
-  display:flex;
-  gap: 28px;
+/* Stats row visible again */
+.trust-badges {
   margin-top: 36px;
   padding-top: 28px;
-  border-top: 1px solid rgba(0,0,0,.10);
+  border-top: 1px solid rgba(0,0,0,.12);
 }
 
-.badge-number{
-  font-size: 42px;
-  font-weight: 900;
-  color: hsl(185 65% 42%);
-}
-
-/* MOBILE */
-@media (max-width: 980px){
-  .hero-content{
-    padding: 36px 22px !important;
-    min-height: auto;
+/* ================= MOBILE ================= */
+@media (max-width: 980px) {
+  .hero-content {
+    grid-template-columns: 1fr;
     text-align: center;
   }
 
-  .hero-content::before{
-    position: relative;
-    left: auto;
-    top: auto;
-    transform: none;
-    margin: 0 auto 22px;
+  .hero-content::before {
+    margin-bottom: 24px;
     width: 240px;
     height: 240px;
-    border-width: 10px;
+  }
+
+  .hero-content > * {
+    grid-column: 1;
   }
 
   .hero-buttons,
-  .trust-badges{
+  .trust-badges {
     justify-content: center;
   }
 }
