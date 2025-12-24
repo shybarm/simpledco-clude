@@ -1,660 +1,142 @@
-/* theme-doctreat.css — BRMLY STYLE MATCH (static version)
-   Goal: match Dr. Ana’s look & feel: warm-beige canvas, teal primary, clean cards,
-   Heebo/Assistant typography, soft borders, subtle shadows. RTL-safe.
-   SAFE: CSS-only. Does not touch backend logic or JS.
-
-   Assets:
-   - assets/doctor-anna.png  (hero portrait)
-*/
-
-/* Optional font load (safe). If you already load fonts in HTML, you can remove this. */
-@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&family=Assistant:wght@400;600;700&display=swap');
+/* ==============================
+   DOCTREAT / BRAMELI HERO FIX
+   single-source-of-truth
+================================ */
 
 :root{
-  /* Match her Tailwind HSL tokens (approx) */
-  --background: 30 8% 98%;
-  --foreground: 30 8% 12%;
-  --border: 30 8% 90%;
-  --card: 30 6% 96%;
-  --card-foreground: 30 6% 14%;
-  --muted: 30 12% 90%;
-  --muted-foreground: 30 12% 28%;
-  --primary: 185 65% 42%;
-  --primary-foreground: 185 65% 98%;
-  --accent: 185 20% 88%;
-  --accent-foreground: 185 20% 18%;
-
-  --radius: 12px;
-
-  /* Practical aliases */
-  --bg: hsl(var(--background));
-  --text: hsl(var(--foreground));
-  --line: hsl(var(--border));
-  --surface: #ffffff;
-  --surface-2: hsl(var(--card));
-  --muted-text: hsl(var(--muted-foreground));
-  --brand: hsl(var(--primary));                 /* teal */
-  --brand-strong: hsl(185 65% 36%);
-  --brand-soft: hsl(var(--accent));             /* light teal */
-  --ring: hsl(var(--primary));
-  --shadow-sm: 0 10px 28px rgba(0,0,0,.06);
-  --shadow-md: 0 18px 44px rgba(0,0,0,.10);
-
-  --container: 1180px;
-  --hero-photo: url("assets/doctor-anna.png");
+  --brand: hsl(185 65% 42%);
+  --brand-soft: hsl(185 20% 88%);
+  --container: 1360px;
 }
 
 html,body{
-  background: var(--bg) !important;
-  color: var(--text) !important;
-  direction: rtl;
-  text-align: right;
-  font-family: Heebo, Assistant, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: Heebo, system-ui, sans-serif;
+  background: #fafafa;
 }
 
-.container{ width:min(var(--container), calc(100% - 32px)) !important; }
-a{ color: inherit; text-decoration: none; }
-hr{ border:0; height:1px; background: rgba(0,0,0,.08); }
-
-/* Unstyled phone/email links */
-a[href^="tel:"], a[href^="mailto:"]{
-  color: inherit !important;
-  text-decoration: none !important;
+/* Container */
+.container{
+  width: min(var(--container), calc(100% - 48px));
+  margin-inline: auto;
 }
 
-/* ───────────────────────── Header (matches her: clean white bar, thin border) */
+/* Header */
 .header{
+  background: rgba(255,255,255,.9);
+  border-bottom: 1px solid rgba(0,0,0,.08);
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(250,249,249,.92) !important;
-  backdrop-filter: blur(10px) saturate(140%);
-  -webkit-backdrop-filter: blur(10px) saturate(140%);
-  border-bottom: 1px solid rgba(0,0,0,.08) !important;
-  box-shadow: 0 10px 24px rgba(0,0,0,.04);
 }
 
-.nav{
-  padding: 12px 0 !important;
-  display:flex;
-  align-items:center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.logo{
-  font-weight: 900 !important;
-  letter-spacing: .2px;
-  display:flex;
-  align-items:center;
-  gap: 10px;
-}
-.logo::before{
-  content:"א";
-  width: 38px;
-  height: 38px;
-  border-radius: 999px;
-  display:grid;
-  place-items:center;
-  background: var(--brand);
-  color: hsl(var(--primary-foreground));
-  font-weight: 900;
-  box-shadow: 0 10px 24px rgba(37,165,176,.18);
-}
-
-.nav-links{
-  display:flex;
-  gap: 18px !important;
-  align-items:center;
-}
-
-.nav-links a{
-  font-weight: 700 !important;
-  color: rgba(0,0,0,.62);
-  transition: color .12s ease;
-}
-.nav-links a:hover{ color: rgba(0,0,0,.86); }
-
-/* Top-left CTA button (matches screenshot) */
-.nav .btn-primary, .header .btn-primary{
-  border-radius: 10px !important;
-  padding: 10px 14px !important;
-}
-
-/* Mobile toggle */
-.menu-toggle{
-  border-radius: 10px !important;
-  border: 1px solid rgba(0,0,0,.10) !important;
-  background: #fff !important;
-  box-shadow: 0 10px 22px rgba(0,0,0,.06);
-  padding: 10px 12px !important;
-}
-
-/* ───────────────────────── Buttons (teal filled + clean outline like her site) */
-.btn-primary,
-button.btn-primary,
-input[type="submit"].btn-primary{
-  background: var(--brand) !important;
-  color: hsl(var(--primary-foreground)) !important;
-  border: 1px solid rgba(0,0,0,.08) !important;
-  border-radius: 10px !important;
-  box-shadow: 0 12px 26px rgba(37,165,176,.14);
-  font-weight: 800 !important;
-}
-
-.btn-outline,
-.btn-secondary,
-button.btn-outline,
-button.btn-secondary{
-  background: #fff !important;
-  color: rgba(0,0,0,.76) !important;
-  border: 1px solid rgba(0,0,0,.14) !important;
-  border-radius: 10px !important;
-  box-shadow: 0 10px 22px rgba(0,0,0,.05);
-  font-weight: 800 !important;
-}
-
-.btn-primary:hover,
-.btn-outline:hover,
-.btn-secondary:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 16px 34px rgba(0,0,0,.10);
-}
-
-.btn-primary:active,
-.btn-outline:active,
-.btn-secondary:active{
-  transform: translateY(0);
-  box-shadow: 0 10px 22px rgba(0,0,0,.06);
-}
-
-/* ───────────────────────── HERO (match: big circular portrait + clean spacing) */
+/* HERO */
 .hero{
-  padding: 48px 0 34px !important;
-  background: transparent !important;
+  position: relative;
+  padding: 56px 0;
 }
 
 .hero-content{
   position: relative;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-
-/* Create a “section” like her: light background band + soft vignette */
-.hero::before{
-  content:"";
-  position:absolute;
-  inset-inline: 0;
-  top: 72px;
-  height: 420px;
-  background:
-    radial-gradient(1000px 420px at 45% 20%, rgba(0,0,0,.10), transparent 60%),
-    linear-gradient(to bottom, rgba(0,0,0,.02), rgba(0,0,0,.00));
-  opacity:.22;
-  pointer-events:none;
-  z-index:-1;
-}
-
-/* Circle portrait */
-.hero-content::before{
-  content:"";
-  position:absolute;
-  inset-inline-start: 0;
-  top: 18px;
-  width: 360px;
-  height: 360px;
-  border-radius: 999px;
-  background-image: var(--hero-photo);
-  background-size: cover;
-  background-position: center;
-  border: 10px solid rgba(255,255,255,.85);
-  box-shadow: 0 28px 70px rgba(0,0,0,.18);
-}
-
-/* Copy alignment: content sits to the right of portrait on desktop */
-@media (min-width: 1024px){
-  .hero-content{
-    min-height: 400px;
-    padding-inline-start: 420px !important;
-  }
-}
-
-/* Mobile: stack portrait above */
-@media (max-width: 1023px){
-  .hero-content::before{
-    position: relative;
-    display:block;
-    width: min(360px, 88vw);
-    height: min(360px, 88vw);
-    margin: 0 auto 22px auto;
-    top: 0;
-  }
-  .hero-content{
-    padding-inline-start: 0 !important;
-    text-align: center;
-  }
-}
-
-/* Hero title & subtitle */
-.hero h1{
-  font-size: clamp(38px, 4.4vw, 56px) !important;
-  font-weight: 900 !important;
-  letter-spacing: -.2px;
-  line-height: 1.1 !important;
-  margin: 0 0 10px 0 !important;
-  color: rgba(0,0,0,.86) !important;
-}
-
-.hero .subtitle, .hero .hero-description{
-  font-size: 18px !important;
-  line-height: 1.75 !important;
-  color: rgba(0,0,0,.62) !important;
-  max-width: 720px;
-}
-
-/* CTA row similar to her: input-like + primary button */
-.hero-buttons{
-  display:flex;
-  flex-wrap: wrap;
-  gap: 10px !important;
-  margin-top: 14px !important;
-  align-items:center;
-}
-@media (max-width: 1023px){
-  .hero-buttons{ justify-content:center; }
-}
-
-/* If you have an input field in hero (search/ask), style it like her */
-.hero input[type="text"], .hero input[type="search"]{
-  min-height: 44px;
-  border-radius: 10px;
-  border: 1px solid rgba(0,0,0,.14);
   background: #fff;
-  padding: 0 14px;
-  box-shadow: 0 10px 22px rgba(0,0,0,.05);
-}
-
-/* Stats row: big teal numbers */
-.stats, .stats-row, .badges, .hero-badges{
-  display:flex;
-  gap: 34px;
-  justify-content: center;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  margin-top: 34px;
-  padding-top: 26px;
-  border-top: 1px solid rgba(0,0,0,.10);
-}
-
-.stat, .badge, .hero-badge, .stat-badge{
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  text-align:center;
-  min-width: 150px;
-}
-
-.stat strong, .stat .value{
-  display:block;
-  font-size: clamp(40px, 4vw, 60px);
-  font-weight: 900;
-  color: var(--brand);
-}
-
-.stat span, .stat .label{
-  display:block;
-  margin-top: 6px;
-  color: rgba(0,0,0,.55);
-  font-size: 14px;
-  font-weight: 700;
-}
-
-/* ───────────────────────── Section titles */
-.section-title{
-  font-size: clamp(26px, 3vw, 40px) !important;
-  font-weight: 900 !important;
-  color: rgba(0,0,0,.86) !important;
-}
-.section-subtitle{
-  color: rgba(0,0,0,.60) !important;
-}
-
-/* ───────────────────────── Cards (services/news/about) */
-.card, .service-card, .feature-card, .panel, .box,
-.admin-card, .today-card, .patient-card{
-  background: #fff !important;
-  border: 1px solid rgba(0,0,0,.10) !important;
-  border-radius: 16px !important;
-  box-shadow: var(--shadow-sm);
-}
-
-.card:hover, .service-card:hover, .feature-card:hover, .panel:hover, .box:hover{
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-
-/* Service icons in small rounded square like her */
-.service-icon{
-  width: 54px;
-  height: 54px;
-  border-radius: 12px;
-  background: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow: 0 14px 30px rgba(0,0,0,.06);
-}
-
-/* Link “קרא עוד” style */
-a.read-more, .read-more{
-  color: var(--brand) !important;
-  font-weight: 800 !important;
-}
-
-/* ───────────────────────── Forms */
-.appointment-form, form{
-  background: #fff !important;
-  border: 1px solid rgba(0,0,0,.10) !important;
-  border-radius: 16px !important;
-  box-shadow: var(--shadow-sm);
-}
-
-.form-group label{
-  font-weight: 800 !important;
-  color: rgba(0,0,0,.62) !important;
-  font-size: 13px !important;
-}
-
-input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="number"], select, textarea{
-  background: #fff !important;
-  border: 1px solid rgba(0,0,0,.14) !important;
-  border-radius: 12px !important;
-  min-height: 44px;
-  padding: 10px 12px !important;
-  box-shadow: 0 10px 22px rgba(0,0,0,.05);
-}
-
-input:focus, select:focus, textarea:focus{
-  outline: none !important;
-  border-color: rgba(37,165,176,.55) !important;
-  box-shadow: 0 0 0 4px rgba(37,165,176,.15), 0 16px 34px rgba(0,0,0,.10) !important;
-}
-
-/* ───────────────────────── Footer */
-.footer, footer{
-  border-top: 1px solid rgba(0,0,0,.10);
-  background: rgba(255,255,255,.75);
-}
-
-/* ───────────────────────── Mobile adjustments */
-@media (max-width: 767px){
-  .nav-links{ gap: 12px !important; }
-}
-/* ───────────────────────── FIX 1: HERO WIDTH (match Dr. Brameli – wide, airy) */
-
-/* Expand overall container slightly like her layout */
-:root{ --container: 1320px; }
-.container{ width:min(var(--container), calc(100% - 40px)) !important; }
-
-/* Ensure hero section uses full available width and same spacing */
-.hero{
-  position: relative;
-  padding: 56px 0 40px !important;
-}
-
-/* Remove any max-width constraints applied by older CSS */
-.hero .container,
-.hero-content{
-  max-width: none !important;
-  width: 100% !important;
-}
-
-/* Make hero content behave like a two-column layout (portrait + copy) */
-@media (min-width: 1024px){
-  .hero-content{
-    padding-inline-start: 460px !important;
-    min-height: 430px !important;
-  }
-  .hero-content::before{
-    width: 390px !important;
-    height: 390px !important;
-    top: 10px !important;
-  }
-}
-
-/* Reproduce her “wide light band” look */
-.hero::after{
-  content:"";
-  position:absolute;
-  inset-inline:0;
-  top: 70px;
-  height: 470px;
-  background:
-    radial-gradient(1200px 520px at 45% 25%, rgba(0,0,0,.12), transparent 60%),
-    linear-gradient(to bottom, rgba(0,0,0,.025), rgba(0,0,0,0));
-  opacity: .20;
-  pointer-events:none;
-  z-index:-2;
-}
-
-/* ───────────────────────── FIX 2: REMOVE ICONS (clean cards like you asked) */
-
-/* Kill “service icons” and any decorative icons inside service cards / content cards */
-.service-icon,
-.service-card .service-icon,
-.service-card img,
-.service-card svg,
-.service-card i,
-.service-card [class*="icon"],
-.service-card [class*="Icon"],
-.card img.icon,
-.card svg.icon,
-.card i.icon,
-.feature-card img,
-.feature-card svg,
-.feature-card i,
-.panel img,
-.panel svg,
-.panel i{
-  display: none !important;
-}
-
-/* If an icon is rendered inside a small square bubble, hide the bubble too */
-.service-card .icon-badge,
-.service-card .icon-wrap,
-.service-card .badge-icon{
-  display: none !important;
-}
-
-/* Tighten card padding now that icons are gone */
-.service-card,
-.card,
-.feature-card,
-.panel{
-  padding-top: 18px !important;
-}
-
-/* ───────────────────────── BOT (floating assistant) — if you include chatbot.js */
-
-/* Button */
-.chatbot-launcher{
-  position: fixed;
-  inset-inline-start: 20px;
-  bottom: 20px;
-  z-index: 9999;
-  width: 56px;
-  height: 56px;
-  border-radius: 999px;
-  border: 1px solid rgba(0,0,0,.10);
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  box-shadow: 0 18px 44px rgba(0,0,0,.18);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
-
-.chatbot-panel{
-  position: fixed;
-  inset-inline-start: 20px;
-  bottom: 86px;
-  width: min(360px, calc(100vw - 40px));
-  max-height: 70vh;
-  z-index: 9999;
-  background: #fff;
-  border: 1px solid rgba(0,0,0,.10);
-  border-radius: 16px;
-  box-shadow: 0 24px 70px rgba(0,0,0,.20);
-  overflow: hidden;
-  display: none;
-}
-
-.chatbot-panel.open{ display: flex; flex-direction: column; }
-
-.chatbot-head{
-  padding: 12px 14px;
-  background: rgba(0,0,0,.03);
-  border-bottom: 1px solid rgba(0,0,0,.08);
-  display:flex;
-  align-items:center;
-  justify-content: space-between;
-  gap: 10px;
-}
-.chatbot-title{
-  font-weight: 900;
-  color: rgba(0,0,0,.82);
-}
-.chatbot-close{
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  border: 1px solid rgba(0,0,0,.12);
-  background: #fff;
-  cursor: pointer;
-  font-weight: 900;
-}
-
-.chatbot-body{
-  padding: 12px 14px;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.chatbot-msg{
-  border-radius: 14px;
-  padding: 10px 12px;
+  border-radius: 28px;
   border: 1px solid rgba(0,0,0,.08);
-  background: rgba(0,0,0,.02);
-  color: rgba(0,0,0,.78);
-  line-height: 1.6;
-}
-.chatbot-msg.me{
-  background: hsl(var(--accent));
-  border-color: rgba(0,0,0,.06);
-}
+  box-shadow: 0 18px 44px rgba(0,0,0,.10);
 
-.chatbot-foot{
-  padding: 10px 12px;
-  border-top: 1px solid rgba(0,0,0,.08);
-  display:flex;
-  gap: 8px;
-  align-items:center;
-}
-.chatbot-input{
-  flex:1;
-  min-height: 42px;
-  border-radius: 12px;
-  border: 1px solid rgba(0,0,0,.14);
-  padding: 0 12px;
-  box-shadow: 0 10px 22px rgba(0,0,0,.05);
-}
-.chatbot-send{
-  min-height: 42px;
-  padding: 0 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(0,0,0,.10);
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  font-weight: 900;
-  cursor: pointer;
-}
-
-
-/* ================================
-   HERO — Brameli width + layout fix
-   (design-only; no HTML changes)
-==================================*/
-.hero .container{
-  max-width: 1360px !important;
-  width: min(1360px, calc(100% - 48px)) !important;
-}
-
-.hero-content{
-  /* Wide panel like Brameli */
-  background: radial-gradient(900px 420px at 20% 10%, rgba(185,65%,42%,.10), transparent 55%),
-              radial-gradient(900px 420px at 80% 18%, rgba(185,20%,88%,.55), transparent 60%),
-              #fff !important;
-  border: 1px solid rgba(0,0,0,.08) !important;
-  border-radius: 28px !important;
-  box-shadow: 0 18px 44px rgba(0,0,0,.10) !important;
-
-  /* reserve space for the portrait on the left */
-  padding: 56px 56px 56px 560px !important;
+  /* reserve space for image */
+  padding: 56px 56px 56px 520px;
   min-height: 520px;
-  width: 100% !important;
-  max-width: 100% !important;
 }
 
-/* Big circular portrait (left side) */
+/* Portrait */
 .hero-content::before{
   content:"";
   position:absolute;
   left: 56px;
   top: 50%;
   transform: translateY(-50%);
-  width: 400px;
-  height: 400px;
+  width: 360px;
+  height: 360px;
   border-radius: 999px;
-  background: #fff url("assets/doctor-anna.png") center/cover no-repeat;
+  background: url("assets/doctor-anna.png") center/cover no-repeat;
+  border: 14px solid rgba(255,255,255,.95);
   box-shadow: 0 30px 80px rgba(0,0,0,.16);
-  border: 14px solid rgba(255,255,255,.92);
 }
 
-/* Small floating tag cards (optional; matches Brameli) */
-.hero-content .badge,
-.hero-content .stat,
-.hero-content .hero-badge{
-  border-radius: 14px !important;
-  background: rgba(255,255,255,.92) !important;
-  border: 1px solid rgba(0,0,0,.08) !important;
-  box-shadow: 0 12px 26px rgba(0,0,0,.10) !important;
+/* Text */
+.hero h1{
+  font-size: clamp(38px,4vw,56px);
+  font-weight: 900;
+  margin-bottom: 12px;
 }
 
-/* Mobile: stack + shrink portrait */
+.subtitle{
+  font-weight: 700;
+  color: rgba(0,0,0,.65);
+}
+
+.hero-description{
+  max-width: 720px;
+  color: rgba(0,0,0,.6);
+  line-height: 1.7;
+}
+
+/* Buttons */
+.btn-primary{
+  background: var(--brand);
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 800;
+}
+
+.btn-secondary,
+.btn-outline{
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.14);
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 800;
+}
+
+/* Stats */
+.stats{
+  display:flex;
+  gap: 34px;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0,0,0,.1);
+}
+
+.stat strong{
+  font-size: 42px;
+  color: var(--brand);
+}
+
+.stat span{
+  font-size: 14px;
+  color: rgba(0,0,0,.55);
+  font-weight: 700;
+}
+
+/* MOBILE */
 @media (max-width: 980px){
   .hero-content{
-    padding: 40px 22px 26px !important;
+    padding: 32px 20px;
     min-height: auto;
     text-align: center;
   }
+
   .hero-content::before{
     position: relative;
     left: auto;
     top: auto;
     transform: none;
-    display:block;
-    margin: 0 auto 18px;
+    margin: 0 auto 20px;
     width: 240px;
     height: 240px;
-    border-width: 10px;
   }
-  .hero-buttons{ justify-content:center !important; }
-}
 
+  .stats{
+    justify-content: center;
+  }
+}
