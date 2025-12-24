@@ -5,11 +5,11 @@
   const style = document.createElement("style");
   style.textContent = `
     .bot-fab{position:fixed;left:18px;bottom:18px;z-index:9999;border-radius:999px;border:1px solid rgba(15,23,42,.12);
-      box-shadow:0 12px 30px rgba(15,23,42,.14);padding:12px 14px;background:#fff;cursor:pointer;display:flex;gap:10px;align-items:center}
+      box-shadow:0 8px 22px rgba(15,23,42,.12);padding:12px 14px;background:#fff;cursor:pointer;display:flex;gap:10px;align-items:center}
     .bot-fab .dot{width:10px;height:10px;border-radius:50%;background:#22c55e}
     .bot-fab strong{font-weight:700}
     .bot-panel{position:fixed;left:18px;bottom:76px;z-index:9999;width:min(360px, calc(100vw - 36px));
-      border-radius:18px;border:1px solid rgba(15,23,42,.12);background:#fff;box-shadow:0 18px 50px rgba(15,23,42,.18);overflow:hidden;display:none}
+      border-radius:18px;border:1px solid rgba(15,23,42,.12);background:#fff;box-shadow:0 10px 28px rgba(15,23,42,.14);overflow:hidden;display:none}
     .bot-head{padding:14px 14px 10px;border-bottom:1px solid rgba(15,23,42,.08);display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
     .bot-head h4{margin:0;font-size:15px}
     .bot-head p{margin:6px 0 0;font-size:12px;opacity:.75;line-height:1.35}
