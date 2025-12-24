@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patient File | תיק מטופל</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
+  <!-- Design-only theme layer (keeps logic/flow unchanged) -->
+  <link rel="stylesheet" href="theme-doctreat.css">
+
+  <style>
+    .patient-wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    .patient-top { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:16px; }
+    .patient-actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .patient-card { background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:14px; padding:16px; }
+    .patient-grid { display:grid; grid-template-columns: 2fr 1fr 1fr; gap:12px; }
+    .tabs { display:flex; gap:10px; margin: 18px 0 10px; flex-wrap:wrap; }
+    .tab { padding:10px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.15); background:#fff; cursor:pointer; }
+    .tab.active { border-color: rgba(0,0,0,.35); font-weight:700; }
+    .panel { display:none; }
+    .panel.active { display:block; }
+    .list { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+    .row { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:12px; border:1px solid rgba(0,0,0,.08); border-radius:12px; background:#fff; }
+    .row .meta { display:flex; flex-direction:column; gap:4px; }
+    .row .actions { display:flex; gap:8px; flex-wrap:wrap; }
+    table.items { width:100%; border-collapse:collapse; }
+    table.items th, table.items td { border-bottom:1px solid rgba(0,0,0,.08); padding:8px; }
+    .totals { display:flex; gap:18px; margin-top:10px; justify-content:flex-end; }
+    .totals div { display:flex; gap:6px; }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <div class="logo">Back Office</div>
+
+        <ul class="nav-links active" style="position: static; box-shadow:none; padding:0; flex-direction: row; gap: 1rem;">
+          <li><a href="./admin.html">חזרה לניהול</a></li>
+          <li><a href="#" id="logoutLink">התנתקות</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="patient-wrap">
+    <div class="patient-top">
+      <div>
+        <h1 class="admin-title" style="margin:0;">תיק מטופל</h1>
+        <!-- patient_id hidden by request -->
+        <p class="admin-subtitle" id="patientMeta" style="margin:.25rem 0 0;">—</p>
+      </div>
+
+      <div class="patient-actions">
+        <button class="btn-secondary" id="refreshBtn" type="button">רענן</button>
+        <button class="btn-primary" id="savePatientBtn" type="button">שמור פרטים</button>
+      </div>
+    </div>
+
+    <section class="patient-card">
+      <div class="patient-grid">
+        <div class="form-group" style="margin:0;">
+          <label>שם מלא</label>
+          <input id="fullNameInput" type="text" placeholder="שם מלא" />
+        </div>
+
+        <div class="form-group" style="margin:0;">
+          <label>אימייל</label>
+          <input id="emailInput" type="email" placeholder="name@email.com" />
+        </div>
+
+        <div class="form-group" style="margin:0;">
+          <label>טלפון</label>
+          <input id="phoneInput" type="text" placeholder="05XXXXXXXX" />
+        </div>
+      </div>
+
+      <div class="patient-grid" style="margin-top:12px; grid-template-columns: 1fr 1fr 2fr;">
+        <div class="form-group" style="margin:0;">
+          <label>מספר ת"ז</label>
+          <input id="personalIdInput" type="text" placeholder="לדוגמה: 123456789" />
+        </div>
+
+        <div class="form-group" style="margin:0;">
+          <label>תאריך לידה</label>
+          <input id="dobInput" type="date" />
+        </div>
+
+       <div class="form-group" style="margin:0;">
+  <label style="display:flex; align-items:center; gap:8px;">
+    <input type="checkbox" id="hasAllergiesCheckbox" />
+    אלרגיות
+  </label>
+</div>
+
+<div class="form-group" id="allergiesBox" style="margin:0; display:none;">
+  <label>פירוט אלרגיות</label>
+  <textarea
+    id="allergiesInput"
+    rows="2"
+    placeholder="פרט אלרגיות, רגישויות, תרופות..."
+  ></textarea>
+</div>
+      </div>
+    </section>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="appointments" type="button">תורים</button>
+      <button class="tab" data-tab="visits" type="button">ביקורים</button>
+      <button class="tab" data-tab="invoices" type="button">חשבוניות</button>
+    </div>
+
+    <section class="panel active" id="panel-appointments">
+      <div class="patient-card">
+        <h3 style="margin:0 0 8px;">תורים</h3>
+        <div class="list" id="appointmentsList"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-visits">
+      <div class="patient-card">
+        <h3 style="margin:0 0 10px;">ביקור חדש</h3>
+
+        <div class="patient-grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="form-group" style="margin:0;">
+            <label>תאריך ביקור</label>
+            <input id="visitDateInput" type="date" />
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <label>סיכום קצר</label>
+            <input id="visitSummaryInput" type="text" placeholder="למשל: בדיקה כללית" />
+          </div>
+
+          <div class="form-group" style="margin:0; grid-column: 1 / -1;">
+            <label>הערות רופא</label>
+            <textarea id="visitNotesInput" rows="4" placeholder="פרטים קליניים..."></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <button class="btn-primary" id="createVisitBtn" type="button">צור ביקור</button>
+        </div>
+
+        <h3 id="visitsHistoryTitle" style="margin:18px 0 8px;">היסטוריית ביקורים</h3>
+        <div class="list" id="visitsList"></div>
+
+        <h3 style="margin:18px 0 8px;">קבצים מצורפים (מתורים)</h3>
+        <div class="list" id="filesList"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-invoices">
+      <div class="patient-card">
+        <h3 style="margin:0 0 10px;">חשבונית חדשה</h3>
+
+        <div class="patient-grid" style="grid-template-columns: 2fr 1fr;">
+          <div class="form-group" style="margin:0;">
+            <label>שליחה לכתובת מייל</label>
+            <input id="invoiceToEmailInput" type="email" placeholder="ברירת מחדל: מייל המטופל" />
+          </div>
+
+          <div style="display:flex; align-items:flex-end; gap:10px;">
+            <button class="btn-outline" id="addItemBtn" type="button">הוסף שורה</button>
+            <button class="btn-primary" id="createInvoiceBtn" type="button">צור חשבונית</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <table class="items">
+            <thead>
+              <tr>
+                <th>תיאור</th>
+                <th style="width:110px;">כמות</th>
+                <th style="width:140px;">מחיר יח׳</th>
+                <th style="width:140px;">סה״כ שורה</th>
+              </tr>
+            </thead>
+            <tbody id="itemsBody"></tbody>
+          </table>
+
+          <div class="totals">
+            <div><strong>סכום ביניים:</strong> <span id="subTotalLabel">0.00</span></div>
+            <div><strong>סה״כ:</strong> <span id="totalLabel">0.00</span></div>
+          </div>
+        </div>
+
+        <h3 style="margin:18px 0 8px;">חשבוניות</h3>
+        <div class="list" id="invoicesList"></div>
+      </div>
+    </section>
+
+    <p class="admin-footnote" style="margin-top:14px;">
+      ✅ נתונים נטענים מה-DB של Supabase. רק משתמשים מחוברים יכולים לראות ולנהל.
+    </p>
+  </main>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script src="patient.js"></script>
+</body>
+</html>
