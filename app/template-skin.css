@@ -1,92 +1,184 @@
-/* template-skin.css — Replit-template-inspired polish layer (front-end only) */
+/* template-skin.css — Replit-template-inspired skin layer (front-end only)
+   - Designed to be LOADED AFTER theme-doctreat.css
+   - Does NOT change backend or admin.
+   - Targets existing class names in the main template.
+*/
 
-/* Global rhythm & typography */
 :root{
-  --skin-radius: 18px;
-  --skin-shadow: 0 10px 30px rgba(15, 23, 42, .08);
-  --skin-border: rgba(15, 23, 42, .08);
+  --ink: #0f172a;
+  --muted: rgba(15,23,42,.70);
+  --border: rgba(15,23,42,.10);
+  --bg: #ffffff;
+
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --shadow: 0 18px 55px rgba(15,23,42,.10);
+  --shadow-soft: 0 10px 30px rgba(15,23,42,.08);
+
+  --primary: #1f3a8a;      /* deep medical blue */
+  --primary-2: #2563eb;    /* bright blue */
+  --success: #16a34a;
 }
+
 html{ scroll-behavior: smooth; }
+
 body{
-  font-family: "Heebo","Assistant",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  font-family: "Assistant","Heebo",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  color: var(--ink);
+  background: var(--bg);
 }
 
-/* Cleaner container feel */
-.container{
-  max-width: 1180px;
-}
+/* Wider, calmer layout */
+.container{ max-width: 1200px; }
 
-/* Header polish */
-header, .header{
+/* Sticky glassy header like the template */
+.header{
   position: sticky;
   top: 0;
   z-index: 50;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   background: rgba(255,255,255,.82);
-  border-bottom: 1px solid var(--skin-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
 }
-nav a{
+
+.logo{
+  letter-spacing: -.02em;
+}
+
+.nav-links a{
   border-radius: 999px;
-  padding: .55rem .9rem;
-  transition: transform .12s ease, background .12s ease;
+  padding: .55rem .95rem;
+  transition: transform .14s ease, background .14s ease, box-shadow .14s ease;
 }
-nav a:hover{
+
+.nav-links a:hover{
   background: rgba(15,23,42,.06);
   transform: translateY(-1px);
 }
 
-/* Sections: more air */
+/* Make section rhythm more "premium" */
 section{
   padding-top: clamp(56px, 7vw, 92px);
   padding-bottom: clamp(56px, 7vw, 92px);
 }
-section h2{
-  letter-spacing: -0.02em;
+
+.section-title{
+  letter-spacing: -.02em;
 }
 
-/* Cards: softer */
-.card, .service-card, .testimonial-card, .stat-card, .contact-card{
-  border-radius: var(--skin-radius);
-  border: 1px solid var(--skin-border);
-  box-shadow: var(--skin-shadow);
-}
-.card:hover, .service-card:hover, .testimonial-card:hover{
-  transform: translateY(-2px);
+.section-subtitle{
+  color: var(--muted);
 }
 
-/* Buttons: modern */
-.btn, button, .button, a.button{
+/* HERO — add a subtle calm gradient + better hierarchy */
+.hero{
+  padding-top: clamp(70px, 9vw, 120px);
+  padding-bottom: clamp(64px, 8vw, 110px);
+  background:
+    radial-gradient(900px 600px at 15% 10%, rgba(37,99,235,.10), transparent 55%),
+    radial-gradient(700px 500px at 85% 25%, rgba(31,58,138,.08), transparent 55%);
+}
+
+.hero h1{
+  line-height: 1.15;
+  letter-spacing: -.03em;
+}
+
+.subtitle{ color: var(--muted); }
+
+.hero-description{ color: rgba(15,23,42,.78); }
+
+/* Buttons — map to existing classes */
+.btn-primary,
+.btn-secondary,
+.btn-outline{
   border-radius: 999px;
-  transition: transform .12s ease, box-shadow .12s ease;
-}
-.btn:hover, button:hover, .button:hover, a.button:hover{
-  transform: translateY(-1px);
+  transition: transform .14s ease, box-shadow .14s ease, background .14s ease, color .14s ease, border-color .14s ease;
 }
 
-/* Form fields: smoother */
+.btn-primary{
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
+  box-shadow: 0 14px 40px rgba(37,99,235,.20);
+  border: 1px solid rgba(37,99,235,.20);
+}
+
+.btn-primary:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 18px 55px rgba(37,99,235,.25);
+}
+
+.btn-secondary{
+  background: rgba(15,23,42,.06);
+  border: 1px solid rgba(15,23,42,.12);
+}
+
+.btn-secondary:hover{
+  transform: translateY(-1px);
+  background: rgba(15,23,42,.08);
+}
+
+.btn-outline{
+  border: 1px solid rgba(15,23,42,.16);
+  background: rgba(255,255,255,.75);
+}
+
+.btn-outline:hover{
+  transform: translateY(-1px);
+  background: rgba(15,23,42,.04);
+}
+
+/* Trust badges — turn into template-like pills */
+.trust-badges .badge{
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  background: rgba(255,255,255,.70);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.badge-number{
+  letter-spacing: -.02em;
+}
+
+/* Services / Testimonials cards */
+.service-card,
+.testimonial-card{
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  transition: transform .14s ease, box-shadow .14s ease;
+}
+
+.service-card:hover,
+.testimonial-card:hover{
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.service-card.featured{
+  border-color: rgba(37,99,235,.25);
+  box-shadow: 0 22px 70px rgba(37,99,235,.14);
+}
+
+/* Forms — smoother inputs */
 input, select, textarea{
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   border: 1px solid rgba(15,23,42,.16);
 }
+
 input:focus, select:focus, textarea:focus{
   outline: none;
-  border-color: rgba(15,23,42,.28);
-  box-shadow: 0 0 0 4px rgba(15,23,42,.08);
+  border-color: rgba(37,99,235,.40);
+  box-shadow: 0 0 0 4px rgba(37,99,235,.12);
 }
 
-/* Hero: gentle spacing + portrait not dominant */
-.hero{
-  padding-top: clamp(70px, 9vw, 110px);
-  padding-bottom: clamp(60px, 8vw, 100px);
-}
-.hero-portrait{
-  width: 260px;
-  height: 260px;
-  box-shadow: 0 16px 44px rgba(15,23,42,.12);
-  border: 6px solid rgba(255,255,255,.9);
+/* Footer polish */
+footer{
+  border-top: 1px solid var(--border);
 }
 
 /* Motion safety */
