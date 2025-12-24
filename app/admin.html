@@ -78,7 +78,12 @@
     }
     .patient-open:hover { text-decoration: underline; }
     .patient-open:disabled { cursor: default; opacity: .55; text-decoration: none; }
-  </style>
+  
+    /* dashboard-simplify */
+    /* Keep the dashboard focused on "מטופלים שמגיעים היום" + KPI cards */
+    .filters-row, .filters-panel, .admin-table-wrap { display:none !important; }
+    .admin-kpis{ margin-top: 14px; }
+</style>
 </head>
 
 <body>
@@ -214,7 +219,6 @@
               <table class="admin-table">
                 <thead>
                   <tr>
-                    <th>נוצר</th>
                     <th>מטופל</th>
                     <th>שירות</th>
                     <th>תאריך</th>

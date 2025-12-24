@@ -114,7 +114,13 @@
 
   // ---------- Modal scroll lock ----------
   function lockBodyScroll() {
+    // Preserve scroll position & prevent background scroll (avoids "jump" on open)
     lastScrollY = window.scrollY || 0;
+
+    const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarW > 0) document.body.style.paddingRight = `${scrollbarW}px`;
+
+    document.body.style.overflow = "hidden";
     document.body.style.position = "fixed";
     document.body.style.top = `-${lastScrollY}px`;
     document.body.style.left = "0";
@@ -124,11 +130,15 @@
 
   function unlockBodyScroll() {
     const top = document.body.style.top;
+
+    document.body.style.overflow = "";
     document.body.style.position = "";
     document.body.style.top = "";
     document.body.style.left = "";
     document.body.style.right = "";
     document.body.style.width = "";
+    document.body.style.paddingRight = "";
+
     const y = top ? Math.abs(parseInt(top, 10)) : lastScrollY;
     window.scrollTo(0, y || 0);
   }
@@ -202,12 +212,13 @@
     }
 
     kpis.innerHTML = `
-      <div class="kpi-card"><div class="kpi-label">סה"כ</div><div class="kpi-value">${total}</div></div>
-      <div class="kpi-card"><div class="kpi-label">חדש</div><div class="kpi-value">${byStatus.new}</div></div>
-      <div class="kpi-card"><div class="kpi-label">אושר</div><div class="kpi-value">${byStatus.confirmed}</div></div>
-      <div class="kpi-card"><div class="kpi-label">בוטל</div><div class="kpi-value">${byStatus.cancelled}</div></div>
+      <div class="kpi-card kpi-total"><div class="kpi-label">סה"כ</div><div class="kpi-value">${total}</div></div>
+      <div class="kpi-card kpi-new"><div class="kpi-label">חדש</div><div class="kpi-value">${byStatus.new}</div></div>
+      <div class="kpi-card kpi-confirmed"><div class="kpi-label">אושר</div><div class="kpi-value">${byStatus.confirmed}</div></div>
+      <div class="kpi-card kpi-cancelled"><div class="kpi-label">בוטל</div><div class="kpi-value">${byStatus.cancelled}</div></div>
     `;
   }
+
 
   function renderToday(rows) {
     if (!todayList || !todayCountBadge) return;
@@ -251,9 +262,7 @@
 
     appointmentsBody.innerHTML = "";
 
-    for (const r of rows) {
-      const created = r.created_at ? new Date(r.created_at).toLocaleString("he-IL") : "—";
-      const patientName = `${safeStr(r.first_name)} ${safeStr(r.last_name)}`.trim() || "—";
+    for (const r of rows) {      const patientName = `${safeStr(r.first_name)} ${safeStr(r.last_name)}`.trim() || "—";
       const service = labelService(r.service);
       const date = safeStr(r.date) || "—";
       const time = safeStr(r.time) || "—";
@@ -262,8 +271,6 @@
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${escapeHtml(created)}</td>
-
         <td>
           <button class="patient-open js-open-patient" type="button" data-id="${escapeHtml(r.id)}">
             ${escapeHtml(patientName)}
@@ -322,6 +329,9 @@
           <div><strong>תאריך:</strong> ${escapeHtml(safeStr(appt.date) || "—")}</div>
           <div><strong>שעה:</strong> ${escapeHtml(safeStr(appt.time) || "—")}</div>
           <div style="margin-top:8px;"><strong>הערות:</strong><br/>${escapeHtml(safeStr(appt.notes) || "—")}</div>
+          <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <button class="btn-primary btn-sm js-enter-file" type="button" data-patient-id="${escapeHtml(safeStr(appt.patient_id)||"")}">הכנס לתיק</button>
+          </div>
         </div>
 
         <div class="files-head" style="margin-top:14px;">
@@ -510,6 +520,17 @@
       if (patientBtn) {
         const id = patientBtn.getAttribute("data-id");
         if (id) await openPatient(id);
+        return;
+      }
+
+      const enterBtn = t?.closest?.(".js-enter-file");
+      if (enterBtn) {
+        const pid = enterBtn.getAttribute("data-patient-id");
+        if (!pid) {
+          toast("לא נמצא patient_id לתיק מטופל (בדוק שהשדה patient_id קיים בטבלת appointments).", "error");
+          return;
+        }
+        window.location.href = `./patient.html?patient_id=${encodeURIComponent(pid)}`;
         return;
       }
 

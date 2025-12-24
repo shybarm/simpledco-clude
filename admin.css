@@ -96,3 +96,14 @@
   line-height: 1.6;
 }
 .btn-sm{ padding: 10px 14px !important; border-radius: 12px !important; font-size: 13px !important; }
+
+
+/* ---------- KPI colors ---------- */
+.kpi-card{ border:1px solid rgba(0,0,0,.10); border-radius:14px; background:#fff; padding:14px; }
+.kpi-card .kpi-label{ color:#607080; font-weight:800; }
+.kpi-card .kpi-value{ font-size:28px; font-weight:900; color:#1f2d3d; margin-top:6px; }
+
+.kpi-card.kpi-total{ background: rgba(11, 94, 215, .06); border-color: rgba(11, 94, 215, .22); }
+.kpi-card.kpi-new{ background: rgba(255, 193, 7, .10); border-color: rgba(255, 193, 7, .30); }
+.kpi-card.kpi-confirmed{ background: rgba(25, 135, 84, .10); border-color: rgba(25, 135, 84, .28); }
+.kpi-card.kpi-cancelled{ background: rgba(220, 53, 69, .08); border-color: rgba(220, 53, 69, .24); }

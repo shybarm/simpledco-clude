@@ -11,9 +11,7 @@
 
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="admin.css">
-  <link rel="stylesheet" href="theme-doctreat.css">
-
-  <style>
+<style>
     .layout { display:flex; gap:18px; align-items:flex-start; }
     .sidebar {
       width: 260px; flex: 0 0 260px;
@@ -129,7 +127,12 @@
       font-weight: 700;
       color: #0b5ed7;
     }
-  </style>
+  
+    /* dashboard-simplify */
+    /* Keep the dashboard focused on "מטופלים שמגיעים היום" + KPI cards */
+    .filters-row, .filters-panel, .admin-table-wrap { display:none !important; }
+    .admin-kpis{ margin-top: 14px; }
+</style>
 </head>
 
 <body>
@@ -265,7 +268,6 @@
               <table class="admin-table">
                 <thead>
                   <tr>
-                    <th>נוצר</th>
                     <th>מטופל</th>
                     <th>שירות</th>
                     <th>תאריך</th>
