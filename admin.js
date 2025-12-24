@@ -1,7 +1,3 @@
-// FILE: admin.js
-// LOCATION: /admin.js
-// FULL COPY-PASTE
-
 (function () {
   // ---------- DOM ----------
   const $ = (id) => document.getElementById(id);
@@ -34,7 +30,7 @@
   const kpis = $("kpis");
   const accountingCount = $("accountingCount");
 
-  // Files modal (must exist in admin.html)
+  // Optional modal nodes (only used if you added them in admin.html)
   const filesModalBackdrop = $("filesModalBackdrop");
   const filesModalMeta = $("filesModalMeta");
   const closeFilesModal = $("closeFilesModal");
@@ -49,8 +45,8 @@
   // ---------- Utils ----------
   function show(el) { if (el) el.style.display = ""; }
   function hide(el) { if (el) el.style.display = "none"; }
-
   function setText(el, txt) { if (el) el.textContent = txt == null ? "" : String(txt); }
+  function safeStr(v) { return v == null ? "" : String(v); }
 
   function isoToday() {
     const d = new Date();
@@ -59,8 +55,6 @@
     const dd = String(d.getDate()).padStart(2, "0");
     return `${yyyy}-${mm}-${dd}`;
   }
-
-  function safeStr(v) { return v == null ? "" : String(v); }
 
   function labelService(v) {
     const map = {
@@ -74,11 +68,7 @@
   }
 
   function labelStatus(v) {
-    const map = {
-      "new": "חדש",
-      "confirmed": "אושר",
-      "cancelled": "בוטל",
-    };
+    const map = { "new": "חדש", "confirmed": "אושר", "cancelled": "בוטל" };
     return map[v] || safeStr(v) || "—";
   }
 
@@ -122,7 +112,7 @@
     return window.getSupabaseClient();
   }
 
-  // ---------- Modal (fixed + no scroll bugs) ----------
+  // ---------- Modal scroll lock ----------
   function lockBodyScroll() {
     lastScrollY = window.scrollY || 0;
     document.body.style.position = "fixed";
@@ -162,20 +152,15 @@
 
   // ---------- Data ----------
   async function loadAppointments() {
-    // Prefer RPC if exists; fallback to table select
-    // Expected appointments columns:
-    // id, created_at, first_name, last_name, service, date, time, notes, status
     let rows = [];
 
-    // 1) Try RPC: list_appointments (optional)
+    // Try RPC (if you created it)
     try {
       const { data, error } = await sb.rpc("list_appointments");
-      if (!error && Array.isArray(data)) {
-        rows = data;
-      }
+      if (!error && Array.isArray(data)) rows = data;
     } catch (_) {}
 
-    // 2) Fallback: direct select
+    // Fallback: direct select
     if (!rows.length) {
       const { data, error } = await sb
         .from("appointments")
@@ -198,12 +183,10 @@
 
     return rows.filter((r) => {
       const fullName = `${safeStr(r.first_name)} ${safeStr(r.last_name)}`.trim().toLowerCase();
-
       if (q && !fullName.includes(q)) return false;
       if (d && safeStr(r.date) !== d) return false;
       if (st !== "all" && safeStr(r.status) !== st) return false;
       if (sv !== "all" && safeStr(r.service) !== sv) return false;
-
       return true;
     });
   }
@@ -281,7 +264,6 @@
       tr.innerHTML = `
         <td>${escapeHtml(created)}</td>
 
-        <!-- CLICKABLE PATIENT (RESTORED) -->
         <td>
           <button class="patient-open js-open-patient" type="button" data-id="${escapeHtml(r.id)}">
             ${escapeHtml(patientName)}
@@ -306,63 +288,64 @@
   function renderAll() {
     const filtered = applyFilters(allAppointments);
     renderKPIs(filtered);
-    renderToday(allAppointments); // today dashboard should ignore filters (feels right)
+    renderToday(allAppointments);
     renderTable(filtered);
 
-    // Accounting counter (example: confirmed items)
     const confirmed = allAppointments.filter((r) => safeStr(r.status) === "confirmed").length;
     if (accountingCount) accountingCount.textContent = String(confirmed);
   }
 
   // ---------- Patient + Files actions ----------
   async function openPatient(appointmentId) {
-    // Simple “access patient” behavior: scroll to row + open files modal with details
-    // (No patient page needed; keeps dashboard design unchanged)
     const appt = allAppointments.find((x) => safeStr(x.id) === safeStr(appointmentId));
     if (!appt) return;
 
-    const name = `${safeStr(appt.first_name telling)} ${safeStr(appt.last_name)}`.trim();
+    const name = `${safeStr(appt.first_name)} ${safeStr(appt.last_name)}`.trim();
     const meta = `${name || "מטופל"} • ${labelService(appt.service)} • ${safeStr(appt.date)} ${safeStr(appt.time)}`;
 
-    // Open same modal but show “patient card” + files
+    // If you didn't add the modal HTML, just do nothing (keeps dashboard stable)
+    if (!filesModalBackdrop || !appointmentFilesHost) {
+      toast("כדי לפתוח כרטיס מטופל, הוסף את מודאל הקבצים ל-admin.html", "error");
+      return;
+    }
+
     openFilesModal(meta);
 
-    if (appointmentFilesHost) {
-      appointmentFilesHost.innerHTML = `
-        <div class="files-block">
-          <div class="files-head">
-            <div style="font-weight:900;">פרטי מטופל</div>
-          </div>
-          <div class="files-card">
-            <div><strong>שם:</strong> ${escapeHtml(name || "—")}</div>
-            <div><strong>שירות:</strong> ${escapeHtml(labelService(appt.service))}</div>
-            <div><strong>תאריך:</strong> ${escapeHtml(safeStr(appt.date) || "—")}</div>
-            <div><strong>שעה:</strong> ${escapeHtml(safeStr(appt.time) || "—")}</div>
-            <div style="margin-top:8px;"><strong>הערות:</strong><br/>${escapeHtml(safeStr(appt.notes) || "—")}</div>
-          </div>
-
-          <div class="files-head" style="margin-top:14px;">
-            <div style="font-weight:900;">קבצים מצורפים</div>
-          </div>
-          <div id="filesList">טוען קבצים…</div>
+    appointmentFilesHost.innerHTML = `
+      <div class="files-block">
+        <div class="files-head">
+          <div style="font-weight:900;">פרטי מטופל</div>
         </div>
-      `;
-    }
+        <div class="files-card">
+          <div><strong>שם:</strong> ${escapeHtml(name || "—")}</div>
+          <div><strong>שירות:</strong> ${escapeHtml(labelService(appt.service))}</div>
+          <div><strong>תאריך:</strong> ${escapeHtml(safeStr(appt.date) || "—")}</div>
+          <div><strong>שעה:</strong> ${escapeHtml(safeStr(appt.time) || "—")}</div>
+          <div style="margin-top:8px;"><strong>הערות:</strong><br/>${escapeHtml(safeStr(appt.notes) || "—")}</div>
+        </div>
+
+        <div class="files-head" style="margin-top:14px;">
+          <div style="font-weight:900;">קבצים מצורפים</div>
+        </div>
+        <div id="filesList">טוען קבצים…</div>
+      </div>
+    `;
 
     await loadFilesInto("filesList", appointmentId);
   }
 
   async function openFilesOnly(appointmentId) {
+    if (!filesModalBackdrop || !appointmentFilesHost) {
+      toast("כדי לפתוח קבצים, הוסף את מודאל הקבצים ל-admin.html", "error");
+      return;
+    }
+
     const appt = allAppointments.find((x) => safeStr(x.id) === safeStr(appointmentId));
     const name = appt ? `${safeStr(appt.first_name)} ${safeStr(appt.last_name)}`.trim() : "—";
     const meta = `${name || "מטופל"} • ${labelService(appt?.service)} • ${safeStr(appt?.date)} ${safeStr(appt?.time)}`;
 
     openFilesModal(meta);
-
-    if (appointmentFilesHost) {
-      appointmentFilesHost.innerHTML = `<div id="filesList">טוען קבצים…</div>`;
-    }
-
+    appointmentFilesHost.innerHTML = `<div id="filesList">טוען קבצים…</div>`;
     await loadFilesInto("filesList", appointmentId);
   }
 
@@ -370,8 +353,6 @@
     const host = $(hostId);
     if (!host) return;
 
-    // table: appointment_files
-    // columns: id, appointment_id, file_name, file_path, file_type, created_at
     let files = [];
     try {
       const { data, error } = await sb
@@ -402,7 +383,6 @@
       const fileName = safeStr(f.file_name) || "file";
       const filePath = safeStr(f.file_path);
 
-      // Signed URL (works even if bucket is private)
       let url = "";
       try {
         const { data, error } = await sb.storage.from(BUCKET).createSignedUrl(filePath, 60 * 20);
@@ -442,66 +422,63 @@
     if (session) {
       hide(loginPanel);
       show(appPanel);
-      show(logoutLink);
+      if (logoutLink) show(logoutLink);
       await bootAfterLogin();
     } else {
       show(loginPanel);
       hide(appPanel);
-      hide(logoutLink);
+      if (logoutLink) hide(logoutLink);
     }
   }
 
   async function doLogin() {
-    hide(loginError);
+    if (loginError) hide(loginError);
+
     const email = safeStr(emailInput?.value).trim();
     const password = safeStr(passwordInput?.value);
 
     if (!email || !password) {
       setText(loginError, "נא להזין אימייל וסיסמה.");
-      show(loginError);
+      if (loginError) show(loginError);
       return;
     }
 
-    loginBtn.disabled = true;
+    if (loginBtn) loginBtn.disabled = true;
 
     try {
       const { data, error } = await sb.auth.signInWithPassword({ email, password });
       if (error) throw error;
+
       session = data?.session || null;
 
       hide(loginPanel);
       show(appPanel);
-      show(logoutLink);
+      if (logoutLink) show(logoutLink);
 
       await bootAfterLogin();
       toast("✅ התחברת בהצלחה", "success");
     } catch (e) {
       console.error(e);
       setText(loginError, "התחברות נכשלה: " + (e?.message || "שגיאה"));
-      show(loginError);
+      if (loginError) show(loginError);
     } finally {
-      loginBtn.disabled = false;
+      if (loginBtn) loginBtn.disabled = false;
     }
   }
 
   async function doLogout() {
-    try {
-      await sb.auth.signOut();
-    } catch (_) {}
+    try { await sb.auth.signOut(); } catch (_) {}
     session = null;
     show(loginPanel);
     hide(appPanel);
-    hide(logoutLink);
+    if (logoutLink) hide(logoutLink);
     toast("התנתקת", "success");
   }
 
   async function bootAfterLogin() {
-    // Basic identity text (optional)
     setText(sideDoctorName, "Back Office");
     setText(sideClinicMeta, "ניהול תורים וקבצים");
     setText(clinicSub, "רשימת תורים + קבצים מצורפים");
-
-    // Load data
     await loadAppointments();
   }
 
@@ -510,9 +487,10 @@
     if (loginBtn) loginBtn.addEventListener("click", doLogin);
     if (logoutLink) logoutLink.addEventListener("click", (e) => { e.preventDefault(); doLogout(); });
 
-    if (refreshBtn) refreshBtn.addEventListener("click", () => loadAppointments().catch((e) => console.error(e)));
+    if (refreshBtn) refreshBtn.addEventListener("click", () => loadAppointments().catch(console.error));
 
     if (toggleFiltersBtn && filtersPanel) {
+      filtersPanel.style.display = "none";
       toggleFiltersBtn.addEventListener("click", () => {
         const isOpen = filtersPanel.style.display !== "none";
         filtersPanel.style.display = isOpen ? "none" : "block";
@@ -525,30 +503,24 @@
     if (statusFilter) statusFilter.addEventListener("change", refilter);
     if (serviceFilter) serviceFilter.addEventListener("change", refilter);
 
-    // Table + today list delegated clicks (RESTORES “patient click”)
     document.addEventListener("click", async (e) => {
       const t = e.target;
 
       const patientBtn = t?.closest?.(".js-open-patient");
       if (patientBtn) {
         const id = patientBtn.getAttribute("data-id");
-        if (id) {
-          await openPatient(id);
-        }
+        if (id) await openPatient(id);
         return;
       }
 
       const filesBtn = t?.closest?.(".js-open-files");
       if (filesBtn) {
         const id = filesBtn.getAttribute("data-id");
-        if (id) {
-          await openFilesOnly(id);
-        }
+        if (id) await openFilesOnly(id);
         return;
       }
     });
 
-    // Modal close (fix scroll bugs)
     if (closeFilesModal) closeFilesModal.addEventListener("click", closeFilesModalFn);
 
     if (filesModalBackdrop) {
@@ -577,21 +549,20 @@
     wireEvents();
     await restoreSession();
 
-    // Keep UI synced with auth state changes
     sb.auth.onAuthStateChange(async (_event, _session) => {
       session = _session || null;
       if (session) {
         hide(loginPanel);
         show(appPanel);
-        show(logoutLink);
+        if (logoutLink) show(logoutLink);
         await bootAfterLogin();
       } else {
         show(loginPanel);
         hide(appPanel);
-        hide(logoutLink);
+        if (logoutLink) hide(logoutLink);
       }
     });
   }
 
-  init().catch((e) => console.error(e));
+  init().catch(console.error);
 })();
