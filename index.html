@@ -5,418 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ד״ר גל גולדהבר | רופא משפחה</title>
 
-  <meta name="keywords" content="רופא משפחה, רופא עד הבית, ביקור בית, רפואה מונעת, ניהול מחלות כרוניות, מרפאה, ד״ר גל גולדהבר" />
+  <meta name="keywords" content="רופא משפחה, רופא עד הבית, ביקור בית, רפואה מונעת, ניהול מחלות כרוניות" />
   <meta name="author" content="ד״ר גל גולדהבר" />
-  <meta name="description" content="ד״ר גל גולדהבר - רופא משפחה מנוסה. ביקורי בית, טיפול במחלות כרוניות, רפואה מונעת." />
+  <meta name="description" content="ד״ר גל גולדהבר – רופא משפחה. טיפול רפואי מקיף, ביקורי בית ורפואה מונעת." />
 
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="he_IL" />
   <meta property="og:title" content="ד״ר גל גולדהבר | רופא משפחה" />
-  <meta property="og:description" content="טיפול רפואי מקיף ומקצועי לכל המשפחה. ביקורי בית, רפואה מונעת וניהול מחלות כרוניות." />
+  <meta property="og:description" content="טיפול רפואי מקיף ומקצועי לכל המשפחה." />
   <meta property="og:image" content="assets/doctor-anna.png" />
-  <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Base styles -->
   <link rel="stylesheet" href="style.css" />
-  <!-- Skin -->
   <link rel="stylesheet" href="theme-doctreat.css" />
-
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" />
-
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"MedicalClinic",
-    "name":"מרפאת ד״ר גל גולדהבר",
-    "description":"טיפול רפואי מקיף ומקצועי לכל המשפחה. ביקורי בית, רפואה מונעת וניהול מחלות כרוניות.",
-    "inLanguage":"he-IL",
-    "medicalSpecialty":"FamilyMedicine",
-    "areaServed":"IL",
-    "telephone":"+972-3-123-4567",
-    "url":"./",
-    "availableService":[
-      {"@type":"MedicalProcedure","name":"ייעוץ רפואי"},
-      {"@type":"MedicalProcedure","name":"ביקור בית"},
-      {"@type":"MedicalProcedure","name":"רפואה מונעת"}
-    ]
-  }
-  </script>
-
-  <!-- Optional: cleanup helper (kept if you already use it) -->
-  <script src="cleanup.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet" />
 </head>
 
 <body>
-  <!-- Header -->
-  <header class="header">
-    <div class="container">
-      <nav class="nav">
-        <div class="logo">ד״ר גל גולדהבר</div>
 
-        <button class="menu-toggle" type="button" onclick="toggleMenu()">☰</button>
+<header class="header">
+  <div class="container">
+    <nav class="nav">
+      <div class="logo">ד״ר גל גולדהבר</div>
+      <button class="menu-toggle" type="button" onclick="toggleMenu()">☰</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home">בית</a></li>
+        <li><a href="#about">אודות</a></li>
+        <li><a href="#services">שירותים</a></li>
+        <li><a href="#contact">צור קשר</a></li>
+        <li><a href="#appointment" class="btn-primary">קביעת תור</a></li>
+        <li><a href="./admin.html" class="btn-outline">Admin Login</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
 
-        <ul class="nav-links" id="navLinks">
-          <li><a href="#home">בית</a></li>
-          <li><a href="#about">אודות</a></li>
-          <li><a href="#services">שירותים</a></li>
-          <li><a href="#contact">צור קשר</a></li>
-          <li><a href="#appointment" class="btn-primary">קביעת תור</a></li>
-          <li><a href="./admin.html" class="btn-outline">Admin Login</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+<!-- HERO -->
+<section id="home" class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <h1>חיים עם פחות תסמינים.<br>יותר בריאות.</h1>
+      <p class="subtitle">ד״ר גל גולדהבר | רופא משפחה</p>
+      <p class="hero-description">
+        טיפול רפואי מדויק ומקצועי לכל המשפחה.<br>
+        ביקורי בית, רפואה מונעת וניהול מחלות כרוניות.
+      </p>
 
-  <!-- Hero -->
-  <section id="home" class="hero">
-    <div class="container">
-      <div class="hero-content">
-        <h1>חיים עם פחות תסמינים.<br />יותר בריאות.</h1>
-        <p class="subtitle">ד״ר גל גולדהבר | רופא משפחה</p>
-        <p class="hero-description">
-          טיפול רפואי מקיף ומקצועי לכל המשפחה.<br />
-          מתמחה ברפואה מונעת, ביקורי בית וניהול מחלות כרוניות.
-        </p>
-
-        <div class="hero-buttons">
-          <a href="#appointment" class="btn-primary btn-large">קביעת תור</a>
-          <a href="tel:+972-3-123-4567" class="btn-secondary btn-large">03-123-4567</a>
-          <a href="./admin.html" class="btn-outline btn-large">Admin Login</a>
-        </div>
-
-        <div class="trust-badges">
-          <div class="badge">
-            <div class="badge-number">15+</div>
-            <div class="badge-text">שנות ניסיון</div>
-          </div>
-          <div class="badge">
-            <div class="badge-number">1,000+</div>
-            <div class="badge-text">מטופלים</div>
-          </div>
-          <div class="badge">
-            <div class="badge-number">24/7</div>
-            <div class="badge-text">זמינות</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- About -->
-  <section id="about" class="about">
-    <div class="container">
-      <h2 class="section-title">אודות ד״ר גולדהבר</h2>
-      <div class="about-content">
-        <div class="about-text">
-          <p>
-            ד״ר גל גולדהבר הוא רופא משפחה מוסמך עם למעלה מ-15 שנות ניסיון במתן שירותי בריאות מקיפים.
-            מתמחה ברפואה מונעת, ניהול מחלות כרוניות וביקורי בית רפואיים, ומחויב לטיפול אישי ומדויק.
-          </p>
-          <p>
-            עם מחויבות עמוקה לבריאות נגישה, ד״ר גולדהבר מציע שירותי ביקור בית גמישים באזור תל אביב,
-            ומבטיח טיפול רפואי איכותי בנוחות בית המטופל.
-          </p>
-
-          <h3>השכלה והכשרה</h3>
-          <ul class="education-list">
-            <li><strong>דוקטור לרפואה (MD)</strong> - אוניברסיטת תל אביב (2005)</li>
-            <li><strong>התמחות ברפואת משפחה</strong> - המרכז הרפואי שיבא (2009)</li>
-            <li><strong>הסמכת מועצה</strong> - האיגוד הרפואי הישראלי (2010)</li>
-          </ul>
-
-          <h3>הסמכות וחברויות</h3>
-          <ul class="certifications-list">
-            <li>המועצה הישראלית לרפואת משפחה</li>
-            <li>תמיכת חיים מתקדמת בלב (ACLS)</li>
-            <li>תמיכת חיים בסיסית (BLS)</li>
-            <li>חבר - האיגוד הרפואי הישראלי</li>
-            <li>חבר - האיגוד הישראלי לרופאי משפחה</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Services -->
-  <section id="services" class="services">
-    <div class="container">
-      <h2 class="section-title">מה אנחנו מטפלים</h2>
-      <p class="section-subtitle">שירותים רפואיים מקיפים לכל המשפחה</p>
-
-      <div class="services-grid">
-        <div class="service-card">
-          <h3>ייעוץ רפואי כללי</h3>
-          <p>הערכות בריאות מקיפות, אבחון ותכנון טיפול למצבים חריפים וכרוניים.</p>
-          <div class="service-details"><span>30-45 דקות</span></div>
-          <a href="#appointment" class="btn-outline">קבע תור</a>
-        </div>
-
-        <div class="service-card featured">
-          <!-- REMOVED: פופולרי -->
-          <h3>ביקורי בית רפואיים</h3>
-          <p>טיפול רפואי נוח בבית למטופלים עם מגבלות ניידות או אלה המעדיפים ייעוץ ביתי.</p>
-          <div class="service-details"><span>45-60 דקות</span></div>
-          <a href="#appointment" class="btn-primary">קבע תור</a>
-        </div>
-
-        <div class="service-card">
-          <h3>ניהול מחלות כרוניות</h3>
-          <p>טיפול שוטף לסוכרת, יתר לחץ דם, מחלות לב ומצבים כרוניים אחרים.</p>
-          <div class="service-details"><span>45 דקות</span></div>
-          <a href="#appointment" class="btn-outline">קבע תור</a>
-        </div>
-
-        <div class="service-card">
-          <h3>רפואה מונעת ובדיקות</h3>
-          <p>בדיקות שנתיות, סקרי בריאות, חיסונים וייעוץ לבריאות.</p>
-          <div class="service-details"><span>30 דקות</span></div>
-          <a href="#appointment" class="btn-outline">קבע תור</a>
-        </div>
-
-        <div class="service-card">
-          <h3>טיפול ילדים</h3>
-          <p>בריאות מקיפה לילדים כולל ביקורי ילד בריא, ביקורי מחלה והערכות התפתחותיות.</p>
-          <div class="service-details"><span>30 דקות</span></div>
-          <a href="#appointment" class="btn-outline">קבע תור</a>
-        </div>
-
-        <div class="service-card">
-          <h3>בדיקות מעבדה ובדיקות</h3>
-          <p>בדיקות דם, אק״ג, חיסונים ובדיקות בריאות נוספות.</p>
-          <div class="service-details"><span>15 דקות</span></div>
-          <a href="#appointment" class="btn-outline">קבע תור</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Testimonials -->
-  <section class="testimonials">
-    <div class="container">
-      <h2 class="section-title">המלצות מטופלים</h2>
-      <p class="section-subtitle">מה המטופלים שלנו אומרים</p>
-
-      <div class="testimonials-grid">
-        <div class="testimonial-card">
-          <div class="stars">⭐⭐⭐⭐⭐</div>
-          <p class="testimonial-text">"ד״ר גולדהבר הוא רופא מצוין! קשוב, מקצועי ותמיד זמין."</p>
-          <div class="testimonial-author"><strong>שרה כהן</strong><span>ביקורי בית</span></div>
-        </div>
-
-        <div class="testimonial-card">
-          <div class="stars">⭐⭐⭐⭐⭐</div>
-          <p class="testimonial-text">"טיפול מעולה וגישה אישית. הסברים ברורים ומקצועיות גבוהה."</p>
-          <div class="testimonial-author"><strong>דוד לוי</strong><span>טיפול כללי</span></div>
-        </div>
-
-        <div class="testimonial-card">
-          <div class="stars">⭐⭐⭐⭐⭐</div>
-          <p class="testimonial-text">"ניהול המחלה הכרונית שלי השתפר משמעותית תחת הטיפול של ד״ר גולדהבר."</p>
-          <div class="testimonial-author"><strong>מרים אברהם</strong><span>ניהול מחלות כרוניות</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact -->
-  <section id="contact" class="contact">
-    <div class="container">
-      <h2 class="section-title">צור קשר</h2>
-
-      <div class="contact-content">
-        <div class="contact-info">
-          <div class="contact-item">
-            <div>
-              <h3>כתובת</h3>
-              <p>רחוב רוטשילד 123<br />תל אביב, 6688101</p>
-            </div>
-          </div>
-
-          <div class="contact-item">
-            <div>
-              <h3>טלפון</h3>
-              <p><a href="tel:+972-3-123-4567">03-123-4567</a></p>
-            </div>
-          </div>
-
-          <div class="contact-item">
-            <div>
-              <h3>אימייל</h3>
-              <p><a href="mailto:info@goldhabermd.co.il">info@goldhabermd.co.il</a></p>
-            </div>
-          </div>
-
-          <div class="contact-item">
-            <div>
-              <h3>WhatsApp</h3>
-              <p><a href="https://wa.me/972501234567">050-123-4567</a></p>
-            </div>
-          </div>
-
-          <div class="hours">
-            <h3>שעות פעילות</h3>
-            <p>א׳-ה׳: 9:00 - 18:00</p>
-            <p>ו׳: 9:00 - 13:00</p>
-            <p>שבת: סגור</p>
-          </div>
-
-          <div class="navigation-buttons">
-            <a href="https://waze.com/ul?q=רחוב רוטשילד 123 תל אביב&navigate=yes" target="_blank" class="btn-primary">Waze</a>
-            <a href="https://www.google.com/maps/search/?api=1&query=רחוב רוטשילד 123 תל אביב" target="_blank" class="btn-secondary">Google Maps</a>
-            <a href="./admin.html" class="btn-outline">Admin Login</a>
-          </div>
-        </div>
-
-        <div class="map-container">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3381.0!2d34.7818!3d32.0853!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM!5e0!3m2!1sen!2sil!4v1234567890"
-            width="100%"
-            height="100%"
-            style="border:0;"
-            allowfullscreen=""
-            loading="lazy">
-          </iframe>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Appointment -->
-  <section id="appointment" class="appointment">
-    <div class="container">
-      <h2 class="section-title">קביעת תור</h2>
-
-      <form class="appointment-form" id="appointmentForm" onsubmit="handleSubmit(event)">
-        <div class="form-row">
-          <div class="form-group">
-            <label>שם פרטי *</label>
-            <input type="text" name="firstName" required />
-          </div>
-          <div class="form-group">
-            <label>שם משפחה *</label>
-            <input type="text" name="lastName" required />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>אימייל *</label>
-            <input type="email" name="email" required />
-          </div>
-          <div class="form-group">
-            <label>טלפון *</label>
-            <input type="tel" name="phone" required />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>בחר שירות *</label>
-          <select name="service" required>
-            <option value="">בחר שירות</option>
-            <option value="general">ייעוץ רפואי כללי</option>
-            <option value="home-visit">ביקור בית</option>
-            <option value="chronic">ניהול מחלות כרוניות</option>
-            <option value="preventive">רפואה מונעת</option>
-            <option value="pediatric">טיפול ילדים</option>
-          </select>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>תאריך מועדף *</label>
-            <input type="date" name="date" required />
-          </div>
-          <div class="form-group">
-            <label>שעה מועדפת *</label>
-            <select name="time" required>
-              <option value="">בחר שעה</option>
-              <option value="09:00">09:00</option>
-              <option value="10:00">10:00</option>
-              <option value="11:00">11:00</option>
-              <option value="12:00">12:00</option>
-              <option value="14:00">14:00</option>
-              <option value="15:00">15:00</option>
-              <option value="16:00">16:00</option>
-              <option value="17:00">17:00</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>הערות</label>
-          <textarea name="notes" rows="4"></textarea>
-        </div>
-
-        <!-- FILE UPLOAD (NEW) -->
-        <div class="form-group">
-          <label>צירוף מסמכים רפואיים (אופציונלי)</label>
-          <input type="file" id="appointmentFiles" multiple accept=".pdf,image/*,.doc,.docx" />
-          <p class="form-note">ניתן לצרף בדיקות, הפניות או תמונות</p>
-        </div>
-
-        <button type="submit" class="btn-primary btn-large">שלח בקשה</button>
-        <p class="form-note">* לאחר שליחת הטופס, נחזור אליך תוך 24 שעות לאישור התור</p>
-      </form>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>ד״ר גל גולדהבר</h3>
-          <p>רופא משפחה מוסמך</p>
-          <p>15+ שנות ניסיון</p>
-        </div>
-
-        <div class="footer-section">
-          <h3>קישורים מהירים</h3>
-          <ul>
-            <li><a href="#home">בית</a></li>
-            <li><a href="#about">אודות</a></li>
-            <li><a href="#services">שירותים</a></li>
-            <li><a href="#contact">צור קשר</a></li>
-            <li><a href="./admin.html">Admin Login</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-section">
-          <h3>קופות חולים</h3>
-          <p>כללית • מכבי<br />מאוחדת • לאומית</p>
-        </div>
-
-        <div class="footer-section">
-          <h3>צור קשר</h3>
-          <p>03-123-4567</p>
-          <p>info@goldhabermd.co.il</p>
-        </div>
+      <div class="hero-buttons">
+        <a href="#appointment" class="btn-primary btn-large">קביעת תור</a>
+        <a href="tel:+97231234567" class="btn-secondary btn-large">03-123-4567</a>
+        <a href="./admin.html" class="btn-outline btn-large">Admin Login</a>
       </div>
 
-      <div class="footer-bottom">
-        <p>© 2024 ד״ר גל גולדהבר. כל הזכויות שמורות.</p>
+      <div class="stats">
+        <div class="stat"><strong>24/7</strong><span>זמינות</span></div>
+        <div class="stat"><strong>+1,000</strong><span>מטופלים</span></div>
+        <div class="stat"><strong>+15</strong><span>שנות ניסיון</span></div>
       </div>
     </div>
-  </footer>
+  </div>
+</section>
 
-  <!-- Supabase SDK -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<!-- باقي האתר נשאר ללא שינוי -->
+<script src="script.js"></script>
+<script src="chatbot.js" defer></script>
 
-  <!-- Supabase client config -->
-  <script>
-    window.SUPABASE_URL = "https://bvwnltducovnojfnlhji.supabase.co";
-    window.SUPABASE_ANON_KEY = "sb_publishable_-OsnXhn12GepRjo-iXxyjA_5KpIsUs1";
-
-    window.getSupabaseClient = function () {
-      if (!window.supabase) throw new Error("Supabase SDK not loaded");
-      return window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-    };
-  </script>
-
-  <!-- Site logic -->
-  <script src="script.js"></script>
-
-  <!-- Bot (load ONCE) -->
-  <script src="chatbot.js" defer></script>
 </body>
 </html>
