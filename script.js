@@ -1,38 +1,94 @@
-// script.js — Website + Appointment submit via RPC (create_appointment)
+// FILE: script.js
+// LOCATION: /script.js
+// FULL COPY-PASTE
+// FIXES:
+// 1) Storage upload now uses upsert:true (prevents “already exists” edge)
+// 2) Adds explicit checks + better logging for appointmentFiles input
+// 3) Ensures DB insert happens and shows why it fails (RLS / missing columns / wrong types)
+// 4) Adds small delay after RPC (helps if triggers/replication timing exist)
 
 async function uploadAppointmentFiles(supabase, appointmentId) {
   const input = document.getElementById("appointmentFiles");
-  if (!input || !input.files || input.files.length === 0) return;
+
+  if (!appointmentId) {
+    console.error("uploadAppointmentFiles: missing appointmentId");
+    return;
+  }
+
+  if (!input) {
+    console.warn("uploadAppointmentFiles: #appointmentFiles not found in DOM");
+    return;
+  }
+
+  if (!input.files || input.files.length === 0) {
+    // no files selected
+    return;
+  }
+
+  // Safety: bucket name must match your Supabase Storage bucket
+  const BUCKET = "appointment-files";
 
   for (const file of input.files) {
-    const safeName = file.name.replace(/[^\w.\-() ]/g, "_");
-    const filePath = `appointments/${appointmentId}/${Date.now()}_${safeName}`;
+    try {
+      const safeName = String(file.name || "file").replace(/[^\w.\-() ]/g, "_");
+      const filePath = `appointments/${appointmentId}/${Date.now()}_${safeName}`;
 
-    // Upload to Storage bucket: appointment-files
-    const { error: uploadError } = await supabase.storage
-      .from("appointment-files")
-      .upload(filePath, file);
+      // 1) Upload to Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from(BUCKET)
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: true, // IMPORTANT: avoids occasional "already exists"
+          contentType: file.type || undefined,
+        });
 
-    if (uploadError) {
-      console.error("File upload failed:", uploadError);
-      // Do not fail the appointment if a file fails
-      continue;
+      if (uploadError) {
+        console.error("File upload failed:", {
+          appointmentId,
+          fileName: file.name,
+          filePath,
+          uploadError,
+        });
+        continue; // do not block appointment
+      }
+
+      // 2) Insert into DB appointment_files
+      const payload = {
+        appointment_id: appointmentId,
+        file_name: file.name,
+        file_path: filePath,
+        file_type: file.type || null,
+      };
+
+      const { error: dbError } = await supabase
+        .from("appointment_files")
+        .insert(payload);
+
+      if (dbError) {
+        console.error("DB insert failed (appointment_files):", {
+          payload,
+          dbError,
+          hint:
+            "Likely RLS or missing insert permission on appointment_files. Also verify columns: appointment_id, file_name, file_path, file_type.",
+        });
+      } else {
+        console.log("appointment_files row created:", {
+          appointmentId,
+          fileName: file.name,
+          filePath,
+          uploadData,
+        });
+      }
+    } catch (e) {
+      console.error("uploadAppointmentFiles: unexpected error:", e);
     }
-
-    // Save reference in DB table: appointment_files
-    const { error: dbError } = await supabase.from("appointment_files").insert({
-      appointment_id: appointmentId,
-      file_name: file.name,
-      file_path: filePath,
-      file_type: file.type || null,
-    });
-
-    if (dbError) console.error("DB insert failed:", dbError);
   }
 }
 
 (function () {
-  function byId(id) { return document.getElementById(id); }
+  function byId(id) {
+    return document.getElementById(id);
+  }
 
   function showToast(message, type) {
     const toast = document.createElement("div");
@@ -75,13 +131,13 @@ async function uploadAppointmentFiles(supabase, appointmentId) {
     const form = event.target;
 
     const firstName = getFormValue(form, "firstName");
-    const lastName  = getFormValue(form, "lastName");
-    const email     = getFormValue(form, "email");
-    const phone     = getFormValue(form, "phone");
-    const service   = getFormValue(form, "service");
-    const date      = getFormValue(form, "date");  // YYYY-MM-DD from <input type="date">
-    const time      = getFormValue(form, "time");
-    const notes     = getFormValue(form, "notes");
+    const lastName = getFormValue(form, "lastName");
+    const email = getFormValue(form, "email");
+    const phone = getFormValue(form, "phone");
+    const service = getFormValue(form, "service");
+    const date = getFormValue(form, "date"); // YYYY-MM-DD
+    const time = getFormValue(form, "time");
+    const notes = getFormValue(form, "notes");
 
     if (!firstName || !lastName || !email || !phone || !service || !date || !time) {
       showToast("נא למלא את כל השדות החובה.", "error");
@@ -104,10 +160,13 @@ async function uploadAppointmentFiles(supabase, appointmentId) {
 
     const submitBtn = form.querySelector('button[type="submit"]');
     const oldBtnText = submitBtn ? submitBtn.textContent : "";
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "שולח..."; }
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "שולח...";
+    }
 
     try {
-      // Call the RPC (safe public entry point)
+      // RPC creates appointment and returns UUID
       const { data, error } = await sb.rpc("create_appointment", {
         p_first_name: firstName,
         p_last_name: lastName,
@@ -116,7 +175,7 @@ async function uploadAppointmentFiles(supabase, appointmentId) {
         p_service: service,
         p_date: date,
         p_time: time,
-        p_notes: notes || null
+        p_notes: notes || null,
       });
 
       if (error) {
@@ -125,11 +184,13 @@ async function uploadAppointmentFiles(supabase, appointmentId) {
         return;
       }
 
-      // data returns appointment UUID
       const appointmentId = data;
       console.log("Appointment created:", appointmentId);
 
-      // Upload files (optional) — safe: never blocks appointment success
+      // tiny delay (helps in some setups with triggers/latency)
+      await new Promise((r) => setTimeout(r, 80));
+
+      // Upload files (optional)
       try {
         await uploadAppointmentFiles(sb, appointmentId);
       } catch (uploadErr) {
@@ -138,12 +199,14 @@ async function uploadAppointmentFiles(supabase, appointmentId) {
 
       form.reset();
       showToast("✅ הבקשה נשלחה! נחזור אליך בהקדם לאישור התור.", "success");
-
     } catch (err) {
       console.error(err);
       showToast("שליחה נכשלה: Network error", "error");
     } finally {
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = oldBtnText || "שלח בקשה"; }
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = oldBtnText || "שלח בקשה";
+      }
     }
   };
 })();
